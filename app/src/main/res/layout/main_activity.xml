@@ -6,12 +6,12 @@
         android:id="@+id/main"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".MainActivityActivity">
+        tools:context=".MainActivity">
         <Button
-                android:id="@+id/supabutton"
+                android:id="@+id/btnNewKeyPair"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="I'm a button" tools:ignore="MissingConstraints"/>
+                android:text="Neues Öffentliches Profil" tools:ignore="MissingConstraints"/>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

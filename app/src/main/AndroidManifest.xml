@@ -13,7 +13,13 @@
             android:theme="@style/Theme.PommesfanIdentAndroid"
             tools:targetApi="31">
         <activity
-                android:name=".MainActivity"
+                android:name=".ImportedProfiles"
+                android:exported="false"/>
+        <activity
+                android:name=".CreateProfile"
+                android:exported="false"/>
+        <activity
+                android:name=".MainMenu"
                 android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
@@ -21,9 +27,6 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-        <activity
-                android:name=".MainActivityActivity"
-                android:exported="false"/>
     </application>
 
 </manifest>

@@ -1,32 +1,27 @@
 package com.example.pommesfanidentandroid;
+import android.app.Activity;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
-import com.example.pommesfanidentandroid.controller.Controller;
-
+import com.example.controller.Controller;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.security.*;
-import java.util.Objects;
 
-public class MainActivity extends AppCompatActivity {
+
+public class CreateProfile extends Activity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
-        setContentView(R.layout.main_activity);
-        ConstraintLayout myLayout = findViewById(R.id.main);
+        setContentView(R.layout.create_profile);
+        LinearLayout myLayout = findViewById(R.id.createProfiles);
 
         File appDir = getFilesDir();
         int i = 0;
@@ -39,7 +34,7 @@ public class MainActivity extends AppCompatActivity {
             i += 1;
         }
 
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
+        ViewCompat.setOnApplyWindowInsetsListener(myLayout, (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
@@ -58,11 +53,13 @@ public class MainActivity extends AppCompatActivity {
         layout.addView(input);
         builder.setPositiveButton("Ok", (dialog, id) -> {
             try {
-                Controller.generateKeyPair(getFilesDir() + "/" + input.getText().toString());
-                recreate();
-            } catch (NoSuchAlgorithmException | IOException e) {
+                Controller.controller.generateKeyPair(getFilesDir() + input.getText().toString(), new String[0]);
+            } catch (NoSuchAlgorithmException e) {
+                throw new RuntimeException(e);
+            } catch (IOException e) {
                 throw new RuntimeException(e);
             }
+            recreate();
         });
         builder.setNegativeButton("Abbrechen", (dialog, id) -> {
         });

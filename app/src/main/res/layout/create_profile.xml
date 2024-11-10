@@ -1,17 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
+<LinearLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        android:id="@+id/createProfiles"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:id="@+id/createProfile"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:orientation="vertical"
         tools:context=".CreateProfile">
         <Button
                 android:id="@+id/btnNewKeyPair"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Neues Öffentliches Profil" tools:ignore="MissingConstraints"/>
+                android:text="@string/neues_ffentliches_profil"/>
 
-
-</androidx.constraintlayout.widget.ConstraintLayout>
+</LinearLayout>

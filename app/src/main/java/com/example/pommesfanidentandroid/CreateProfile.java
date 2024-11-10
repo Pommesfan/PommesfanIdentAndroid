@@ -1,4 +1,5 @@
 package com.example.pommesfanidentandroid;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.os.Bundle;
 import android.widget.Button;
@@ -21,7 +22,7 @@ public class CreateProfile extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.create_profile);
-        LinearLayout myLayout = findViewById(R.id.createProfiles);
+        @SuppressLint("MissingInflatedId") LinearLayout myLayout = findViewById(R.id.createProfile);
 
         File appDir = getFilesDir();
         int i = 0;

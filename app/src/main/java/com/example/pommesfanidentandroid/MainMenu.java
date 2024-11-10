@@ -1,6 +1,7 @@
 package com.example.pommesfanidentandroid;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -21,7 +22,17 @@ public class MainMenu extends Activity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
-        findViewById(R.id.ownProfiles).setOnClickListener(v -> setContentView(R.layout.create_profile));
-        findViewById(R.id.importedProfiles).setOnClickListener(v -> setContentView(R.layout.activity_imported_profiles));
+        findViewById(R.id.ownProfiles).setOnClickListener(v -> {
+            Intent intent = new Intent(this, CreateProfile.class);
+            startActivity(intent);
+        });
+        findViewById(R.id.importedProfiles).setOnClickListener(v -> {
+            Intent intent = new Intent(this, ImportedProfiles.class);
+            startActivity(intent);
+        });
+        findViewById(R.id.importedPersonalIDs).setOnClickListener(v -> {
+            Intent intent = new Intent(this, ImportedPersonalID.class);
+            startActivity(intent);
+        });
     }
 }

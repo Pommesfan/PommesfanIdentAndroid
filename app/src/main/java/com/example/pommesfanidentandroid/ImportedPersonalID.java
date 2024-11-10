@@ -1,14 +1,12 @@
 package com.example.pommesfanidentandroid;
 
 import android.app.Activity;
-import android.content.Intent;
 import android.os.Bundle;
-import android.provider.DocumentsContract;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
-public class ImportedProfiles extends Activity {
+public class ImportedPersonalID extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -18,13 +16,5 @@ public class ImportedProfiles extends Activity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
-        findViewById(R.id.addButton).setOnClickListener(v -> openFile());
-    }
-
-    private void openFile() {
-        Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
-        intent.addCategory(Intent.CATEGORY_OPENABLE);
-        intent.putExtra(DocumentsContract.EXTRA_INITIAL_URI, "");
-        startActivityForResult(intent, 1);
     }
 }

@@ -6,9 +6,12 @@ import android.os.Bundle;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
-import com.example.controller.Controller;
+import controller.Controller;
 
-public class MainMenu extends Activity {
+import java.util.Observable;
+import java.util.Observer;
+
+public class MainMenu extends Activity implements Observer {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,5 +37,18 @@ public class MainMenu extends Activity {
             Intent intent = new Intent(this, ImportedPersonalID.class);
             startActivity(intent);
         });
+
+        Controller.controller.addObserver(this);
+    }
+
+    @Override
+    protected void onDestroy() {
+        Controller.controller.deleteObserver(this);
+        super.onDestroy();
+    }
+
+    @Override
+    public void update(Observable o, Object arg) {
+
     }
 }

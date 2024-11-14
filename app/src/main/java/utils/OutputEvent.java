@@ -1,4 +1,4 @@
-package com.example.utils;
+package utils;
 
 public interface OutputEvent {
 
@@ -19,6 +19,20 @@ public interface OutputEvent {
         public ServerStartedEvent(String pIP, int pPort) {
             ip = pIP;
             port = pPort;
+        }
+    }
+
+    class NoSuchPublicProfileEvent implements OutputEvent{
+        public final String name;
+        public NoSuchPublicProfileEvent(String name) {
+            this.name = name;
+        }
+    }
+
+    class DynamicAttributesDoesntFitEvent implements OutputEvent{
+        public final int nDynamicAttributes;
+        public DynamicAttributesDoesntFitEvent(int nDynamicAttributes) {
+            this.nDynamicAttributes = nDynamicAttributes;
         }
     }
 }

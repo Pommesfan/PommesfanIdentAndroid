@@ -10,19 +10,22 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
-import com.example.controller.Controller;
+import controller.Controller;
+
 import java.io.File;
 import java.io.IOException;
 import java.security.*;
+import java.util.Observable;
+import java.util.Observer;
 
 
-public class CreateProfile extends Activity {
+public class CreateProfile extends Activity implements Observer {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.create_profile);
-        @SuppressLint("MissingInflatedId") LinearLayout myLayout = findViewById(R.id.createProfile);
+        @SuppressLint({"MissingInflatedId", "LocalSuppress"}) LinearLayout myLayout = findViewById(R.id.createProfile);
 
         File appDir = getFilesDir();
         int i = 0;
@@ -44,6 +47,8 @@ public class CreateProfile extends Activity {
         newKeyPair.setOnClickListener(v -> {
             newPublicProfileDialog();
         });
+
+        Controller.controller.addObserver(this);
     }
 
     private void newPublicProfileDialog() {
@@ -54,7 +59,7 @@ public class CreateProfile extends Activity {
         layout.addView(input);
         builder.setPositiveButton("Ok", (dialog, id) -> {
             try {
-                Controller.controller.generateKeyPair(getFilesDir() + input.getText().toString(), new String[0]);
+                controller.Controller.controller.generateKeyPair(getFilesDir() + input.getText().toString(), new String[0]);
             } catch (NoSuchAlgorithmException e) {
                 throw new RuntimeException(e);
             } catch (IOException e) {
@@ -67,5 +72,16 @@ public class CreateProfile extends Activity {
 
         builder.setView(layout);
         builder.create().show();
+    }
+
+    @Override
+    protected void onDestroy() {
+        Controller.controller.deleteObserver(this);
+        super.onDestroy();
+    }
+
+    @Override
+    public void update(Observable o, Object arg) {
+
     }
 }

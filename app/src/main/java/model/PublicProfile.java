@@ -1,6 +1,8 @@
-package com.example.model;
+package model;
 
-import com.example.utils.Utils;
+import controller.Controller;
+import utils.OutputEvent;
+import utils.Utils;
 
 import java.io.*;
 
@@ -14,13 +16,18 @@ public class PublicProfile {
         this.publicKey = publicKey;
     }
 
-    public static PublicProfile loadInternal(String path, String fileName) throws IOException {
-        FileInputStream fis2 = new FileInputStream(path + fileName);
-        Utils.SliceReader sliceReader2 = new Utils.SliceReader((data, length) -> fis2.read(data, 0, length));
-        byte[] dynamicAttributes_b = sliceReader2.next();
-        byte[] publicKey = sliceReader2.next();
+    public static PublicProfile loadInternal(Controller controller, String path, String fileName) throws IOException {
+        File f = new File(path + fileName);
+        if(!f.exists()) {
+            controller.notifyObservers(new OutputEvent.NoSuchPublicProfileEvent(fileName));
+            return null;
+        }
+        FileInputStream fis = new FileInputStream(path + fileName);
+        Utils.SliceReader sliceReader = new Utils.SliceReader((data, length) -> fis.read(data, 0, length));
+        byte[] dynamicAttributes_b = sliceReader.next();
+        byte[] publicKey = sliceReader.next();
         String[] dynamicAttributes = Utils.bytesToStringArray(dynamicAttributes_b);
-        fis2.close();
+        fis.close();
         return new PublicProfile(fileName, dynamicAttributes, publicKey);
     }
 

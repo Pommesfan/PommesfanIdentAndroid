@@ -1,4 +1,4 @@
-package com.example.utils;
+package utils;
 
 import java.io.*;
 import java.nio.ByteBuffer;

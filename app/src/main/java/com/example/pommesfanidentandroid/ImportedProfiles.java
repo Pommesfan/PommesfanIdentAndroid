@@ -4,20 +4,18 @@ import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.FileUtils;
-import android.util.Log;
 import android.widget.Toast;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
-import com.example.controller.Controller;
+import controller.Controller;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Observable;
+import java.util.Observer;
 
-import static android.content.ContentValues.TAG;
-
-public class ImportedProfiles extends Activity {
+public class ImportedProfiles extends Activity implements Observer {
     private static final int PICKFILE_RESULT_CODE = 2;
 
     @Override
@@ -30,6 +28,8 @@ public class ImportedProfiles extends Activity {
             return insets;
         });
         findViewById(R.id.addButton).setOnClickListener(v -> openFile());
+
+        Controller.controller.addObserver(this);
     }
 
     private static final int FILE_SELECT_CODE = 0;
@@ -56,7 +56,7 @@ public class ImportedProfiles extends Activity {
                     Uri uri = data.getData();
                     File f = new File(uri.getPath());
                     try {
-                        Controller.controller.importPublicProfile(f);
+                        controller.Controller.controller.importPublicProfile(f);
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }
@@ -64,5 +64,16 @@ public class ImportedProfiles extends Activity {
                 break;
         }
         super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    @Override
+    protected void onDestroy() {
+        Controller.controller.deleteObserver(this);
+        super.onDestroy();
+    }
+
+    @Override
+    public void update(Observable o, Object arg) {
+
     }
 }

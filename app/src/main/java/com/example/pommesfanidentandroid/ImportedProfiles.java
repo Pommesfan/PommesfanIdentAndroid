@@ -9,15 +9,12 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import controller.Controller;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.Observable;
 import java.util.Observer;
 
 public class ImportedProfiles extends Activity implements Observer {
-    private static final int PICKFILE_RESULT_CODE = 2;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -56,7 +53,7 @@ public class ImportedProfiles extends Activity implements Observer {
                     Uri uri = data.getData();
                     File f = new File(uri.getPath());
                     try {
-                        controller.Controller.controller.importPublicProfile(f);
+                        Controller.controller.importPublicProfile(f);
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }

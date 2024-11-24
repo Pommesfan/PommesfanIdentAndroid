@@ -25,20 +25,10 @@ public class CreateProfile extends Activity implements Observer {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.create_profile);
-        @SuppressLint({"MissingInflatedId", "LocalSuppress"}) LinearLayout myLayout = findViewById(R.id.createProfile);
+        LinearLayout layout = findViewById(R.id.createProfile);
+        loadPublicProfiles(layout);
 
-        File appDir = getFilesDir();
-        int i = 0;
-        for(File f : appDir.listFiles()) {
-            TextView t = new TextView(this);
-            t.setText(f.getName());
-            t.setX(20);
-            t.setY(60 * i + 160);
-            myLayout.addView(t);
-            i += 1;
-        }
-
-        ViewCompat.setOnApplyWindowInsetsListener(myLayout, (v, insets) -> {
+        ViewCompat.setOnApplyWindowInsetsListener(layout, (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
@@ -59,7 +49,7 @@ public class CreateProfile extends Activity implements Observer {
         layout.addView(input);
         builder.setPositiveButton("Ok", (dialog, id) -> {
             try {
-                controller.Controller.controller.generateKeyPair(getFilesDir() + input.getText().toString(), new String[0]);
+                controller.Controller.controller.generateKeyPair(input.getText().toString(), new String[0]);
             } catch (NoSuchAlgorithmException e) {
                 throw new RuntimeException(e);
             } catch (IOException e) {
@@ -72,6 +62,22 @@ public class CreateProfile extends Activity implements Observer {
 
         builder.setView(layout);
         builder.create().show();
+    }
+
+    private void loadPublicProfiles(LinearLayout layout) {
+        File appDir = new File(Controller.controller.appDataLocation + "MyPublicProfiles/");
+        if(!appDir.exists()) {
+            return;
+        }
+        int i = 0;
+        for(File f : appDir.listFiles()) {
+            TextView t = new TextView(this);
+            t.setText(f.getName());
+            t.setX(20);
+            t.setY(60 * i + 0);
+            layout.addView(t);
+            i += 1;
+        }
     }
 
     @Override

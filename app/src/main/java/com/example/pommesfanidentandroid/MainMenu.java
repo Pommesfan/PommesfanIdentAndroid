@@ -17,7 +17,7 @@ public class MainMenu extends Activity implements Observer {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if(Controller.controller == null) {
-            Controller.controller = new Controller(getFilesDir().toString());
+            Controller.controller = new Controller(getFilesDir().toString() + "/");
         }
         setContentView(R.layout.activity_main_menu);
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {

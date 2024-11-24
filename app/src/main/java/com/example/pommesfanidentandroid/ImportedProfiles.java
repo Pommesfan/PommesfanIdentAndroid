@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -19,11 +21,14 @@ public class ImportedProfiles extends Activity implements Observer {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_imported_profiles);
+        LinearLayout layout = findViewById(R.id.importedProfiles);
+        loadImportedProfiles(layout);
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.importedProfiles), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+
         findViewById(R.id.addButton).setOnClickListener(v -> openFile());
 
         Controller.controller.addObserver(this);
@@ -45,6 +50,22 @@ public class ImportedProfiles extends Activity implements Observer {
         }
     }
 
+    private void loadImportedProfiles(LinearLayout layout) {
+        File appDir = new File(Controller.controller.appDataLocation + "ImportedPublicProfiles/");
+        if(!appDir.exists()) {
+            return;
+        }
+        int i = 0;
+        for(File f : appDir.listFiles()) {
+            TextView t = new TextView(this);
+            t.setText(f.getName());
+            t.setX(20);
+            t.setY(60 * i + 0);
+            layout.addView(t);
+            i += 1;
+        }
+    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
@@ -54,6 +75,7 @@ public class ImportedProfiles extends Activity implements Observer {
                     File f = new File(uri.getPath());
                     try {
                         Controller.controller.importPublicProfile(f);
+                        recreate();
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }

@@ -1,5 +1,4 @@
 package com.example.pommesfanidentandroid;
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.os.Bundle;
 import android.widget.Button;
@@ -27,7 +26,6 @@ public class CreateProfile extends Activity implements Observer {
         setContentView(R.layout.create_profile);
         LinearLayout layout = findViewById(R.id.createProfile);
         loadPublicProfiles(layout);
-
         ViewCompat.setOnApplyWindowInsetsListener(layout, (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);

@@ -178,9 +178,8 @@ public class Controller extends Observable {
         fos.close();
     }
 
-    public void importPersonalID(File source) throws Exception {
-        FileInputStream fis = new FileInputStream(source);
-        Utils.SliceReader sliceReader = new Utils.SliceReader((data, length) -> fis.read(data, 0, length));
+    public void importPersonalID(InputStream inputStream) throws Exception {
+        Utils.SliceReader sliceReader = new Utils.SliceReader((data, length) -> inputStream.read(data, 0, length));
         // read personal id
         byte[] personal_id_b = sliceReader.next();
         // read signature
@@ -188,7 +187,7 @@ public class Controller extends Observable {
         // read personal image and hand signature
         byte[] personalImage_b = sliceReader.next();
         byte[] handSignature_b = sliceReader.next();
-        fis.close();
+        inputStream.close();
         String[] personal_id_s = Utils.bytesToStringArray(personal_id_b);
 
         PublicProfile publicProfile = PublicProfile.loadInternal(this,appDataLocation + "ImportedPublicProfiles/", personal_id_s[1]);

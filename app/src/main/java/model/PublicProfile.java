@@ -31,13 +31,12 @@ public class PublicProfile {
         return new PublicProfile(fileName, dynamicAttributes, publicKey);
     }
 
-    public static PublicProfile fromExternal(File publicProfileFile) throws IOException {
-        FileInputStream fis = new FileInputStream(publicProfileFile);
-        Utils.SliceReader sliceReader = new Utils.SliceReader((data, length) -> fis.read(data, 0, length));
+    public static PublicProfile fromExternal(InputStream inputStream) throws IOException {
+        Utils.SliceReader sliceReader = new Utils.SliceReader((data, length) -> inputStream.read(data, 0, length));
         String public_profile_name = new String(sliceReader.next());
         byte[] dynamic_attributes_b = sliceReader.next();
         byte[] public_profile_b = sliceReader.next();
-        fis.close();
+        inputStream.close();
         return new PublicProfile(public_profile_name, Utils.bytesToStringArray(dynamic_attributes_b), public_profile_b);
     }
 

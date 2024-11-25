@@ -142,8 +142,8 @@ public class Controller extends Observable {
         publicProfile.saveExternal(destination);
     }
 
-    public void importPublicProfile(File publicProfileFile) throws IOException {
-        PublicProfile publicProfile = PublicProfile.fromExternal(publicProfileFile);
+    public void importPublicProfile(InputStream inputStream) throws IOException {
+        PublicProfile publicProfile = PublicProfile.fromExternal(inputStream);
         publicProfile.saveInternal(appDataLocation + "ImportedPublicProfiles/");
     }
 

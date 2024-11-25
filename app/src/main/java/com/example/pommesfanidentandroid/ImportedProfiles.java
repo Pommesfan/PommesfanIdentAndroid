@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.CancellationSignal;
+import android.os.ParcelFileDescriptor;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -11,8 +13,8 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import controller.Controller;
-import java.io.File;
-import java.io.IOException;
+
+import java.io.*;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -72,9 +74,10 @@ public class ImportedProfiles extends Activity implements Observer {
             case FILE_SELECT_CODE:
                 if (resultCode == RESULT_OK) {
                     Uri uri = data.getData();
-                    File f = new File(uri.getPath());
                     try {
-                        Controller.controller.importPublicProfile(f);
+                        ParcelFileDescriptor pfd = getContentResolver().openFileDescriptor(uri, "r");
+                        InputStream inputStream = new FileInputStream(pfd.getFileDescriptor());
+                        Controller.controller.importPublicProfile(inputStream);
                         recreate();
                     } catch (IOException e) {
                         throw new RuntimeException(e);

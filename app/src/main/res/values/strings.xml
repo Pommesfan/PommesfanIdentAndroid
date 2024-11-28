@@ -6,4 +6,11 @@
     <string name="eigene_profile">Eigene Profile</string>
     <string name="hinzuf_gen">Hinzufügen</string>
     <string name="neues_ffentliches_profil">Neues Öffentliches Profil</string>
+    <string name="ausweisnummer">Ausweisnummer</string>
+    <string name="profilname">Profilname</string>
+    <string name="vorname">Vorname</string>
+    <string name="nachname">Nachname</string>
+    <string name="geburtsdatum">Geburtsdatum</string>
+    <string name="adresse">Adresse</string>
+    <string name="dynamische_attribute">Dynamische Attribute</string>
 </resources>

@@ -2,18 +2,17 @@ package com.example.pommesfanidentandroid;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.CancellationSignal;
 import android.os.ParcelFileDescriptor;
+import android.widget.Button;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 import android.widget.Toast;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import controller.Controller;
-
 import java.io.*;
 import java.util.Observable;
 import java.util.Observer;
@@ -59,13 +58,21 @@ public class ImportedProfiles extends Activity implements Observer {
         }
         int i = 0;
         for(File f : appDir.listFiles()) {
-            TextView t = new TextView(this);
-            t.setText(f.getName());
-            t.setX(20);
-            t.setY(60 * i + 0);
-            layout.addView(t);
+            Button b = new Button(this);
+            b.setText(f.getName());
+            b.setBackgroundColor(Color.BLUE);
+            b.setX(20);
+            b.setY(60 * i + 0);
+            layout.addView(b);
             i += 1;
+            b.setOnClickListener(v -> startDetailView(f.getName()));
         }
+    }
+
+    private void startDetailView(String profileName) {
+        Intent intent = new Intent(this, PublicProfileDetailView.class);
+        intent.putExtra("profileName", profileName);
+        startActivity(intent);
     }
 
     @Override

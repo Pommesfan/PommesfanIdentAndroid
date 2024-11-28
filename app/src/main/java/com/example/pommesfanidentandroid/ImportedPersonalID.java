@@ -1,12 +1,12 @@
 package com.example.pommesfanidentandroid;
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.ParcelFileDescriptor;
 import android.widget.Button;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 import android.widget.Toast;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -23,9 +23,9 @@ public class ImportedPersonalID extends Activity implements Observer {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_imported_personal_ids);
-        LinearLayout layout = findViewById(R.id.viewImportedPersonalIDs);
+        LinearLayout layout = findViewById(R.id.viewImportedPersonalID);
         loadImportedProfiles(layout);
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.viewImportedPersonalIDs), (v, insets) -> {
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.viewImportedPersonalID), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
@@ -62,13 +62,21 @@ public class ImportedPersonalID extends Activity implements Observer {
         }
         int i = 0;
         for(File f : appDir.listFiles()) {
-            TextView t = new TextView(this);
-            t.setText(f.getName());
-            t.setX(20);
-            t.setY(60 * i + 0);
-            layout.addView(t);
+            Button b = new Button(this);
+            b.setText(f.getName());
+            b.setBackgroundColor(Color.GREEN);
+            b.setX(20);
+            b.setY(60 * i + 0);
+            layout.addView(b);
             i += 1;
+            b.setOnClickListener(v -> startDetailView(f.getName()));
         }
+    }
+
+    private void startDetailView(String idNumber) {
+        Intent intent = new Intent(this, PersonalIDdetailView.class);
+        intent.putExtra("idNumber", idNumber);
+        startActivity(intent);
     }
 
     @Override

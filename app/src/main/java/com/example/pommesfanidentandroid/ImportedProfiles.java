@@ -60,7 +60,7 @@ public class ImportedProfiles extends Activity implements Observer {
         for(File f : appDir.listFiles()) {
             Button b = new Button(this);
             b.setText(f.getName());
-            b.setBackgroundColor(Color.BLUE);
+            b.setBackgroundColor(Color.GREEN);
             b.setX(20);
             b.setY(60 * i + 0);
             layout.addView(b);

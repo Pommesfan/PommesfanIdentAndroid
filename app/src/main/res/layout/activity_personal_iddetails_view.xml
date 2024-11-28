@@ -13,6 +13,8 @@
             android:textSize="20sp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:textColor="@color/purple_700"
+            android:textStyle="bold|italic"
             android:text="@string/ausweisnummer" />
     <TextView
             android:textSize="20sp"
@@ -23,6 +25,8 @@
             android:textSize="20sp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:textColor="@color/purple_700"
+            android:textStyle="bold|italic"
             android:text="@string/profilname" />
     <TextView
             android:textSize="20sp"
@@ -33,6 +37,8 @@
             android:textSize="20sp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:textColor="@color/purple_700"
+            android:textStyle="bold|italic"
             android:text="@string/vorname" />
     <TextView
             android:textSize="20sp"
@@ -43,6 +49,8 @@
             android:textSize="20sp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:textColor="@color/purple_700"
+            android:textStyle="bold|italic"
             android:text="@string/nachname" />
     <TextView
             android:textSize="20sp"
@@ -53,6 +61,8 @@
             android:textSize="20sp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:textColor="@color/purple_700"
+            android:textStyle="bold|italic"
             android:text="@string/geburtsdatum" />
     <TextView
             android:textSize="20sp"
@@ -63,6 +73,8 @@
             android:textSize="20sp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:textColor="@color/purple_700"
+            android:textStyle="bold|italic"
             android:text="@string/adresse" />
     <TextView
             android:textSize="20sp"

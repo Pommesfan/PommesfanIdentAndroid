@@ -10,15 +10,16 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import controller.Controller;
-
+import model.PublicProfile;
+import utils.Observer;
+import utils.OutputEvent;
 import java.io.File;
 import java.io.IOException;
 import java.security.*;
-import java.util.Observable;
-import java.util.Observer;
+import java.text.ParseException;
 
 
-public class CreateProfile extends Activity implements Observer {
+public class CreateProfile extends Activity implements Observer<OutputEvent> {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,14 +44,58 @@ public class CreateProfile extends Activity implements Observer {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setMessage("Neues öffentliches Profil");
         LinearLayout layout = new LinearLayout(this);
-        EditText input = new EditText(this);
-        layout.addView(input);
+
+        TextView l_name = new TextView(this);
+        l_name.setText("Name");
+        EditText name_input = new EditText(this);
+        layout.addView(l_name);
+        layout.addView(name_input);
+
+        TextView l_sequence = new TextView(this);
+        l_sequence.setText("Sequenznummer");
+        EditText sequence_input = new EditText(this);
+        layout.addView(l_sequence);
+        layout.addView(sequence_input);
+
+        TextView l_valid_from = new TextView(this);
+        l_valid_from.setText("Gültig ab");
+        EditText valid_from = new EditText(this);
+        layout.addView(l_valid_from);
+        layout.addView(valid_from);
+
+        TextView l_valid_until_creation = new TextView(this);
+        l_valid_until_creation.setText("Gültig bis für Ausstellung");
+        EditText valid_until_creation = new EditText(this);
+        layout.addView(l_valid_until_creation);
+        layout.addView(valid_until_creation);
+
+        TextView l_valid_until_created = new TextView(this);
+        l_valid_until_created.setText("Ausgestellte max gültig bis");
+        EditText valid_until_created = new EditText(this);
+        layout.addView(l_valid_until_created);
+        layout.addView(valid_until_created);
+
+        TextView l_max_days_valid = new TextView(this);
+        l_max_days_valid.setText("Tage maximale Gültigkeit");
+        EditText max_days_valid = new EditText(this);
+        layout.addView(l_max_days_valid);
+        layout.addView(max_days_valid);
+
+        PublicProfile.ValidityPeriod v = new PublicProfile.ValidityPeriod(
+                valid_from.getText().toString(),
+                valid_until_creation.getText().toString(),
+                valid_until_created.getText().toString(),
+                Integer.parseInt(max_days_valid.getText().toString()));
         builder.setPositiveButton("Ok", (dialog, id) -> {
             try {
-                controller.Controller.controller.generateKeyPair(input.getText().toString(), new String[0]);
+                String name = name_input.getText().toString();
+                int sequence_number = Integer.parseInt(sequence_input.getText().toString());
+                controller.Controller.controller.generateKeyPair(name, sequence_number, v, new String[0]);
             } catch (NoSuchAlgorithmException e) {
                 throw new RuntimeException(e);
             } catch (IOException e) {
+                throw new RuntimeException(e);
+            } catch (ParseException e) {
                 throw new RuntimeException(e);
             }
             recreate();
@@ -63,7 +108,7 @@ public class CreateProfile extends Activity implements Observer {
     }
 
     private void loadPublicProfiles(LinearLayout layout) {
-        File appDir = new File(Controller.controller.appDataLocation + "MyPublicProfiles/");
+        File appDir = new File(Controller.controller.appDataLocation + Controller.strImportedPublicProfiles);
         if(!appDir.exists()) {
             return;
         }
@@ -85,7 +130,7 @@ public class CreateProfile extends Activity implements Observer {
     }
 
     @Override
-    public void update(Observable o, Object arg) {
+    public void update(OutputEvent e) {
 
     }
 }

@@ -10,11 +10,11 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import controller.Controller;
 import model.PublicProfile;
+import utils.Observer;
+import utils.OutputEvent;
 import java.io.IOException;
-import java.util.Observable;
-import java.util.Observer;
 
-public class PublicProfileDetailView extends AppCompatActivity implements Observer {
+public class PublicProfileDetailView extends AppCompatActivity implements Observer<OutputEvent> {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,17 +28,18 @@ public class PublicProfileDetailView extends AppCompatActivity implements Observ
         });
         Intent intent = getIntent();
         String profileName = intent.getStringExtra("profileName");
+        int sequenceNumber = intent.getIntExtra("sequenceNumber", -1);
         try {
-            loadData(profileName, layout);
+            loadData(profileName, layout, sequenceNumber);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
         Controller.controller.addObserver(this);
     }
 
-    private void loadData(String profileName, LinearLayout layout) throws IOException {
+    private void loadData(String profileName, LinearLayout layout, int sequenceNumber) throws IOException {
         Controller controller = Controller.controller;
-        PublicProfile profile = PublicProfile.loadInternal(controller, controller.appDataLocation + "ImportedPublicProfiles/", profileName);
+        PublicProfile profile = PublicProfile.loadInternal(controller, controller.appDataLocation + Controller.strImportedPublicProfiles, profileName, sequenceNumber);
         if(profile == null) {
             return;
         }
@@ -63,7 +64,7 @@ public class PublicProfileDetailView extends AppCompatActivity implements Observ
     }
 
     @Override
-    public void update(Observable o, Object arg) {
+    public void update(OutputEvent e) {
 
     }
 }

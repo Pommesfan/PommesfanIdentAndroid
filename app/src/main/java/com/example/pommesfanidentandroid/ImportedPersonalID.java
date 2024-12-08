@@ -12,13 +12,13 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import controller.Controller;
+import utils.Observer;
+import utils.OutputEvent;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
-import java.util.Observable;
-import java.util.Observer;
 
-public class ImportedPersonalID extends Activity implements Observer {
+public class ImportedPersonalID extends Activity implements Observer<OutputEvent> {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -56,7 +56,7 @@ public class ImportedPersonalID extends Activity implements Observer {
     }
 
     private void loadImportedProfiles(LinearLayout layout) {
-        File appDir = new File(Controller.controller.appDataLocation + "ImportedPersonalIDs/");
+        File appDir = new File(Controller.controller.appDataLocation + Controller.strImportedPersonalIDs);
         if(!appDir.exists()) {
             return;
         }
@@ -106,7 +106,7 @@ public class ImportedPersonalID extends Activity implements Observer {
     }
 
     @Override
-    public void update(Observable o, Object arg) {
+    public void update(OutputEvent e) {
 
     }
 }

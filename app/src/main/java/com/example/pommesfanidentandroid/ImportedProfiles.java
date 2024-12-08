@@ -13,11 +13,11 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import controller.Controller;
+import utils.Observer;
+import utils.OutputEvent;
 import java.io.*;
-import java.util.Observable;
-import java.util.Observer;
 
-public class ImportedProfiles extends Activity implements Observer {
+public class ImportedProfiles extends Activity implements Observer<OutputEvent> {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -52,26 +52,31 @@ public class ImportedProfiles extends Activity implements Observer {
     }
 
     private void loadImportedProfiles(LinearLayout layout) {
-        File appDir = new File(Controller.controller.appDataLocation + "ImportedPublicProfiles/");
+        File appDir = new File(Controller.controller.appDataLocation + Controller.strImportedPublicProfiles);
         if(!appDir.exists()) {
             return;
         }
         int i = 0;
         for(File f : appDir.listFiles()) {
-            Button b = new Button(this);
-            b.setText(f.getName());
-            b.setBackgroundColor(Color.GREEN);
-            b.setX(20);
-            b.setY(60 * i + 0);
-            layout.addView(b);
-            i += 1;
-            b.setOnClickListener(v -> startDetailView(f.getName()));
+            String name = f.getName();
+            for(File fs : f.listFiles()) {
+                int sequence = Integer.parseInt(fs.getName());
+                Button b = new Button(this);
+                b.setText(name + " : " + sequence);
+                b.setBackgroundColor(Color.GREEN);
+                b.setX(20);
+                b.setY(60 * i + 0);
+                layout.addView(b);
+                i += 1;
+                b.setOnClickListener(v -> startDetailView(name, sequence));
+            }
         }
     }
 
-    private void startDetailView(String profileName) {
+    private void startDetailView(String profileName, int sequence_number) {
         Intent intent = new Intent(this, PublicProfileDetailView.class);
         intent.putExtra("profileName", profileName);
+        intent.putExtra("sequenceNumber", sequence_number);
         startActivity(intent);
     }
 
@@ -102,7 +107,7 @@ public class ImportedProfiles extends Activity implements Observer {
     }
 
     @Override
-    public void update(Observable o, Object arg) {
+    public void update(OutputEvent e) {
 
     }
 }

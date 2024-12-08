@@ -7,11 +7,10 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import controller.Controller;
+import utils.Observer;
+import utils.OutputEvent;
 
-import java.util.Observable;
-import java.util.Observer;
-
-public class MainMenu extends Activity implements Observer {
+public class MainMenu extends Activity implements Observer<OutputEvent> {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,7 +47,7 @@ public class MainMenu extends Activity implements Observer {
     }
 
     @Override
-    public void update(Observable o, Object arg) {
+    public void update(OutputEvent e) {
 
     }
 }

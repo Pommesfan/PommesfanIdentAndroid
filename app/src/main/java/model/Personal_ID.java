@@ -2,108 +2,192 @@ package model;
 
 import controller.Controller;
 import utils.OutputEvent;
-
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.*;
+import utils.Utils;
+import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.NoSuchElementException;
+import java.util.Optional;
 
 public class Personal_ID {
     public final String ID_number;
     public final PublicProfile publicProfile;
+    public final String created;
+    public final String validUntil;
     public final String name;
     public final String surname;
-    public final int birthdate_day;
-    public final int birthdate_month;
-    public final int birthdate_year;
+    public final String birthdate;
     public final String address;
     public final String[] dynamicAttributesValues;
     public final String personalImagePath;
     public final String handSignaturePath;
+    public Optional<byte[]> signature = Optional.empty();
+    public Optional<BLOB> blob = Optional.empty();
 
-    public Personal_ID(String pIDnumber, PublicProfile pPublicProfile, String pName, String pSurname, Date pBirthDate,
-                       String pAddress, String[] pDynamicAttributesValues, String pPersonalImagePath, String pHandSignaturePath) {
-        Calendar calendar = new GregorianCalendar();
-        calendar.setTime(pBirthDate);
+    public Personal_ID(String pIDnumber, PublicProfile pPublicProfile, String pCreated, String pValidUntil, String pName,
+                       String pSurname, String pBirthDate, String pAddress, String[] pDynamicAttributesValues,
+                       String pPersonalImagePath, String pHandSignaturePath) {
         ID_number = pIDnumber;
         publicProfile = pPublicProfile;
+        created = pCreated;
+        validUntil = pValidUntil;
         name = pName;
         surname = pSurname;
-        birthdate_day = calendar.get(Calendar.DAY_OF_MONTH);
-        birthdate_month = calendar.get(Calendar.MONTH) + 1;
-        birthdate_year = calendar.get(Calendar.YEAR);
+        birthdate = pBirthDate;
         address = pAddress;
         dynamicAttributesValues = pDynamicAttributesValues;
         personalImagePath = pPersonalImagePath;
         handSignaturePath = pHandSignaturePath;
     }
 
-    public static Personal_ID fromString(Controller controller, int own_or_imported_profile, String[] attributes) throws Exception {
+    public static Personal_ID fromString(Controller controller, int created_or_imported_profile, String[] attributes) throws Exception {
         String ID_number = attributes[0];
-        PublicProfile publicProfile = null;
-        if (own_or_imported_profile == Controller.LOAD_PROFILE_FROM_OWN) {
-            publicProfile = PrivateProfile.loadInternal(controller, controller.appDataLocation + "MyPublicProfiles/", attributes[1]);
-        } else if(own_or_imported_profile == Controller.LOAD_PROFILE_FROM_IMPORTED) {
-            publicProfile = PublicProfile.loadInternal(controller, controller.appDataLocation + "ImportedPublicProfiles/", attributes[1]);
+        PublicProfile publicProfile;
+        final String profileName = attributes[1];
+        final int sequence_number = Integer.parseInt(attributes[2]);
+        if (created_or_imported_profile == Controller.LOAD_FROM_CREATED) {
+            publicProfile = PrivateProfile.loadInternal(controller, controller.appDataLocation + Controller.strCreatedProfiles, profileName, sequence_number);
+        } else if(created_or_imported_profile == Controller.LOAD_FROM_IMPORTED) {
+            publicProfile = PublicProfile.loadInternal(controller, controller.appDataLocation + Controller.strImportedPublicProfiles, profileName, sequence_number);
+        } else {
+            throw new NoSuchMethodException("created_or_imported must be 1 or 2");
         }
         if(publicProfile == null) {
             return null;
         }
-        String name = attributes[2];
-        String surname = attributes[3];
-        int birthdate_day = Integer.parseInt(attributes[4]);
-        int birthdate_month = Integer.parseInt(attributes[5]);
-        int birthdate_year = Integer.parseInt(attributes[6]);
-        String address = attributes[7];
+        String created = attributes[3];
+        String validUntil = attributes[4];
+
+        if(!Utils.dateAfter(Utils.today(), validUntil, true)) {
+            controller.notifyObservers(new OutputEvent.PersonalIDoutdatedEvent(ID_number));
+            return null;
+        }
+
+        String name = attributes[5];
+        String surname = attributes[6];
+        String birthdate = attributes[7];
+        String address = attributes[8];
 
         int nDynamicAttributes = publicProfile.dynamicAttributes.length;
-        if(attributes.length != 10 + nDynamicAttributes) {
+        if(attributes.length != 11 + nDynamicAttributes) {
             controller.notifyObservers(new OutputEvent.DynamicAttributesDoesntFitEvent(nDynamicAttributes));
             return null;
         }
 
-        String[] dynamicAttributesValues = new String[nDynamicAttributes];
-        for (int i = 0; i < nDynamicAttributes; i++) {
-            dynamicAttributesValues[i] = attributes[8 + i];
+        String[] dynamicAttributesValues = Utils.sliceStringArray(attributes, 9, 9 + nDynamicAttributes);
+
+        String personalImagePath = attributes[9 + nDynamicAttributes];
+        String handSignaturePath = attributes[10 + nDynamicAttributes];
+        return new Personal_ID(ID_number, publicProfile, created, validUntil, name, surname, birthdate, address, dynamicAttributesValues, personalImagePath, handSignaturePath);
+    }
+
+    public static Personal_ID fromInputStream(Controller controller, int created_or_imported_profile, InputStream inputStream, boolean withBlob) throws Exception {
+        Utils.SliceReader sliceReader = new Utils.SliceReader(inputStream);
+        String[] attributes = Utils.bytesToStringArray(sliceReader.next());
+        Personal_ID personalId = Personal_ID.fromString(controller, created_or_imported_profile, attributes);
+        if(personalId == null)
+            return null;
+        personalId.signature = Optional.of(sliceReader.next());
+
+        if(withBlob) {
+            byte[] personal_image = sliceReader.next();
+            byte[] hand_signature = sliceReader.next();
+            personalId.blob = Optional.of(new BLOB(personal_image, hand_signature));
+        }
+        inputStream.close();
+        return personalId;
+    }
+
+    public static Personal_ID loadInternal(Controller controller, int created_or_imported, String name) throws Exception {
+        String location;
+        if (created_or_imported == Controller.LOAD_FROM_CREATED) {
+            location = controller.appDataLocation + Controller.strCreatedPersonalIDs;
+        } else if(created_or_imported == Controller.LOAD_FROM_IMPORTED) {
+            location = controller.appDataLocation + Controller.strImportedPersonalIDs;
+        } else {
+            throw new NoSuchMethodException("created_or_imported must be 1 or 2");
+        }
+        if(!Utils.exists(location + name)) {
+            controller.notifyObservers(new OutputEvent.NoSuchPersonalIDevent(name));
+            return null;
+        }
+        FileInputStream fis = new FileInputStream(location + name);
+        Personal_ID personalId = fromInputStream(controller, created_or_imported, fis, false);
+        if(personalId == null)
+            return null;
+        byte[] personalImage_b = Files.readAllBytes(Paths.get(controller.appDataLocation + Controller.strPersonalImages + personalId.personalImagePath));
+        byte[] handSignature_b = Files.readAllBytes(Paths.get(controller.appDataLocation + Controller.strHandSignatures + personalId.handSignaturePath));
+        personalId.blob = Optional.of(new BLOB(personalImage_b, handSignature_b));
+        fis.close();
+        return personalId;
+    }
+
+    public void toOutputStream(OutputStream outputStream, boolean withBlob) throws IOException {
+        Utils.SliceWriter sliceWriter = new Utils.SliceWriter(outputStream);
+        sliceWriter.write(toByte(true));
+
+        if(signature.isEmpty())
+            throw new NoSuchElementException("Optional of signature is empty");
+
+        sliceWriter.write(signature.get());
+        if(withBlob) {
+
+            if (blob.isEmpty())
+                throw new NoSuchElementException("Optional of BLOB is empty");
+
+            BLOB blob_unwrapped = blob.get();
+            sliceWriter.write(blob_unwrapped.personal_image);
+            sliceWriter.write(blob_unwrapped.hand_signature);
+        }
+        outputStream.close();
+    }
+
+    public void saveInternal(Controller controller, int created_or_imported) throws IOException, NoSuchMethodException {
+        if (blob.isEmpty())
+            throw new NoSuchElementException("Optional of BLOB is empty");
+        BLOB blob_unwrapped = blob.get();
+
+        String location;
+        if (created_or_imported == Controller.LOAD_FROM_CREATED) {
+            location = controller.appDataLocation + Controller.strCreatedPersonalIDs;
+        } else if(created_or_imported == Controller.LOAD_FROM_IMPORTED) {
+            location = controller.appDataLocation + Controller.strImportedPersonalIDs;
+        } else {
+            throw new NoSuchMethodException("created_or_imported must be 1 or 2");
         }
 
-        String personalImagePath = attributes[8 + nDynamicAttributes];
-        String handSignaturePath = attributes[9 + nDynamicAttributes];
-        Date birtdate = new SimpleDateFormat("dd.MM.yyyy").parse(birthdate_day + "." + birthdate_month + "." + birthdate_year);
-        return new Personal_ID(ID_number, publicProfile, name, surname, birtdate, address, dynamicAttributesValues, personalImagePath, handSignaturePath);
+        if(Utils.exists(location + ID_number)) {
+            controller.notifyObservers(new OutputEvent.IDalreadyExistsEvent());
+            return;
+        }
+        File f = Utils.createFileAndSubfolder(location + ID_number);
+        FileOutputStream fos = new FileOutputStream(f);
+        toOutputStream(fos, false);
+        controller.saveAttachedData(controller.appDataLocation + Controller.strPersonalImages + personalImagePath, blob_unwrapped.personal_image);
+        controller.saveAttachedData(controller.appDataLocation + Controller.strHandSignatures + handSignaturePath, blob_unwrapped.hand_signature);
     }
 
     public byte[] toByte(boolean withPaths) throws IOException {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        baos.write(ID_number.getBytes());
-        baos.write('\n');
-        baos.write(publicProfile.name.getBytes());
-        baos.write('\n');
-        baos.write(name.getBytes());
-        baos.write('\n');
-        baos.write(surname.getBytes());
-        baos.write('\n');
-        baos.write(Integer.toString(birthdate_day).getBytes());
-        baos.write('\n');
-        baos.write(Integer.toString(birthdate_month).getBytes());
-        baos.write('\n');
-        baos.write(Integer.toString(birthdate_year).getBytes());
-        baos.write('\n');
-        baos.write(address.getBytes());
-        baos.write('\n');
+        Utils.LineWriter lineWriter = new Utils.LineWriter();
+        lineWriter.write(ID_number);
+        lineWriter.write(publicProfile.name);
+        lineWriter.write(Integer.toString(publicProfile.sequence_number));
+        lineWriter.write(created);
+        lineWriter.write(validUntil);
+        lineWriter.write(name);
+        lineWriter.write(surname);
+        lineWriter.write(birthdate);
+        lineWriter.write(address);
 
         for (String attribute : dynamicAttributesValues) {
-            baos.write(attribute.getBytes());
-            baos.write('\n');
+            lineWriter.write(attribute);
         }
 
         if(withPaths) {
-            baos.write(personalImagePath.getBytes());
-            baos.write('\n');
-            baos.write(handSignaturePath.getBytes());
-            baos.write('\n');
+            lineWriter.write(personalImagePath);
+            lineWriter.write(handSignaturePath);
         }
-        return baos.toByteArray();
+        return lineWriter.get_bytes();
     }
 
     @Override
@@ -113,16 +197,18 @@ public class Personal_ID {
         sb.append(ID_number);
         sb.append("\nÖffentliches Profil:\n");
         sb.append(publicProfile.name);
+        sb.append("\nÖffentliches Profil Folgenummer:\n");
+        sb.append(publicProfile.sequence_number);
+        sb.append("\nErstellt:\n");
+        sb.append(created);
+        sb.append("\nGültig bis:\n");
+        sb.append(validUntil);
         sb.append("\nVorname:\n");
         sb.append(name);
         sb.append("\nNachname:\n");
         sb.append(surname);
         sb.append("\nGeburtsdatum\n");
-        sb.append(birthdate_day);
-        sb.append(".");
-        sb.append(birthdate_month);
-        sb.append(".");
-        sb.append(birthdate_year);
+        sb.append(birthdate);
         sb.append("\nAdresse:\n");
         sb.append(address);
 
@@ -139,5 +225,14 @@ public class Personal_ID {
         sb.append(handSignaturePath);
         sb.append('\n');
         return sb.toString();
+    }
+
+    public static class BLOB {
+        public final byte[] personal_image;
+        public final byte[] hand_signature;
+        public BLOB(byte[] personal_image, byte[] hand_signature) {
+            this.personal_image = personal_image;
+            this.hand_signature = hand_signature;
+        }
     }
 }

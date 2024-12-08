@@ -2,27 +2,23 @@ package com.example.pommesfanidentandroid;
 
 import android.content.Intent;
 import android.os.Bundle;
-
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import controller.Controller;
 import model.Personal_ID;
+import utils.Observer;
+import utils.OutputEvent;
 import utils.Utils;
-
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.IOException;
-import java.util.Observable;
-import java.util.Observer;
 
-import static controller.Controller.LOAD_PROFILE_FROM_IMPORTED;
+import static controller.Controller.LOAD_FROM_IMPORTED;
 
-public class PersonalIDdetailView extends AppCompatActivity implements Observer {
+public class PersonalIDdetailView extends AppCompatActivity implements Observer<OutputEvent> {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,13 +43,13 @@ public class PersonalIDdetailView extends AppCompatActivity implements Observer 
     private void loadData(String id_number, LinearLayout layout) throws Exception {
         //load personal id
         Controller controller = Controller.controller;
-        String distPath = controller.appDataLocation + "ImportedPersonalIDs/" + id_number;
+        String distPath = controller.appDataLocation + Controller.strImportedPersonalIDs + id_number;
         File f = new File(distPath);
         FileInputStream fis = new FileInputStream(f);
-        Utils.SliceReader sliceReader = new Utils.SliceReader((data, length) -> fis.read(data, 0, length));
+        Utils.SliceReader sliceReader = new Utils.SliceReader(fis);
         byte[] personal_id_b = sliceReader.next();
         String[] personal_id_s = Utils.bytesToStringArray(personal_id_b);
-        Personal_ID personalId = Personal_ID.fromString(controller, LOAD_PROFILE_FROM_IMPORTED, personal_id_s);
+        Personal_ID personalId = Personal_ID.fromString(controller, LOAD_FROM_IMPORTED, personal_id_s);
         if (personalId == null) {
             return;
         }
@@ -69,7 +65,7 @@ public class PersonalIDdetailView extends AppCompatActivity implements Observer 
         viewProfileName.setText(personalId.publicProfile.name);
         viewName.setText(personalId.name);
         viewSurname.setText(personalId.surname);
-        String birthdate = personalId.birthdate_day + "." + personalId.birthdate_month + "." + personalId.birthdate_year;
+        String birthdate = personalId.birthdate;
         viewBirthdate.setText(birthdate);
         viewAdress.setText(personalId.address);
     }
@@ -81,7 +77,7 @@ public class PersonalIDdetailView extends AppCompatActivity implements Observer 
     }
 
     @Override
-    public void update(Observable o, Object arg) {
+    public void update(OutputEvent e) {
 
     }
 }

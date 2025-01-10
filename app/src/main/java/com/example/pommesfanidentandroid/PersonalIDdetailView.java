@@ -1,7 +1,9 @@
 package com.example.pommesfanidentandroid;
 
 import android.content.Intent;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
@@ -12,9 +14,7 @@ import controller.Controller;
 import model.Personal_ID;
 import utils.Observer;
 import utils.OutputEvent;
-import utils.Utils;
-import java.io.File;
-import java.io.FileInputStream;
+import java.io.ByteArrayInputStream;
 
 import static controller.Controller.LOAD_FROM_IMPORTED;
 
@@ -42,14 +42,7 @@ public class PersonalIDdetailView extends AppCompatActivity implements Observer<
 
     private void loadData(String id_number, LinearLayout layout) throws Exception {
         //load personal id
-        Controller controller = Controller.controller;
-        String distPath = controller.appDataLocation + Controller.strImportedPersonalIDs + id_number;
-        File f = new File(distPath);
-        FileInputStream fis = new FileInputStream(f);
-        Utils.SliceReader sliceReader = new Utils.SliceReader(fis);
-        byte[] personal_id_b = sliceReader.next();
-        String[] personal_id_s = Utils.bytesToStringArray(personal_id_b);
-        Personal_ID personalId = Personal_ID.fromString(controller, LOAD_FROM_IMPORTED, personal_id_s);
+        Personal_ID personalId = Personal_ID.loadInternal(Controller.controller, LOAD_FROM_IMPORTED, id_number);
         if (personalId == null) {
             return;
         }
@@ -60,6 +53,8 @@ public class PersonalIDdetailView extends AppCompatActivity implements Observer<
         TextView viewSurname = findViewById(R.id.fieldSurname);
         TextView viewBirthdate = findViewById(R.id.fieldBirthdate);
         TextView viewAdress = findViewById(R.id.fieldAdress);
+        ImageView personalImage = findViewById(R.id.viewPersonalImage);
+        ImageView handSignature = findViewById(R.id.viewHandSignature);
 
         viewIDnumber.setText(personalId.ID_number);
         viewProfileName.setText(personalId.publicProfile.name);
@@ -68,6 +63,13 @@ public class PersonalIDdetailView extends AppCompatActivity implements Observer<
         String birthdate = personalId.birthdate;
         viewBirthdate.setText(birthdate);
         viewAdress.setText(personalId.address);
+
+        if(personalId.blob.isEmpty())
+            return;
+        Personal_ID.BLOB blob = personalId.blob.get();
+
+        personalImage.setImageDrawable(new BitmapDrawable(new ByteArrayInputStream(blob.personal_image)));
+        handSignature.setImageDrawable(new BitmapDrawable(new ByteArrayInputStream(blob.hand_signature)));
     }
 
     @Override

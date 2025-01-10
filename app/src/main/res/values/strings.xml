@@ -13,4 +13,6 @@
     <string name="geburtsdatum">Geburtsdatum</string>
     <string name="adresse">Adresse</string>
     <string name="dynamische_attribute">Dynamische Attribute</string>
+    <string name="passbild">Passbild</string>
+    <string name="h_ndische_unterschrift">Händische Unterschrift</string>
 </resources>

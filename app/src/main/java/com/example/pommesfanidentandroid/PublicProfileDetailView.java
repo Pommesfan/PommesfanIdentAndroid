@@ -3,6 +3,7 @@ package com.example.pommesfanidentandroid;
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
@@ -20,7 +21,7 @@ public class PublicProfileDetailView extends AppCompatActivity implements Observ
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_public_profile_detail_view);
-        LinearLayout layout = findViewById(R.id.publicProfileDetailView);
+        ScrollView layout = findViewById(R.id.publicProfileDetailView);
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.publicProfileDetailView), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
@@ -37,7 +38,7 @@ public class PublicProfileDetailView extends AppCompatActivity implements Observ
         Controller.controller.addObserver(this);
     }
 
-    private void loadData(String profileName, LinearLayout layout, int sequenceNumber) throws IOException {
+    private void loadData(String profileName, ScrollView layout, int sequenceNumber) throws IOException {
         Controller controller = Controller.controller;
         PublicProfile profile = PublicProfile.loadInternal(controller, controller.appDataLocation + Controller.strImportedPublicProfiles, profileName, sequenceNumber);
         if(profile == null) {
@@ -46,6 +47,8 @@ public class PublicProfileDetailView extends AppCompatActivity implements Observ
         TextView profileNameView = findViewById(R.id.fieldprofileName);
         profileNameView.setText(profile.name);
 
+        LinearLayout attributes_layout = findViewById(R.id.publicProfileAttributes);
+
         for (int i = 0; i < profile.dynamicAttributes.length; i++) {
             String dynamicAttribute = profile.dynamicAttributes[i];
             TextView t = new TextView(this);
@@ -53,7 +56,7 @@ public class PublicProfileDetailView extends AppCompatActivity implements Observ
             t.setText(dynamicAttribute);
             t.setX(20);
             t.setY(40 * i + 50);
-            layout.addView(t);
+            attributes_layout.addView(t);
         }
     }
 

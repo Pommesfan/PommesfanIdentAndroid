@@ -4,7 +4,7 @@ import android.content.Intent;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
@@ -24,7 +24,7 @@ public class PersonalIDdetailView extends AppCompatActivity implements Observer<
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_personal_iddetails_view);
-        LinearLayout layout = findViewById(R.id.personalIDdetailView);
+        ScrollView layout = findViewById(R.id.personalIDdetailView);
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.personalIDdetailView), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
@@ -40,7 +40,7 @@ public class PersonalIDdetailView extends AppCompatActivity implements Observer<
         Controller.controller.addObserver(this);
     }
 
-    private void loadData(String id_number, LinearLayout layout) throws Exception {
+    private void loadData(String id_number, ScrollView layout) throws Exception {
         //load personal id
         Personal_ID personalId = Personal_ID.loadInternal(Controller.controller, LOAD_FROM_IMPORTED, id_number);
         if (personalId == null) {

@@ -1,9 +1,12 @@
 package com.example.pommesfanidentandroid;
 
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.Typeface;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
@@ -15,6 +18,7 @@ import model.Personal_ID;
 import utils.Observer;
 import utils.OutputEvent;
 import java.io.ByteArrayInputStream;
+import android.widget.LinearLayout.LayoutParams;
 
 import static controller.Controller.LOAD_FROM_IMPORTED;
 
@@ -63,6 +67,28 @@ public class PersonalIDdetailView extends AppCompatActivity implements Observer<
         String birthdate = personalId.birthdate;
         viewBirthdate.setText(birthdate);
         viewAdress.setText(personalId.address);
+
+        //set dynamic attributes
+        String[]dynamic_attributes_names = personalId.publicProfile.dynamicAttributes;
+        LinearLayout attributes_layout = findViewById(R.id.personal_id_attributes);
+        for (int i = 0; i < dynamic_attributes_names.length; i++) {
+            LayoutParams lparams1 = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
+            LayoutParams lparams2 = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
+
+            TextView t1 = new TextView(this);
+            t1.setText(dynamic_attributes_names[i]);
+            t1.setTextSize(20);
+            t1.setTextColor(Color.parseColor("magenta"));
+            t1.setTypeface(t1.getTypeface(), Typeface.BOLD);
+            t1.setLayoutParams(lparams1);
+            attributes_layout.addView(t1);
+
+            TextView t2 = new TextView(this);
+            t2.setText(personalId.dynamicAttributesValues[i]);
+            t2.setTextSize(20);
+            t2.setLayoutParams(lparams2);
+            attributes_layout.addView(t2);
+        }
 
         if(personalId.blob.isEmpty())
             return;

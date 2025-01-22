@@ -14,6 +14,7 @@ import model.PublicProfile;
 import utils.Observer;
 import utils.OutputEvent;
 import java.io.IOException;
+import android.widget.LinearLayout.LayoutParams;
 
 public class PublicProfileDetailView extends AppCompatActivity implements Observer<OutputEvent> {
 
@@ -50,12 +51,12 @@ public class PublicProfileDetailView extends AppCompatActivity implements Observ
         LinearLayout attributes_layout = findViewById(R.id.publicProfileAttributes);
 
         for (int i = 0; i < profile.dynamicAttributes.length; i++) {
+           LayoutParams lparams = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
             String dynamicAttribute = profile.dynamicAttributes[i];
             TextView t = new TextView(this);
+            t.setLayoutParams(lparams);
             t.setTextSize(20);
             t.setText(dynamicAttribute);
-            t.setX(20);
-            t.setY(40 * i + 50);
             attributes_layout.addView(t);
         }
     }

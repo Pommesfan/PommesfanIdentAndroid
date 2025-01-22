@@ -16,6 +16,7 @@ import controller.Controller;
 import utils.Observer;
 import utils.OutputEvent;
 import java.io.*;
+import android.widget.LinearLayout.LayoutParams;
 
 public class ImportedProfiles extends Activity implements Observer<OutputEvent> {
     @Override
@@ -56,18 +57,17 @@ public class ImportedProfiles extends Activity implements Observer<OutputEvent> 
         if(!appDir.exists()) {
             return;
         }
-        int i = 0;
+
         for(File f : appDir.listFiles()) {
             String name = f.getName();
             for(File fs : f.listFiles()) {
+                LayoutParams lparams = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
                 int sequence = Integer.parseInt(fs.getName());
                 Button b = new Button(this);
+                b.setLayoutParams(lparams);
                 b.setText(name + " : " + sequence);
                 b.setBackgroundColor(Color.GREEN);
-                b.setX(20);
-                b.setY(60 * i + 0);
                 layout.addView(b);
-                i += 1;
                 b.setOnClickListener(v -> startDetailView(name, sequence));
             }
         }

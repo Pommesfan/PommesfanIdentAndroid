@@ -17,6 +17,7 @@ import utils.OutputEvent;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
+import android.widget.LinearLayout.LayoutParams;
 
 public class ImportedPersonalID extends Activity implements Observer<OutputEvent> {
     @Override
@@ -60,15 +61,13 @@ public class ImportedPersonalID extends Activity implements Observer<OutputEvent
         if(!appDir.exists()) {
             return;
         }
-        int i = 0;
         for(File f : appDir.listFiles()) {
+            LayoutParams lparams = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
             Button b = new Button(this);
+            b.setLayoutParams(lparams);
             b.setText(f.getName());
             b.setBackgroundColor(Color.GREEN);
-            b.setX(20);
-            b.setY(60 * i + 0);
             layout.addView(b);
-            i += 1;
             b.setOnClickListener(v -> startDetailView(f.getName()));
         }
     }

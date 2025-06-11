@@ -98,6 +98,10 @@ public class ImportedProfiles extends Activity implements Observer<OutputEvent> 
                                 Controller.controller.importPublicProfile(inputStream, crypto_password);
                                 ImportedProfiles.this.recreate();
                             }
+
+                            @Override
+                            public void onCancel() {
+                            }
                         };
                     } catch (FileNotFoundException e) {
                         throw new RuntimeException(e);

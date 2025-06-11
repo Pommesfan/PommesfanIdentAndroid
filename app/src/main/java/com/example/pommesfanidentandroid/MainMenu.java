@@ -46,6 +46,11 @@ public class MainMenu extends Activity implements Observer<OutputEvent> {
                 public void onOk(String crypto_password) throws Exception {
                     Controller.controller.setPassword(crypto_password);
                 }
+
+                @Override
+                public void onCancel() {
+                    System.exit(0);
+                }
             };
         }
     }

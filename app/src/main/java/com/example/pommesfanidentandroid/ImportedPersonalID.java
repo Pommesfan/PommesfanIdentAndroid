@@ -93,6 +93,10 @@ public class ImportedPersonalID extends Activity implements Observer<OutputEvent
                                 Controller.controller.importPersonalID(inputStream, Controller.controller, crypto_password);
                                 ImportedPersonalID.this.recreate();
                             }
+
+                            @Override
+                            public void onCancel() {
+                            }
                         };
                     } catch (Exception e) {
                         throw new RuntimeException(e);

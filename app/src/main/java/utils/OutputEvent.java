@@ -16,9 +16,11 @@ public interface OutputEvent {
     class ServerStartedEvent implements OutputEvent {
         public final String ip;
         public final int port;
-        public ServerStartedEvent(String pIP, int pPort) {
+        public final String password;
+        public ServerStartedEvent(String pIP, int pPort, String pPassword) {
             ip = pIP;
             port = pPort;
+            password = pPassword;
         }
     }
 
@@ -55,7 +57,7 @@ public interface OutputEvent {
 
     class InvalidDateSequenceEvent implements OutputEvent {}
 
-    class PersonalIDoutOfValidityPeriod implements OutputEvent {}
+    class PersonalIDoutOfValidityPeriodEvent implements OutputEvent {}
 
     class NoSuchPersonalIDevent implements OutputEvent{
         public final String idNumber;
@@ -68,6 +70,17 @@ public interface OutputEvent {
         public final String idNumber;
         public PersonalIDoutdatedEvent(String idNumber) {
             this.idNumber = idNumber;
+        }
+    }
+
+    class CryptoPasswordInvalidEvent implements OutputEvent {}
+
+    class FileNotFromHereEvent implements OutputEvent {}
+
+    class WrongFileTypeEvent implements OutputEvent {
+        public final int type;
+        public WrongFileTypeEvent(int type) {
+            this.type = type;
         }
     }
 }

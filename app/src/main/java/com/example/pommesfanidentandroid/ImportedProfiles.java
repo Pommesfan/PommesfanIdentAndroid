@@ -16,7 +16,10 @@ import controller.Controller;
 import utils.Observer;
 import utils.OutputEvent;
 import java.io.*;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import android.widget.LinearLayout.LayoutParams;
+import javax.crypto.NoSuchPaddingException;
 
 public class ImportedProfiles extends Activity implements Observer<OutputEvent> {
     @Override
@@ -87,11 +90,16 @@ public class ImportedProfiles extends Activity implements Observer<OutputEvent> 
                 if (resultCode == RESULT_OK) {
                     Uri uri = data.getData();
                     try {
-                        ParcelFileDescriptor pfd = getContentResolver().openFileDescriptor(uri, "r");
-                        InputStream inputStream = new FileInputStream(pfd.getFileDescriptor());
-                        Controller.controller.importPublicProfile(inputStream);
-                        recreate();
-                    } catch (IOException e) {
+                        // https://stackoverflow.com/questions/44530136/read-failed-ebadf-bad-file-descriptor-while-reading-from-inputstream-nougat
+                        InputStream inputStream = getContentResolver().openInputStream(uri);
+                        new CryptoPasswordDialog(this) {
+                            @Override
+                            public void onOk(String crypto_password) throws NoSuchPaddingException, IOException, NoSuchAlgorithmException, InvalidKeyException {
+                                Controller.controller.importPublicProfile(inputStream, crypto_password);
+                                ImportedProfiles.this.recreate();
+                            }
+                        };
+                    } catch (FileNotFoundException e) {
                         throw new RuntimeException(e);
                     }
                 }

@@ -13,6 +13,8 @@ import controller.Controller;
 import model.PublicProfile;
 import utils.Observer;
 import utils.OutputEvent;
+
+import javax.crypto.NoSuchPaddingException;
 import java.io.File;
 import java.io.IOException;
 import java.security.*;
@@ -91,11 +93,8 @@ public class CreateProfile extends Activity implements Observer<OutputEvent> {
                 String name = name_input.getText().toString();
                 int sequence_number = Integer.parseInt(sequence_input.getText().toString());
                 controller.Controller.controller.generateKeyPair(name, sequence_number, v, new String[0]);
-            } catch (NoSuchAlgorithmException e) {
-                throw new RuntimeException(e);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            } catch (ParseException e) {
+            } catch (NoSuchAlgorithmException | IOException | NoSuchPaddingException | ParseException |
+                     InvalidKeyException e) {
                 throw new RuntimeException(e);
             }
             recreate();

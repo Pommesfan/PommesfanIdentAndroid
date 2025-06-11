@@ -14,7 +14,10 @@ import model.PublicProfile;
 import utils.Observer;
 import utils.OutputEvent;
 import java.io.IOException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import android.widget.LinearLayout.LayoutParams;
+import javax.crypto.NoSuchPaddingException;
 
 public class PublicProfileDetailView extends AppCompatActivity implements Observer<OutputEvent> {
 
@@ -33,13 +36,13 @@ public class PublicProfileDetailView extends AppCompatActivity implements Observ
         int sequenceNumber = intent.getIntExtra("sequenceNumber", -1);
         try {
             loadData(profileName, layout, sequenceNumber);
-        } catch (IOException e) {
+        } catch (IOException | NoSuchPaddingException | NoSuchAlgorithmException | InvalidKeyException e) {
             throw new RuntimeException(e);
         }
         Controller.controller.addObserver(this);
     }
 
-    private void loadData(String profileName, ScrollView layout, int sequenceNumber) throws IOException {
+    private void loadData(String profileName, ScrollView layout, int sequenceNumber) throws IOException, NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException {
         Controller controller = Controller.controller;
         PublicProfile profile = PublicProfile.loadInternal(controller, controller.appDataLocation + Controller.strImportedPublicProfiles, profileName, sequenceNumber);
         if(profile == null) {

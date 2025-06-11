@@ -38,6 +38,15 @@ public class MainMenu extends Activity implements Observer<OutputEvent> {
         });
 
         Controller.controller.addObserver(this);
+
+        if(Controller.controller.getProgrammPassword() == null) {
+            new CryptoPasswordDialog(this) {
+                @Override
+                public void onOk(String crypto_password) throws Exception {
+                    Controller.controller.setPassword(crypto_password);
+                }
+            };
+        }
     }
 
     @Override

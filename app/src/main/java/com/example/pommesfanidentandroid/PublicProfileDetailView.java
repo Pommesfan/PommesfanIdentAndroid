@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
+import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -72,6 +73,6 @@ public class PublicProfileDetailView extends AppCompatActivity implements Observ
 
     @Override
     public void update(OutputEvent e) {
-
+        Toast.makeText(this, AppGUIUtils.handleMsg(e), Toast.LENGTH_SHORT).show();
     }
 }

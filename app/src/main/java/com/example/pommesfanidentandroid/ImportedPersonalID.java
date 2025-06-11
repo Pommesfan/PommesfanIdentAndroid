@@ -111,5 +111,6 @@ public class ImportedPersonalID extends Activity implements Observer<OutputEvent
 
     @Override
     public void update(OutputEvent e) {
+        Toast.makeText(this, AppGUIUtils.handleMsg(e), Toast.LENGTH_SHORT).show();
     }
 }

@@ -50,6 +50,9 @@ public class PersonalIDdetailView extends AppCompatActivity implements Observer<
 
         TextView viewIDnumber = findViewById(R.id.fieldIDnumber);
         TextView viewProfileName = findViewById(R.id.fieldprofileName);
+        TextView viewProfileSequenceNumber = findViewById(R.id.profile_sequence_number);
+        TextView viewCreated = findViewById(R.id.created);
+        TextView viewValidUntil = findViewById(R.id.valid_until);
         TextView viewName = findViewById(R.id.fieldName);
         TextView viewSurname = findViewById(R.id.fieldSurname);
         TextView viewBirthdate = findViewById(R.id.fieldBirthdate);
@@ -59,6 +62,9 @@ public class PersonalIDdetailView extends AppCompatActivity implements Observer<
 
         viewIDnumber.setText(personalId.ID_number);
         viewProfileName.setText(personalId.publicProfile.name);
+        viewProfileSequenceNumber.setText(String.valueOf(personalId.publicProfile.sequence_number));
+        viewCreated.setText(personalId.created);
+        viewValidUntil.setText(personalId.validUntil);
         viewName.setText(personalId.name);
         viewSurname.setText(personalId.surname);
         String birthdate = personalId.birthdate;

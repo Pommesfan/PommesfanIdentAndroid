@@ -48,6 +48,42 @@
                     android:layout_height="wrap_content"
                     android:textColor="@color/purple_700"
                     android:textStyle="bold|italic"
+                    android:text="Folgenummer Profil" />
+            <TextView
+                    android:textSize="20sp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/profile_sequence_number"/>
+            <TextView
+                    android:textSize="20sp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/purple_700"
+                    android:textStyle="bold|italic"
+                    android:text="@string/erstellt" />
+            <TextView
+                    android:textSize="20sp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/created"/>
+            <TextView
+                    android:textSize="20sp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/purple_700"
+                    android:textStyle="bold|italic"
+                    android:text="@string/g_ltig_bis" />
+            <TextView
+                    android:textSize="20sp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/valid_until"/>
+            <TextView
+                    android:textSize="20sp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/purple_700"
+                    android:textStyle="bold|italic"
                     android:text="@string/vorname" />
             <TextView
                     android:textSize="20sp"

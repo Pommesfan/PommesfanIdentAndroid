@@ -33,6 +33,78 @@
                 android:layout_height="wrap_content"
                 android:textColor="@color/purple_700"
                 android:textStyle="bold|italic"
+                android:text="Sequenznummer" />
+        <TextView
+                android:textSize="20sp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/sequence_number"/>
+        <TextView
+                android:textSize="20sp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/purple_700"
+                android:textStyle="bold|italic"
+                android:text="@string/erstellt"/>
+        <TextView
+                android:textSize="20sp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/created"/>
+        <TextView
+                android:textSize="20sp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/purple_700"
+                android:textStyle="bold|italic"
+                android:text="@string/g_ltig_ab"/>
+        <TextView
+                android:textSize="20sp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/valid_from"/>
+        <TextView
+                android:textSize="20sp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/purple_700"
+                android:textStyle="bold|italic"
+                android:text="@string/g_ltig_bis_f_r_erstellung"/>
+        <TextView
+                android:textSize="20sp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/valid_for_creation"/>
+        <TextView
+                android:textSize="20sp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/purple_700"
+                android:textStyle="bold|italic"
+                android:text="@string/erstellte_maximal_g_ltig_bis"/>
+        <TextView
+                android:textSize="20sp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/valid_for_created"/>
+        <TextView
+                android:textSize="20sp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/purple_700"
+                android:textStyle="bold|italic"
+                android:text="@string/anzahl_tage_maximal_g_ltig"/>
+        <TextView
+                android:textSize="20sp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/max_valid_days"/>
+        <TextView
+                android:textSize="20sp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/purple_700"
+                android:textStyle="bold|italic"
                 android:text="@string/dynamische_attribute"/>
     </LinearLayout>
 </ScrollView>

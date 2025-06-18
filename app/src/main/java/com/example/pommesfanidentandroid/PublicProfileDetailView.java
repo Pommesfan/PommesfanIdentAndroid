@@ -1,6 +1,8 @@
 package com.example.pommesfanidentandroid;
 
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
@@ -52,8 +54,32 @@ public class PublicProfileDetailView extends AppCompatActivity implements Observ
         TextView profileNameView = findViewById(R.id.fieldprofileName);
         profileNameView.setText(profile.name);
 
+        TextView viewCreated = findViewById(R.id.created);
+        TextView sequence_number = findViewById(R.id.sequence_number);
+        TextView viewValidFrom = findViewById(R.id.valid_from);
+        TextView viewValidForCreation = findViewById(R.id.valid_for_creation);
+        TextView viewValidForCreated = findViewById(R.id.valid_for_created);
+        TextView viewMaxValidDays = findViewById(R.id.max_valid_days);
+
+        viewCreated.setText(profile.created);
+        sequence_number.setText(String.valueOf(profile.sequence_number));
+        viewValidFrom.setText(profile.validityPeriod.validFrom);
+        viewValidForCreation.setText(profile.validityPeriod.validUntilForCreation);
+        viewValidForCreated.setText(profile.validityPeriod.validUntilForCreated);
+        viewMaxValidDays.setText(String.valueOf(profile.validityPeriod.maxValidDays));
+
         LinearLayout attributes_layout = findViewById(R.id.publicProfileAttributes);
 
+        if(profile.dynamicAttributes.length == 0) {
+            LayoutParams lparams = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
+            TextView t = new TextView(this);
+            t.setText("Keine");
+            t.setTextSize(20);
+            t.setTextColor(Color.parseColor("red"));
+            t.setTypeface(t.getTypeface(), Typeface.BOLD_ITALIC);
+            t.setLayoutParams(lparams);
+            attributes_layout.addView(t);
+        }
         for (int i = 0; i < profile.dynamicAttributes.length; i++) {
            LayoutParams lparams = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
             String dynamicAttribute = profile.dynamicAttributes[i];

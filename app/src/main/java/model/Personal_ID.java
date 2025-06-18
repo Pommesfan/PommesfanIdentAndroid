@@ -127,7 +127,7 @@ public class Personal_ID {
             return null;
         }
         FileInputStream fis = new FileInputStream(location + name);
-        AES_InputStream aesis = new AES_InputStream(fis, AES_BUFFER_SIZE, controller.getProgrammPassword());
+        AES_InputStream aesis = AES_InputStream.from_ecb(fis, AES_BUFFER_SIZE, controller.getProgramPasswordHash());
         Utils.SliceReader sliceReader = new Utils.SliceReader(aesis);
         Personal_ID personalId = fromSliceReader(controller, created_or_imported, sliceReader, false);
         if(personalId == null)
@@ -177,7 +177,7 @@ public class Personal_ID {
         }
         File f = Utils.createFileAndSubfolder(location + ID_number);
         FileOutputStream fos = new FileOutputStream(f);
-        AES_OutputStream aesos = new AES_OutputStream(fos, AES_BUFFER_SIZE, controller.getProgrammPassword());
+        AES_OutputStream aesos = AES_OutputStream.from_ecb(fos, AES_BUFFER_SIZE, controller.getProgramPasswordHash());
         toSliceWriter(new Utils.SliceWriter(aesos), false);
         aesos.close();
         controller.saveAttachedData(controller.appDataLocation + Controller.strPersonalImages + personalImagePath, blob_unwrapped.personal_image);

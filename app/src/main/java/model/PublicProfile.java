@@ -9,7 +9,6 @@ import javax.crypto.NoSuchPaddingException;
 import java.io.*;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
-import java.util.Arrays;
 import static controller.Controller.*;
 
 public class PublicProfile {
@@ -41,7 +40,7 @@ public class PublicProfile {
         }
 
         FileInputStream fis = new FileInputStream(path + profileName + "/" + sequence_number);
-        AES_InputStream aesis = new AES_InputStream(fis, AES_BUFFER_SIZE, controller.getProgrammPassword());
+        AES_InputStream aesis = AES_InputStream.from_ecb(fis, AES_BUFFER_SIZE, controller.getProgramPasswordHash());
         Utils.SliceReader sliceReader = new Utils.SliceReader(aesis);
         String[] profileParams = Utils.bytesToStringArray(sliceReader.next());
 
@@ -54,13 +53,10 @@ public class PublicProfile {
         return new PublicProfile(profileName, sequence_number, creationDate, validityPeriod, dynamicAttributes, publicKey);
     }
 
-    public static PublicProfile fromExternal(InputStream inputStream, Controller controller, String password) throws IOException {
+    public static PublicProfile fromExternal(InputStream inputStream, Controller controller, byte[]password_hash) throws IOException, NoSuchAlgorithmException {
         Utils.SliceReader sliceReader = new Utils.SliceReader(inputStream);
-        byte[]savedPassword = sliceReader.next();
-        if(!Arrays.equals(savedPassword, password.getBytes())) {
-            controller.notifyObservers(new OutputEvent.CryptoPasswordInvalidEvent());
+        if(!controller.validateCryptoPassword(inputStream, password_hash))
             return null;
-        }
         String[] profileParams = Utils.bytesToStringArray(sliceReader.next());
         String public_profile_name = profileParams[0];
         int sequence_number = Integer.parseInt(profileParams[1]);
@@ -75,9 +71,10 @@ public class PublicProfile {
         FileOutputStream fos = new FileOutputStream(destination);
         fos.write(PROGRAM_WATERMARK);
         fos.write(Utils.int_to_bytes(FILE_TYPE_PROFILE));
-        AES_OutputStream aesos = new AES_OutputStream(fos, AES_BUFFER_SIZE, password);
+        byte[]password_hash = Utils.passwordHash(password);
+        AES_OutputStream aesos = AES_OutputStream.from_ecb(fos, AES_BUFFER_SIZE, password_hash);
         Utils.SliceWriter sliceWriter = new Utils.SliceWriter(aesos);
-        sliceWriter.write(password.getBytes());
+        aesos.write(password_hash);
         sliceWriter.write(toByteArray(true));
         sliceWriter.write(publicKey);
         aesos.close();
@@ -90,7 +87,7 @@ public class PublicProfile {
         }
         File destination = Utils.createFileAndSubfolder(path + name + "/" + sequence_number);
         FileOutputStream fos = new FileOutputStream(destination);
-        AES_OutputStream aesos = new AES_OutputStream(fos, AES_BUFFER_SIZE, controller.getProgrammPassword());
+        AES_OutputStream aesos = AES_OutputStream.from_ecb(fos, AES_BUFFER_SIZE, controller.getProgramPasswordHash());
         Utils.SliceWriter sliceWriter = new Utils.SliceWriter(aesos);
         sliceWriter.write(toByteArray(false));
         sliceWriter.write(publicKey);

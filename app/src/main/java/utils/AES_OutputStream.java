@@ -14,15 +14,20 @@ public class AES_OutputStream extends OutputStream {
     private final OutputStream outputStream;
     private byte[]buf;
     private int buf_position = 0;
-    private Cipher cipher;
-    public AES_OutputStream(OutputStream outputStream, int buf_size, String password) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException {
+    private final Cipher cipher;
+    public AES_OutputStream(OutputStream outputStream, int buf_size, Cipher cipher) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException {
         if (buf_size % 16 != 0)
             throw new IllegalArgumentException("buf_size of AES_InputStream must be multiple of 16");
         this.outputStream = outputStream;
         this.buf = new byte[buf_size];
-        SecretKeySpec sks = new SecretKeySpec(password.getBytes(), "AES");
-        cipher = Cipher.getInstance("AES/ECB/NoPadding");
+        this.cipher = cipher;
+    }
+
+    public static AES_OutputStream from_ecb(OutputStream outputStream, int buf_size, byte[] passwordHash) throws InvalidKeyException, NoSuchPaddingException, NoSuchAlgorithmException {
+        SecretKeySpec sks = new SecretKeySpec(passwordHash, "AES");
+        Cipher cipher = Cipher.getInstance("AES/ECB/NoPadding");
         cipher.init(Cipher.ENCRYPT_MODE, sks);
+        return new AES_OutputStream(outputStream, buf_size, cipher);
     }
 
     @Override

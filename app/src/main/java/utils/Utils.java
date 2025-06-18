@@ -2,6 +2,8 @@ package utils;
 
 import java.io.*;
 import java.nio.ByteBuffer;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
@@ -193,5 +195,9 @@ public class Utils {
             outputStream.write(int_to_bytes(b.length));
             outputStream.write(b);
         }
+    }
+
+    public static byte[] passwordHash(String password) throws NoSuchAlgorithmException {
+        return MessageDigest.getInstance("SHA256").digest(password.getBytes());
     }
 }

@@ -5,6 +5,7 @@ import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
+import android.os.Looper;
 import android.widget.*;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;

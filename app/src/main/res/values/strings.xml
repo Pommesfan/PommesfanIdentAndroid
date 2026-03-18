@@ -15,10 +15,14 @@
     <string name="dynamische_attribute">Dynamische Attribute</string>
     <string name="passbild">Passbild</string>
     <string name="h_ndische_unterschrift">Händische Unterschrift</string>
+    <string name="ip_adresse">IP-Adresse</string>
+    <string name="portnummer">Portnummer</string>
+    <string name="ausweis_pr_fen">Ausweis prüfen</string>
     <string name="anzahl_tage_maximal_g_ltig">Anzahl Tage maximal gültig</string>
     <string name="erstellte_maximal_g_ltig_bis">Erstellte maximal gültig bis</string>
     <string name="g_ltig_bis_f_r_erstellung">Gültig bis für Erstellung</string>
     <string name="g_ltig_ab">Gültig ab</string>
     <string name="erstellt">Erstellt</string>
     <string name="g_ltig_bis">Gültig bis</string>
+    <string name="krypto_passwort">Krypto-Passwort</string>
 </resources>

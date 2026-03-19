@@ -1,20 +1,16 @@
 package controller;
 
-import android.net.wifi.WifiManager;
 import android.os.Looper;
-import android.text.format.Formatter;
 import model.Personal_ID;
 import model.PrivateProfile;
 import model.PublicProfile;
 import utils.*;
 import javax.crypto.NoSuchPaddingException;
 import java.io.*;
-import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.*;
 import java.security.spec.InvalidKeySpecException;
@@ -24,8 +20,6 @@ import java.text.ParseException;
 import java.util.Arrays;
 import java.util.NoSuchElementException;
 import java.util.Optional;
-
-import static android.content.Context.WIFI_SERVICE;
 
 public class Controller extends Observable<OutputEvent> {
     public static final int LOAD_FROM_CREATED = 1;

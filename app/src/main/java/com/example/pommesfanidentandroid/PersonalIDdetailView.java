@@ -1,12 +1,17 @@
 package com.example.pommesfanidentandroid;
 
+import android.app.Activity;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.os.Looper;
+import android.view.LayoutInflater;
+import android.view.View;
 import android.widget.*;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -100,6 +105,48 @@ public class PersonalIDdetailView extends AppCompatActivity implements Observer<
 
         personalImage.setImageDrawable(new BitmapDrawable(new ByteArrayInputStream(blob.personal_image)));
         handSignature.setImageDrawable(new BitmapDrawable(new ByteArrayInputStream(blob.hand_signature)));
+
+        findViewById(R.id.btnHandIn).setOnClickListener(v -> {
+            handIn(personalId.ID_number);
+        });
+    }
+
+    private void handIn(String id_number) {
+        AlertDialog dialog = getHandInDialog(id_number);
+        dialog.show();
+    }
+
+    public AlertDialog getHandInDialog(String id_number) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage("Einreichen");
+        LayoutInflater inflater = getLayoutInflater();
+        View view = inflater.inflate(R.layout.hand_in_dialog, null);
+        builder.setView(view);
+        builder.setPositiveButton("Ok", (dialog, which) -> {
+            EditText ip = view.findViewById(R.id.ip);
+            EditText port = view.findViewById(R.id.port);
+            EditText crypto = view.findViewById(R.id.crypto);
+            try {
+                Thread t = new Thread(() -> {
+                    Looper.prepare();
+                    try {
+                        Controller.controller.handInPersonalIDtoRemote(
+                                id_number, ip.getText().toString(),
+                                Integer.parseInt(port.getText().toString()),
+                                crypto.getText().toString());
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
+                });
+                t.start();
+                t.join();
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        });
+        builder.setNegativeButton("Abbrechen", null);
+        builder.setCancelable(true);
+        return builder.create();
     }
 
     @Override

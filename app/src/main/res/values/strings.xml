@@ -25,4 +25,6 @@
     <string name="erstellt">Erstellt</string>
     <string name="g_ltig_bis">Gültig bis</string>
     <string name="krypto_passwort">Krypto-Passwort</string>
+    <string name="einreichen">Einreichen</string>
+    <string name="krypto_paraphrase">Krypto-Paraphrase</string>
 </resources>

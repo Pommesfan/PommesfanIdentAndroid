@@ -18,6 +18,14 @@
                 android:layout_height="match_parent"
                 android:id="@+id/personal_id_attributes"
                 android:orientation="vertical">
+            <Button
+                    android:textSize="20sp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/purple_700"
+                    android:textStyle="bold|italic"
+                    android:text="@string/einreichen"
+                    android:id="@+id/btnHandIn"/>
             <TextView
                     android:textSize="20sp"
                     android:layout_width="wrap_content"

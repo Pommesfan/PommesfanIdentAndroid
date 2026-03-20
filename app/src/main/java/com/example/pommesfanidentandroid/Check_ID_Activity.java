@@ -1,5 +1,6 @@
 package com.example.pommesfanidentandroid;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -29,7 +30,8 @@ public class Check_ID_Activity extends AppCompatActivity implements Observer<Out
         try {
             Controller.controller.checkPersonalIDFromRemote();
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            Toast.makeText(this, "Fehler beim Einlesen", Toast.LENGTH_SHORT).show();
+            finish();
         }
     }
 
@@ -40,8 +42,14 @@ public class Check_ID_Activity extends AppCompatActivity implements Observer<Out
             ((TextView)findViewById(R.id.ip_address)).setText(evt.ip);
             ((TextView)findViewById(R.id.port)).setText(String.valueOf(evt.port));
             ((TextView)findViewById(R.id.crypto_password)).setText(evt.password);
-        } else {
+        } else if (e instanceof OutputEvent.PersonalIDValidEvent) {
+            finish();
+            Intent intent = new Intent(this, PersonalIDdetailView.class);
+            intent.putExtra("mode", "received");
+            startActivity(intent);
+        }  else {
             Toast.makeText(this, AppGUIUtils.handleMsg(e), Toast.LENGTH_SHORT).show();
+            finish();
         }
     }
 

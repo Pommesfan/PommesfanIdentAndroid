@@ -15,6 +15,8 @@ import utils.Observer;
 import utils.OutputEvent;
 import java.io.File;
 import java.io.InputStream;
+import java.util.Objects;
+
 import android.widget.LinearLayout.LayoutParams;
 
 public class ImportedPersonalID extends Activity implements Observer<OutputEvent> {
@@ -59,7 +61,7 @@ public class ImportedPersonalID extends Activity implements Observer<OutputEvent
         if(!appDir.exists()) {
             return;
         }
-        for(File f : appDir.listFiles()) {
+        for(File f : Objects.requireNonNull(appDir.listFiles())) {
             LayoutParams lparams = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
             Button b = new Button(this);
             b.setLayoutParams(lparams);
@@ -72,6 +74,7 @@ public class ImportedPersonalID extends Activity implements Observer<OutputEvent
 
     private void startDetailView(String idNumber) {
         Intent intent = new Intent(this, PersonalIDdetailView.class);
+        intent.putExtra("mode", "saved");
         intent.putExtra("idNumber", idNumber);
         startActivity(intent);
     }

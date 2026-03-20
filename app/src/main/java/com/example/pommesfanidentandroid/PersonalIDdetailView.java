@@ -1,7 +1,5 @@
 package com.example.pommesfanidentandroid;
 
-import android.app.Activity;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Typeface;
@@ -31,25 +29,35 @@ public class PersonalIDdetailView extends AppCompatActivity implements Observer<
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_personal_iddetails_view);
-        ScrollView layout = findViewById(R.id.personalIDdetailView);
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.personalIDdetailView), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
-        Intent intent = getIntent();
-        String idNumber = intent.getStringExtra("idNumber");
+
         try {
-            loadData(idNumber, layout);
+            loadData();
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
         Controller.controller.addObserver(this);
     }
 
-    private void loadData(String id_number, ScrollView layout) throws Exception {
+    private void loadData() throws Exception {
+        Intent intent = getIntent();
+        String mode = intent.getStringExtra("mode");
         //load personal id
-        Personal_ID personalId = Personal_ID.loadInternal(Controller.controller, LOAD_FROM_IMPORTED, id_number);
+        Personal_ID personalId;
+        assert mode != null;
+        if(mode.equals("saved")) {
+            String idNumber = intent.getStringExtra("idNumber");
+            personalId = Personal_ID.loadInternal(Controller.controller, LOAD_FROM_IMPORTED, idNumber);
+        } else if(mode.equals("received")) {
+            personalId = Controller.controller.getCheckIDrunnerRes();
+        } else {
+            personalId = null;
+        }
+
         if (personalId == null) {
             return;
         }
@@ -106,7 +114,9 @@ public class PersonalIDdetailView extends AppCompatActivity implements Observer<
         personalImage.setImageDrawable(new BitmapDrawable(new ByteArrayInputStream(blob.personal_image)));
         handSignature.setImageDrawable(new BitmapDrawable(new ByteArrayInputStream(blob.hand_signature)));
 
-        findViewById(R.id.btnHandIn).setOnClickListener(v -> {
+        Button btnHandIn = findViewById(R.id.btnHandIn);
+        btnHandIn.setEnabled(!mode.equals("received"));
+        btnHandIn.setOnClickListener(v -> {
             handIn(personalId.ID_number);
         });
     }
@@ -133,7 +143,7 @@ public class PersonalIDdetailView extends AppCompatActivity implements Observer<
                         Controller.controller.handInPersonalIDtoRemote(
                                 id_number, ip.getText().toString(),
                                 Integer.parseInt(port.getText().toString()),
-                                crypto.getText().toString());
+                                crypto.getText().toString().toUpperCase());
                     } catch (Exception e) {
                         throw new RuntimeException(e);
                     }

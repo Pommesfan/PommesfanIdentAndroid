@@ -19,6 +19,7 @@ public abstract class CryptoPasswordDialog {
                 throw new RuntimeException(e);
             }
         });
+        builder.setCancelable(false);
         builder.setNegativeButton("Abbrechen", (dialog, id) -> onCancel());
         builder.setView(layout);
         builder.create().show();

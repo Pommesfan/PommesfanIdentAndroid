@@ -2,6 +2,7 @@ package com.example.pommesfanidentandroid;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Looper;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
@@ -57,7 +58,7 @@ public class Check_ID_Activity extends AppCompatActivity implements Observer<Out
     protected void onDestroy() {
         super.onDestroy();
         try {
-            Controller.controller.stopCheckIDrunner();
+            Controller.controller.stopBackgroundRunner();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

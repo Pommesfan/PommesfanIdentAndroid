@@ -12,7 +12,7 @@ import java.security.NoSuchAlgorithmException;
 
 public class AES_OutputStream extends OutputStream {
     private final OutputStream outputStream;
-    private byte[]buf;
+    private final byte[]buf;
     private int buf_position = 0;
     private final Cipher cipher;
     public AES_OutputStream(OutputStream outputStream, int buf_size, Cipher cipher) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException {
@@ -59,11 +59,9 @@ public class AES_OutputStream extends OutputStream {
                 toOutputStream(buf_len);
                 start += chunk_len;
             } else {
-                int overflow_pos = start + remaining_size;
-                System.arraycopy(b, start, buf, buf_position, overflow_pos);
+                System.arraycopy(b, start, buf, buf_position, remaining_size);
                 toOutputStream(buf_len);
-                System.arraycopy(b, overflow_pos, buf, buf_position, chunk_len - overflow_pos);
-                start += overflow_pos;
+                start += remaining_size;
             }
         }
         System.gc();

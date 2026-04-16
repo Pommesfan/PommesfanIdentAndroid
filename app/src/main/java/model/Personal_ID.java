@@ -51,9 +51,9 @@ public class Personal_ID {
         final String profileName = attributes[1];
         final int sequence_number = Integer.parseInt(attributes[2]);
         if (created_or_imported_profile == Controller.LOAD_FROM_CREATED) {
-            publicProfile = PrivateProfile.loadInternal(controller, controller.appDataLocation + Controller.strCreatedProfiles, profileName, sequence_number);
+            publicProfile = PrivateProfile.loadInternal(controller, controller.appDataLocation + Controller.strPrivateProfiles, profileName, sequence_number);
         } else if(created_or_imported_profile == Controller.LOAD_FROM_IMPORTED) {
-            publicProfile = PublicProfile.loadInternal(controller, controller.appDataLocation + Controller.strImportedPublicProfiles, profileName, sequence_number);
+            publicProfile = PublicProfile.loadInternal(controller, controller.appDataLocation + Controller.strPublicProfiles, profileName, sequence_number);
         } else {
             throw new NoSuchMethodException("created_or_imported must be 1 or 2");
         }
@@ -113,7 +113,7 @@ public class Personal_ID {
         return personalId;
     }
 
-    public static Personal_ID loadInternal(Controller controller, int created_or_imported, String name) throws Exception {
+    public static Personal_ID loadInternal(Controller controller, int created_or_imported, String name, boolean loadBlob) throws Exception {
         String location;
         if (created_or_imported == Controller.LOAD_FROM_CREATED) {
             location = controller.appDataLocation + Controller.strCreatedPersonalIDs;
@@ -132,9 +132,12 @@ public class Personal_ID {
         Personal_ID personalId = fromSliceReader(controller, created_or_imported, sliceReader, false);
         if(personalId == null)
             return null;
-        byte[] personalImage_b = controller.readAttachedData(controller.appDataLocation + Controller.strPersonalImages + personalId.personalImagePath);
-        byte[] handSignature_b = controller.readAttachedData(controller.appDataLocation + Controller.strHandSignatures + personalId.handSignaturePath);
-        personalId.blob = Optional.of(new BLOB(personalImage_b, handSignature_b));
+
+        if(loadBlob) {
+            byte[] personalImage_b = controller.readAttachedData(controller.appDataLocation + Controller.strPersonalImages + personalId.personalImagePath);
+            byte[] handSignature_b = controller.readAttachedData(controller.appDataLocation + Controller.strHandSignatures + personalId.handSignaturePath);
+            personalId.blob = Optional.of(new BLOB(personalImage_b, handSignature_b));
+        }
         aesis.close();
         return personalId;
     }

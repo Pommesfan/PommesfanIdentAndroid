@@ -55,7 +55,7 @@ public class ImportedProfiles extends Activity implements Observer<OutputEvent> 
     }
 
     private void loadImportedProfiles(LinearLayout layout) {
-        File appDir = new File(Controller.controller.appDataLocation + Controller.strImportedPublicProfiles);
+        File appDir = new File(Controller.controller.appDataLocation + Controller.strPublicProfiles);
         if(!appDir.exists()) {
             return;
         }

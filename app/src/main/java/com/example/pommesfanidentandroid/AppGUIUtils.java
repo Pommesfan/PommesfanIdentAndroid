@@ -54,6 +54,8 @@ public class AppGUIUtils {
                 throw new RuntimeException("No such FileType");
             }
             return msg;
+        } else if(e instanceof OutputEvent.IDaggregatedEvent) {
+            return "Diesem Profil ist noch mindestens ein Ausweis zugeordnet";
         }
         return "";
     }

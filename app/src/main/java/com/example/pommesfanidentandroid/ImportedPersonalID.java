@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
+import android.text.Layout;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.Toast;
@@ -25,7 +26,7 @@ public class ImportedPersonalID extends Activity implements Observer<OutputEvent
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_imported_personal_ids);
         LinearLayout layout = findViewById(R.id.viewImportedPersonalID);
-        loadImportedProfiles(layout);
+        loadImportedIDs();
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.viewImportedPersonalID), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
@@ -56,7 +57,9 @@ public class ImportedPersonalID extends Activity implements Observer<OutputEvent
         }
     }
 
-    private void loadImportedProfiles(LinearLayout layout) {
+    private void loadImportedIDs() {
+        LinearLayout listView = findViewById(R.id.listViewIDs);
+        listView.removeAllViews();
         File appDir = new File(Controller.controller.appDataLocation + Controller.strImportedPersonalIDs);
         if(!appDir.exists()) {
             return;
@@ -67,7 +70,7 @@ public class ImportedPersonalID extends Activity implements Observer<OutputEvent
             b.setLayoutParams(lparams);
             b.setText(f.getName());
             b.setBackgroundColor(Color.GREEN);
-            layout.addView(b);
+            listView.addView(b);
             b.setOnClickListener(v -> startDetailView(f.getName()));
         }
     }
@@ -112,6 +115,11 @@ public class ImportedPersonalID extends Activity implements Observer<OutputEvent
     protected void onDestroy() {
         Controller.controller.deleteObserver(this);
         super.onDestroy();
+    }
+    @Override
+    protected void onResume() {
+        super.onResume();
+        loadImportedIDs();
     }
 
     @Override

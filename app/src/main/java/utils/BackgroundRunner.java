@@ -1,5 +1,6 @@
 package utils;
 
+import android.os.Looper;
 import controller.Controller;
 import java.io.IOException;
 import java.net.InetAddress;
@@ -17,7 +18,7 @@ public abstract class BackgroundRunner {
         t = new Thread(() -> {
             try {
                 // for Android
-                //Looper.prepare();
+                Looper.prepare();
                 routine();
             } catch (Exception e) {
                 throw new RuntimeException(e);

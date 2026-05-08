@@ -26,7 +26,7 @@ public class ImportedProfiles extends Activity implements Observer<OutputEvent> 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_imported_profiles);
         LinearLayout layout = findViewById(R.id.importedProfiles);
-        loadImportedProfiles(layout);
+        loadImportedProfiles();
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.importedProfiles), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
@@ -54,7 +54,9 @@ public class ImportedProfiles extends Activity implements Observer<OutputEvent> 
         }
     }
 
-    private void loadImportedProfiles(LinearLayout layout) {
+    private void loadImportedProfiles() {
+        LinearLayout listView = findViewById(R.id.listViewPublicprofiles);
+        listView.removeAllViews();
         File appDir = new File(Controller.controller.appDataLocation + Controller.strPublicProfiles);
         if(!appDir.exists()) {
             return;
@@ -69,7 +71,7 @@ public class ImportedProfiles extends Activity implements Observer<OutputEvent> 
                 b.setLayoutParams(lparams);
                 b.setText(name + " : " + sequence);
                 b.setBackgroundColor(Color.GREEN);
-                layout.addView(b);
+                listView.addView(b);
                 b.setOnClickListener(v -> startDetailView(name, sequence));
             }
         }
@@ -115,6 +117,12 @@ public class ImportedProfiles extends Activity implements Observer<OutputEvent> 
     protected void onDestroy() {
         Controller.controller.deleteObserver(this);
         super.onDestroy();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        loadImportedProfiles();
     }
 
     @Override

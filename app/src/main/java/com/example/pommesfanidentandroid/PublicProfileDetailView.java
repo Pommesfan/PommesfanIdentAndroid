@@ -42,6 +42,14 @@ public class PublicProfileDetailView extends AppCompatActivity implements Observ
         } catch (IOException | NoSuchPaddingException | NoSuchAlgorithmException | InvalidKeyException e) {
             throw new RuntimeException(e);
         }
+        findViewById(R.id.btnDelete).setOnClickListener(v -> {
+            try {
+                Controller.controller.deletePublicProfile(profileName, sequenceNumber);
+                finish();
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        });
         Controller.controller.addObserver(this);
     }
 

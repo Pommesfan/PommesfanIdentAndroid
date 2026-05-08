@@ -119,6 +119,16 @@ public class PersonalIDdetailView extends AppCompatActivity implements Observer<
         btnHandIn.setOnClickListener(v -> {
             handIn(personalId.ID_number);
         });
+        Button btnDelete = findViewById(R.id.btnDelete);
+        btnDelete.setEnabled(!mode.equals("received"));
+        btnDelete.setOnClickListener(v -> {
+            try {
+                Controller.controller.deleteID(personalId.ID_number);
+                finish();
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        });
     }
 
     private void handIn(String id_number) {

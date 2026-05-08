@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
-import android.text.Layout;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.Toast;
@@ -20,12 +19,11 @@ import java.util.Objects;
 
 import android.widget.LinearLayout.LayoutParams;
 
-public class ImportedPersonalID extends Activity implements Observer<OutputEvent> {
+public class ImportedPersonalIDs extends Activity implements Observer<OutputEvent> {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_imported_personal_ids);
-        LinearLayout layout = findViewById(R.id.viewImportedPersonalID);
         loadImportedIDs();
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.viewImportedPersonalID), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
@@ -95,7 +93,7 @@ public class ImportedPersonalID extends Activity implements Observer<OutputEvent
                             @Override
                             public void onOk(String crypto_password) throws Exception {
                                 Controller.controller.importPersonalID(inputStream, crypto_password);
-                                ImportedPersonalID.this.recreate();
+                                ImportedPersonalIDs.this.recreate();
                             }
 
                             @Override

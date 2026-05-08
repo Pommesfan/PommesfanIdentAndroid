@@ -1,7 +1,6 @@
 package com.example.pommesfanidentandroid;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Toast;
@@ -35,7 +34,7 @@ public class MainMenu extends Activity implements Observer<OutputEvent> {
             startActivity(intent);
         });
         findViewById(R.id.importedPersonalIDs).setOnClickListener(v -> {
-            Intent intent = new Intent(this, ImportedPersonalID.class);
+            Intent intent = new Intent(this, ImportedPersonalIDs.class);
             startActivity(intent);
         });
         findViewById(R.id.checkPersonalID).setOnClickListener(v -> {

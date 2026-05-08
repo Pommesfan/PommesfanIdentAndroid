@@ -43,12 +43,7 @@ public class PublicProfileDetailView extends AppCompatActivity implements Observ
             throw new RuntimeException(e);
         }
         findViewById(R.id.btnDelete).setOnClickListener(v -> {
-            try {
-                Controller.controller.deletePublicProfile(profileName, sequenceNumber);
-                finish();
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
+            delete(profileName, sequenceNumber);
         });
         Controller.controller.addObserver(this);
     }
@@ -97,6 +92,20 @@ public class PublicProfileDetailView extends AppCompatActivity implements Observ
             t.setText(dynamicAttribute);
             attributes_layout.addView(t);
         }
+    }
+
+    private void delete(String profileName, int sequenceNumber) {
+        new YesNoDialog(this, "Profil wirklich löschen") {
+            @Override
+            public void onOk() {
+                try {
+                    Controller.controller.deletePublicProfile(profileName, sequenceNumber);
+                    finish();
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        };
     }
 
     @Override

@@ -17,6 +17,7 @@ import utils.OutputEvent;
 import java.io.*;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.util.Objects;
 import android.widget.LinearLayout.LayoutParams;
 import javax.crypto.NoSuchPaddingException;
 
@@ -25,7 +26,6 @@ public class ImportedProfiles extends Activity implements Observer<OutputEvent> 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_imported_profiles);
-        LinearLayout layout = findViewById(R.id.importedProfiles);
         loadImportedProfiles();
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.importedProfiles), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
@@ -62,9 +62,9 @@ public class ImportedProfiles extends Activity implements Observer<OutputEvent> 
             return;
         }
 
-        for(File f : appDir.listFiles()) {
+        for(File f : Objects.requireNonNull(appDir.listFiles())) {
             String name = f.getName();
-            for(File fs : f.listFiles()) {
+            for(File fs : Objects.requireNonNull(f.listFiles())) {
                 LayoutParams lparams = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
                 int sequence = Integer.parseInt(fs.getName());
                 Button b = new Button(this);

@@ -122,18 +122,27 @@ public class PersonalIDdetailView extends AppCompatActivity implements Observer<
         Button btnDelete = findViewById(R.id.btnDelete);
         btnDelete.setEnabled(!mode.equals("received"));
         btnDelete.setOnClickListener(v -> {
-            try {
-                Controller.controller.deleteID(personalId.ID_number);
-                finish();
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
+            delete(personalId.ID_number);
         });
     }
 
     private void handIn(String id_number) {
         AlertDialog dialog = getHandInDialog(id_number);
         dialog.show();
+    }
+
+    private void delete(String id_number) {
+        new YesNoDialog(this, "Ausweis wirklich löschen?") {
+            @Override
+            public void onOk() {
+                try {
+                    Controller.controller.deleteID(id_number);
+                    finish();
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        };
     }
 
     public AlertDialog getHandInDialog(String id_number) {

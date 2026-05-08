@@ -37,7 +37,7 @@
                 android:exported="true">
         </activity>
         <activity
-                android:name=".ImportedPersonalID"
+                android:name=".ImportedPersonalIDs"
                 android:exported="true">
         </activity>
         <activity

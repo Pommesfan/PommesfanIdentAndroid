@@ -23,7 +23,7 @@ public class CreateProfile extends Activity implements Observer<OutputEvent> {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.create_profile);
+        setContentView(R.layout.create_profile_dialog);
         LinearLayout layout = findViewById(R.id.createProfile);
         loadPublicProfiles(layout);
         ViewCompat.setOnApplyWindowInsetsListener(layout, (v, insets) -> {

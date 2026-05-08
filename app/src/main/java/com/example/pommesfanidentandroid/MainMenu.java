@@ -45,10 +45,12 @@ public class MainMenu extends Activity implements Observer<OutputEvent> {
         Controller.controller.addObserver(this);
 
         if(Controller.controller.getProgramPasswordHash() == null) {
-            new CryptoPasswordDialog(this) {
+            new PasswordDialog(this, "App-Passwort", true) {
                 @Override
                 public void onOk(String crypto_password) throws Exception {
-                    Controller.controller.setProgramPasswordHash(crypto_password);
+                    if(!Controller.controller.setProgramPasswordHash(crypto_password)) {
+                        System.exit(0);
+                    }
                 }
 
                 @Override

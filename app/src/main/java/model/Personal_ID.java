@@ -45,15 +45,15 @@ public class Personal_ID {
         handSignaturePath = pHandSignaturePath;
     }
 
-    public static Personal_ID fromString(Controller controller, int created_or_imported_profile, String[] attributes) throws Exception {
+    public static Personal_ID fromString(int created_or_imported_profile, String[] attributes) throws Exception {
         String ID_number = attributes[0];
         PublicProfile publicProfile;
         final String profileName = attributes[1];
         final int sequence_number = Integer.parseInt(attributes[2]);
         if (created_or_imported_profile == Controller.LOAD_FROM_CREATED) {
-            publicProfile = PrivateProfile.loadInternal(controller, controller.appDataLocation + Controller.strPrivateProfiles, profileName, sequence_number);
+            publicProfile = PrivateProfile.loadInternal(controller.appDataLocation + Controller.strPrivateProfiles, profileName, sequence_number);
         } else if(created_or_imported_profile == Controller.LOAD_FROM_IMPORTED) {
-            publicProfile = PublicProfile.loadInternal(controller, controller.appDataLocation + Controller.strPublicProfiles, profileName, sequence_number);
+            publicProfile = PublicProfile.loadInternal(controller.appDataLocation + Controller.strPublicProfiles, profileName, sequence_number);
         } else {
             throw new NoSuchMethodException("created_or_imported must be 1 or 2");
         }
@@ -96,11 +96,11 @@ public class Personal_ID {
         return new Personal_ID(ID_number, publicProfile, created, validUntil, name, surname, birthdate, address, dynamicAttributesValues, personalImagePath, handSignaturePath);
     }
 
-    public static Personal_ID fromSliceReader(Controller controller, int created_or_imported_profile, Utils.SliceReader sliceReader, boolean withBlob) throws Exception {
+    public static Personal_ID fromSliceReader(int created_or_imported_profile, Utils.SliceReader sliceReader, boolean withBlob) throws Exception {
         String[] attributes = Utils.bytesToStringArray(sliceReader.next());
         if(attributes.length == 0)
             return null;
-        Personal_ID personalId = Personal_ID.fromString(controller, created_or_imported_profile, attributes);
+        Personal_ID personalId = Personal_ID.fromString(created_or_imported_profile, attributes);
         if(personalId == null)
             return null;
         personalId.signature = Optional.of(sliceReader.next());
@@ -113,7 +113,7 @@ public class Personal_ID {
         return personalId;
     }
 
-    public static Personal_ID loadInternal(Controller controller, int created_or_imported, String name, boolean loadBlob) throws Exception {
+    public static Personal_ID loadInternal(int created_or_imported, String name, boolean loadBlob) throws Exception {
         String location;
         if (created_or_imported == Controller.LOAD_FROM_CREATED) {
             location = controller.appDataLocation + Controller.strCreatedPersonalIDs;
@@ -129,13 +129,13 @@ public class Personal_ID {
         FileInputStream fis = new FileInputStream(location + name);
         AES_InputStream aesis = AES_InputStream.from_ecb(fis, AES_BUFFER_SIZE, controller.getProgramPasswordHash());
         Utils.SliceReader sliceReader = new Utils.SliceReader(aesis);
-        Personal_ID personalId = fromSliceReader(controller, created_or_imported, sliceReader, false);
+        Personal_ID personalId = fromSliceReader(created_or_imported, sliceReader, false);
         if(personalId == null)
             return null;
 
         if(loadBlob) {
-            byte[] personalImage_b = controller.readAttachedData(controller.appDataLocation + Controller.strPersonalImages + personalId.personalImagePath);
-            byte[] handSignature_b = controller.readAttachedData(controller.appDataLocation + Controller.strHandSignatures + personalId.handSignaturePath);
+            byte[] personalImage_b = controller.readAttachedData(personalId.ID_number, ATTACHMENT_PERSONAL_IMAGE);
+            byte[] handSignature_b = controller.readAttachedData(personalId.ID_number, ATTACHMENT_HAND_SIGNATURE);
             personalId.blob = Optional.of(new BLOB(personalImage_b, handSignature_b));
         }
         aesis.close();
@@ -160,7 +160,7 @@ public class Personal_ID {
         }
     }
 
-    public void saveInternal(Controller controller, int created_or_imported) throws IOException, NoSuchMethodException, NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException {
+    public void saveInternal(int created_or_imported) throws IOException, NoSuchMethodException, NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException {
         if (blob.isEmpty())
             throw new NoSuchElementException("Optional of BLOB is empty");
         BLOB blob_unwrapped = blob.get();
@@ -183,8 +183,8 @@ public class Personal_ID {
         AES_OutputStream aesos = AES_OutputStream.from_ecb(fos, AES_BUFFER_SIZE, controller.getProgramPasswordHash());
         toSliceWriter(new Utils.SliceWriter(aesos), false);
         aesos.close();
-        controller.saveAttachedData(controller.appDataLocation + Controller.strPersonalImages + personalImagePath, blob_unwrapped.personal_image);
-        controller.saveAttachedData(controller.appDataLocation + Controller.strHandSignatures + handSignaturePath, blob_unwrapped.hand_signature);
+        controller.saveAttachedData(personalImagePath, ATTACHMENT_PERSONAL_IMAGE, ID_number, blob_unwrapped.personal_image);
+        controller.saveAttachedData(handSignaturePath, ATTACHMENT_HAND_SIGNATURE, ID_number, blob_unwrapped.hand_signature);
     }
 
     public byte[] toByte(boolean withPaths) throws IOException {

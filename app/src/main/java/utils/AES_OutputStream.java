@@ -32,7 +32,7 @@ public class AES_OutputStream extends OutputStream {
 
     @Override
     public void write(int b) throws IOException {
-        outputStream.write(new byte[]{Integer.valueOf(b).byteValue()});
+        write(Utils.int_to_bytes(b));
     }
 
     @Override

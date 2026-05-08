@@ -36,8 +36,8 @@ public class AES_InputStream extends InputStream {
     @Override
     public int read() throws IOException {
         byte[]b = new byte[4];
-        inputStream.read(b, 0, 4);
-        return ByteBuffer.wrap(b).getInt();
+        read(b, 0, 4);
+        return Utils.bytes_to_int(b);
     }
 
     private void from_inputstream() {

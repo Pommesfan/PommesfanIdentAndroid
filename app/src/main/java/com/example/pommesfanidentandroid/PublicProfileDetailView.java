@@ -47,7 +47,7 @@ public class PublicProfileDetailView extends AppCompatActivity implements Observ
 
     private void loadData(String profileName, ScrollView layout, int sequenceNumber) throws IOException, NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException {
         Controller controller = Controller.controller;
-        PublicProfile profile = PublicProfile.loadInternal(controller, controller.appDataLocation + Controller.strPublicProfiles, profileName, sequenceNumber);
+        PublicProfile profile = PublicProfile.loadInternal(controller.appDataLocation + Controller.strPublicProfiles, profileName, sequenceNumber);
         if(profile == null) {
             return;
         }

@@ -91,7 +91,7 @@ public class ImportedPersonalID extends Activity implements Observer<OutputEvent
                         new CryptoPasswordDialog(this) {
                             @Override
                             public void onOk(String crypto_password) throws Exception {
-                                Controller.controller.importPersonalID(inputStream, Controller.controller, crypto_password);
+                                Controller.controller.importPersonalID(inputStream, crypto_password);
                                 ImportedPersonalID.this.recreate();
                             }
 

@@ -183,6 +183,10 @@ public class Utils {
             inputStream.read(len_personal_id_b, 0, 4);
             return Utils.bytes_to_int(len_personal_id_b);
         }
+
+        public String readLine() throws IOException {
+            return new String(next());
+        }
     }
 
     public static class SliceWriter {
@@ -194,6 +198,10 @@ public class Utils {
         public void write(byte[] b) throws IOException {
             outputStream.write(int_to_bytes(b.length));
             outputStream.write(b);
+        }
+
+        public void writeLine(String s) throws IOException {
+            write(s.getBytes());
         }
     }
 

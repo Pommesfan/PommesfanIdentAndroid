@@ -1,6 +1,5 @@
 package utils;
 
-import android.os.Looper;
 import controller.Controller;
 import java.io.IOException;
 import java.net.InetAddress;
@@ -17,7 +16,8 @@ public abstract class BackgroundRunner {
     public BackgroundRunner() {
         t = new Thread(() -> {
             try {
-                Looper.prepare();
+                // for Android
+                //Looper.prepare();
                 routine();
             } catch (Exception e) {
                 throw new RuntimeException(e);
@@ -25,12 +25,12 @@ public abstract class BackgroundRunner {
         });
     }
 
-    public void init(Controller c) throws NoSuchAlgorithmException, IOException {
+    public void init() throws NoSuchAlgorithmException, IOException {
         serverSocket = new ServerSocket(0);
         String crypto = Utils.getAlphanumeric(16);
         crypto_hash = Utils.passwordHash(crypto);
         String ip = InetAddress.getLocalHost().getHostAddress();
-        c.notifyObservers(new OutputEvent.ServerStartedEvent(ip, serverSocket.getLocalPort(), crypto));
+        Controller.controller.notifyObservers(new OutputEvent.ServerStartedEvent(ip, serverSocket.getLocalPort(), crypto));
     }
 
     public void start() {

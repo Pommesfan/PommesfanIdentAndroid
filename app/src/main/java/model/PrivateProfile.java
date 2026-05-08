@@ -12,14 +12,14 @@ import java.security.NoSuchAlgorithmException;
 
 import static controller.Controller.*;
 
-public class PrivateProfile extends PublicProfile{
+public class PrivateProfile extends PublicProfile {
     public final byte[] privateKey;
     public PrivateProfile(String name, int sequence_number, String created, ValidityPeriod validityPeriod, String[] dynamicAttributes, byte[] publicKey, byte[] privateKey) {
         super(name, sequence_number, created, validityPeriod, dynamicAttributes, publicKey);
         this.privateKey = privateKey;
     }
 
-    public void saveInternal(Controller controller, String url) throws IOException, NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException {
+    public void saveInternal(String url) throws IOException, NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException {
         if(Utils.exists(url)) {
             controller.notifyObservers(new OutputEvent.ProfileAlreadyExistsEvent());
             return;
@@ -34,7 +34,7 @@ public class PrivateProfile extends PublicProfile{
         aesos.close();
     }
 
-    public static PrivateProfile fromInternalFile(Controller controller, String path, String profileName, int sequence_number) throws IOException, NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException {
+    public static PrivateProfile fromInternalFile(String path, String profileName, int sequence_number) throws IOException, NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException {
         if(!Utils.exists(path + profileName)) {
             controller.notifyObservers(new OutputEvent.NoSuchProfileEvent(profileName, sequence_number, false));
             return null;
@@ -56,11 +56,11 @@ public class PrivateProfile extends PublicProfile{
         return new PrivateProfile(profileName, sequence_number, created, validityPeriod, dynamicAttributes, publicKey, privateKey);
     }
 
-    public static PrivateProfile fromExternal(InputStream inputStream, Controller controller, byte[]password_hash) throws IOException, NoSuchAlgorithmException {
+    public static PrivateProfile fromExternal(InputStream inputStream, byte[]password_hash) throws IOException, NoSuchAlgorithmException {
         if(!controller.validateCryptoPassword(inputStream, password_hash))
             return null;
         Utils.SliceReader sliceReader = new Utils.SliceReader(inputStream);
-        PublicProfile p = PublicProfile.fromSliceReader(sliceReader, controller, password_hash);
+        PublicProfile p = PublicProfile.fromSliceReader(sliceReader);
         byte[]private_key_b = sliceReader.next();
         return new PrivateProfile(p.name, p.sequence_number, p.created, p.validityPeriod, p.dynamicAttributes, p.publicKey, private_key_b);
     }

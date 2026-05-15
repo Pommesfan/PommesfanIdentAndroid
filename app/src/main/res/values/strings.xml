@@ -28,4 +28,5 @@
     <string name="einreichen">Einreichen</string>
     <string name="krypto_paraphrase">Krypto-Paraphrase</string>
     <string name="l_schen">Löschen</string>
+    <string name="ueber_netzwerk_importieren">Über Netzwerk importieren</string>
 </resources>

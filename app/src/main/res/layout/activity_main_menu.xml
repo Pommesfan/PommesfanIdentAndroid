@@ -11,22 +11,27 @@
         tools:context=".MainMenu">
     <Button
             android:id="@+id/ownProfiles"
-            android:layout_width="wrap_content"
+            android:layout_width="307dp"
             android:layout_height="wrap_content"
-            android:text="@string/eigene_profile" />
+            android:text="@string/eigene_profile"/>
     <Button
             android:id="@+id/importedProfiles"
-            android:layout_width="wrap_content"
+            android:layout_width="310dp"
             android:layout_height="wrap_content"
-            android:text="@string/importierte_profile" />
+            android:text="@string/importierte_profile"/>
     <Button
             android:id="@+id/importedPersonalIDs"
-            android:layout_width="wrap_content"
+            android:layout_width="310dp"
             android:layout_height="wrap_content"
-            android:text="@string/importierte_ausweise" />
+            android:text="@string/importierte_ausweise"/>
     <Button
             android:id="@+id/checkPersonalID"
-            android:layout_width="wrap_content"
+            android:layout_width="315dp"
             android:layout_height="wrap_content"
-            android:text="@string/ausweis_pr_fen" />
-    </LinearLayout>
+            android:text="@string/ausweis_pr_fen"/>
+    <Button
+            android:id="@+id/importFromNetwork"
+            android:text="@string/ueber_netzwerk_importieren"
+            android:layout_width="320dp"
+            android:layout_height="wrap_content"/>
+</LinearLayout>

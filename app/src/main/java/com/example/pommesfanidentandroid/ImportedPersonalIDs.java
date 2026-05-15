@@ -89,7 +89,7 @@ public class ImportedPersonalIDs extends Activity implements Observer<OutputEven
                     try {
                         // https://stackoverflow.com/questions/44530136/read-failed-ebadf-bad-file-descriptor-while-reading-from-inputstream-nougat
                         InputStream inputStream = getContentResolver().openInputStream(uri);
-                        new PasswordDialog(this, "Krypto-Passwort", false) {
+                        new PasswordDialog(this, "Krypto-Passwort") {
                             @Override
                             public void onOk(String crypto_password) throws Exception {
                                 Controller.controller.importPersonalID(inputStream, crypto_password);

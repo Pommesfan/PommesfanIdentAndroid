@@ -3,6 +3,7 @@ package com.example.pommesfanidentandroid;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Looper;
 import android.widget.Toast;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -42,10 +43,14 @@ public class MainMenu extends Activity implements Observer<OutputEvent> {
             startActivity(intent);
         });
 
+        findViewById(R.id.importFromNetwork).setOnClickListener(v -> {
+            showImportDialog();
+        });
+
         Controller.controller.addObserver(this);
 
         if(Controller.controller.getProgramPasswordHash() == null) {
-            new PasswordDialog(this, "App-Passwort", true) {
+            new PasswordDialog(this, "App-Passwort") {
                 @Override
                 public void onOk(String crypto_password) throws Exception {
                     if(!Controller.controller.setProgramPasswordHash(crypto_password)) {
@@ -59,6 +64,31 @@ public class MainMenu extends Activity implements Observer<OutputEvent> {
                 }
             };
         }
+    }
+
+    public void showImportDialog() {
+        new NetworkDialog(this, "Über Netzwerk importieren") {
+            @Override
+            public void onOk(String ip, int port, String crypto) {
+                try {
+                    Thread t = new Thread(() -> {
+                        Looper.prepare();
+                        try {
+                            Controller.controller.importOverNetwork(ip, port, crypto);
+                        } catch (Exception e) {
+                            throw new RuntimeException(e);
+                        }
+                    });
+                    t.start();
+                    t.join();
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+            @Override
+            public void onCancel() {
+            }
+        };
     }
 
     @Override

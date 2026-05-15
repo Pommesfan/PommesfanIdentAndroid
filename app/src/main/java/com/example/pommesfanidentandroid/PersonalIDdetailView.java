@@ -5,11 +5,7 @@ import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
-import android.os.Looper;
-import android.view.LayoutInflater;
-import android.view.View;
 import android.widget.*;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -127,8 +123,7 @@ public class PersonalIDdetailView extends AppCompatActivity implements Observer<
     }
 
     private void handIn(String id_number) {
-        AlertDialog dialog = getHandInDialog(id_number);
-        dialog.show();
+        getHandInDialog(id_number);
     }
 
     private void delete(String id_number) {
@@ -145,37 +140,17 @@ public class PersonalIDdetailView extends AppCompatActivity implements Observer<
         };
     }
 
-    public AlertDialog getHandInDialog(String id_number) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setMessage("Einreichen");
-        LayoutInflater inflater = getLayoutInflater();
-        View view = inflater.inflate(R.layout.hand_in_dialog, null);
-        builder.setView(view);
-        builder.setPositiveButton("Ok", (dialog, which) -> {
-            EditText ip = view.findViewById(R.id.ip);
-            EditText port = view.findViewById(R.id.port);
-            EditText crypto = view.findViewById(R.id.crypto);
-            try {
-                Thread t = new Thread(() -> {
-                    Looper.prepare();
-                    try {
-                        Controller.controller.handInPersonalIDtoRemote(
-                                id_number, ip.getText().toString(),
-                                Integer.parseInt(port.getText().toString()),
-                                crypto.getText().toString().toUpperCase());
-                    } catch (Exception e) {
-                        throw new RuntimeException(e);
-                    }
-                });
-                t.start();
-                t.join();
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
+    public void getHandInDialog(String id_number) {
+        new NetworkDialog(this, "Einreichen") {
+            @Override
+            public void onOk(String ip, int port, String crypto) throws Exception {
+                Controller.controller.handInPersonalIDtoRemote(id_number, ip, port, crypto);
             }
-        });
-        builder.setNegativeButton("Abbrechen", null);
-        builder.setCancelable(true);
-        return builder.create();
+
+            @Override
+            public void onCancel() {
+            }
+        };
     }
 
     @Override

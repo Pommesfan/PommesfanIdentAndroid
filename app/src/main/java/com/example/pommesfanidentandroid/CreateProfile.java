@@ -104,7 +104,7 @@ public class CreateProfile extends Activity implements Observer<OutputEvent> {
     }
 
     private void loadPublicProfiles(LinearLayout layout) {
-        File appDir = new File(Controller.controller.appDataLocation + Controller.strPublicProfiles);
+        File appDir = new File(Controller.controller.appDataLocation + Controller.strPrivateProfiles);
         if(!appDir.exists()) {
             return;
         }

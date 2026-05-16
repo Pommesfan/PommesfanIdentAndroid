@@ -8,7 +8,7 @@
         android:paddingLeft="16dp"
         android:paddingRight="16dp"
         android:orientation="vertical"
-        tools:context=".ProfileEditor">
+        tools:context=".PrivateProfiles">
         <Button
                 android:id="@+id/btnNewKeyPair"
                 android:layout_width="wrap_content"

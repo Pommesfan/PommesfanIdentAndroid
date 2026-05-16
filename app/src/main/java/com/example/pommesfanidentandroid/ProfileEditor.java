@@ -1,65 +1,60 @@
 package com.example.pommesfanidentandroid;
+
 import android.app.Activity;
-import android.content.Intent;
 import android.os.Bundle;
-import android.widget.*;
+import android.widget.EditText;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import controller.Controller;
+import model.PublicProfile;
 import utils.Observer;
 import utils.OutputEvent;
-import java.io.File;
 
+import javax.crypto.NoSuchPaddingException;
+import java.io.IOException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+import java.text.ParseException;
 
 public class ProfileEditor extends Activity implements Observer<OutputEvent> {
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.create_profile_dialog);
-        LinearLayout layout = findViewById(R.id.createProfile);
-        loadPublicProfiles(layout);
-        ViewCompat.setOnApplyWindowInsetsListener(layout, (v, insets) -> {
+        setContentView(R.layout.activity_profile_editor);
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.newProfileLayout), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
-        Button newKeyPair = findViewById(R.id.btnNewKeyPair);
-        newKeyPair.setOnClickListener(v -> newPrivateProfile());
-
-        Controller.controller.addObserver(this);
-    }
-
-    private void newPrivateProfile() {
-        Intent intent = new Intent(this, NewPrivateProfile.class);
-        startActivity(intent);
-    }
-
-    private void loadPublicProfiles(LinearLayout layout) {
-        File appDir = new File(Controller.controller.appDataLocation + Controller.strPrivateProfiles);
-        if(!appDir.exists()) {
-            return;
-        }
-        int i = 0;
-        for(File f : appDir.listFiles()) {
-            TextView t = new TextView(this);
-            t.setText(f.getName());
-            t.setX(20);
-            t.setY(60 * i + 0);
-            layout.addView(t);
-            i += 1;
-        }
-    }
-
-    @Override
-    protected void onDestroy() {
-        Controller.controller.deleteObserver(this);
-        super.onDestroy();
+        findViewById(R.id.btnSave).setOnClickListener(v -> {
+            EditText profileName = findViewById(R.id.profileName);
+            EditText sequenceNumber = findViewById(R.id.sequence_number);
+            EditText validFrom = findViewById(R.id.valid_from);
+            EditText validUntilForCreation = findViewById(R.id.valid_until_for_creation);
+            EditText validUntilForCreated = findViewById(R.id.valid_until_for_created);
+            EditText maxValidDays = findViewById(R.id.max_valid_days);
+            PublicProfile.ValidityPeriod period = new PublicProfile.ValidityPeriod(
+                    validFrom.getText().toString(),
+                    validUntilForCreation.getText().toString(),
+                    validUntilForCreated.getText().toString(),
+                    Integer.parseInt(maxValidDays.getText().toString()));
+            try {
+                Controller.controller.generateKeyPair(
+                        profileName.getText().toString(),
+                        Integer.parseInt(sequenceNumber.getText().toString()),
+                        period, new String[]{});
+            } catch (NoSuchAlgorithmException | IOException | ParseException | NoSuchPaddingException |
+                     InvalidKeyException e) {
+                throw new RuntimeException(e);
+            }
+            finish();
+        });
     }
 
     @Override
-    public void update(OutputEvent e) {
-        Toast.makeText(this, AppGUIUtils.handleMsg(e), Toast.LENGTH_SHORT).show();
+    public void update(OutputEvent outputEvent) {
+
     }
 }

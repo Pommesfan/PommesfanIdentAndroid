@@ -2,7 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               xmlns:tools="http://schemas.android.com/tools"
               android:id="@+id/newProfileLayout"
-              tools:context=".NewPrivateProfile"
+              tools:context=".ProfileEditor"
               android:orientation="vertical"
               android:layout_width="409dp"
               android:layout_height="729dp" tools:layout_editor_absoluteY="1dp" tools:layout_editor_absoluteX="1dp">

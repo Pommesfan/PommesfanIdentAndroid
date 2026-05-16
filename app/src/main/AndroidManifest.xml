@@ -33,7 +33,7 @@
                 android:exported="true">
         </activity>
         <activity
-                android:name=".ProfileEditor"
+                android:name=".PrivateProfiles"
                 android:exported="true">
         </activity>
         <activity
@@ -41,7 +41,7 @@
                 android:exported="true">
         </activity>
         <activity
-                android:name=".NewPrivateProfile"
+                android:name=".ProfileEditor"
                 android:exported="true">
         </activity>
         <activity

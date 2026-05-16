@@ -63,7 +63,7 @@ public class ImportedPersonalIDs extends Activity implements Observer<OutputEven
             return;
         }
         for(File f : Objects.requireNonNull(appDir.listFiles())) {
-            LayoutParams lparams = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
+            LayoutParams lparams = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
             Button b = new Button(this);
             b.setLayoutParams(lparams);
             b.setText(f.getName());

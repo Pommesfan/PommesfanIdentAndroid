@@ -65,7 +65,7 @@ public class ImportedProfiles extends Activity implements Observer<OutputEvent> 
         for(File f : Objects.requireNonNull(appDir.listFiles())) {
             String name = f.getName();
             for(File fs : Objects.requireNonNull(f.listFiles())) {
-                LayoutParams lparams = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
+                LayoutParams lparams = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
                 int sequence = Integer.parseInt(fs.getName());
                 Button b = new Button(this);
                 b.setLayoutParams(lparams);

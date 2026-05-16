@@ -29,4 +29,10 @@
     <string name="krypto_paraphrase">Krypto-Paraphrase</string>
     <string name="l_schen">Löschen</string>
     <string name="ueber_netzwerk_importieren">Über Netzwerk importieren</string>
+    <string name="folgenummer">Folgenummer</string>
+    <string name="name_profil">Name Profil</string>
+    <string name="speichern">Speichern</string>
+    <string name="g_ltig_bis_f_r_erstellte">Gültig bis für Erstellte</string>
+    <string name="maximale_tage_g_ltigkeit">Maximale Tage Gültigkeit</string>
+    <string name="sequenznummer">Sequenznummer</string>
 </resources>

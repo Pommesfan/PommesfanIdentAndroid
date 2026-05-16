@@ -33,11 +33,15 @@
                 android:exported="true">
         </activity>
         <activity
-                android:name=".CreateProfile"
+                android:name=".ProfileEditor"
                 android:exported="true">
         </activity>
         <activity
                 android:name=".ImportedPersonalIDs"
+                android:exported="true">
+        </activity>
+        <activity
+                android:name=".NewPrivateProfile"
                 android:exported="true">
         </activity>
         <activity

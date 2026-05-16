@@ -27,7 +27,7 @@ public class MainMenu extends Activity implements Observer<OutputEvent> {
             return insets;
         });
         findViewById(R.id.ownProfiles).setOnClickListener(v -> {
-            Intent intent = new Intent(this, CreateProfile.class);
+            Intent intent = new Intent(this, ProfileEditor.class);
             startActivity(intent);
         });
         findViewById(R.id.importedProfiles).setOnClickListener(v -> {

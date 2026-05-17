@@ -4,10 +4,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
-import android.widget.LinearLayout;
-import android.widget.ScrollView;
-import android.widget.TextView;
-import android.widget.Toast;
+import android.widget.*;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -22,12 +19,12 @@ import java.security.NoSuchAlgorithmException;
 import android.widget.LinearLayout.LayoutParams;
 import javax.crypto.NoSuchPaddingException;
 
-public class PublicProfileDetailView extends AppCompatActivity implements Observer<OutputEvent> {
+public class ProfileDetailView extends AppCompatActivity implements Observer<OutputEvent> {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_public_profile_detail_view);
+        setContentView(R.layout.activity_profile_detail_view);
         ScrollView layout = findViewById(R.id.publicProfileDetailView);
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.publicProfileDetailView), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
@@ -37,20 +34,26 @@ public class PublicProfileDetailView extends AppCompatActivity implements Observ
         Intent intent = getIntent();
         String profileName = intent.getStringExtra("profileName");
         int sequenceNumber = intent.getIntExtra("sequenceNumber", -1);
+        String mode = intent.getStringExtra("mode");
         try {
-            loadData(profileName, layout, sequenceNumber);
+            loadData(profileName, sequenceNumber, mode);
         } catch (IOException | NoSuchPaddingException | NoSuchAlgorithmException | InvalidKeyException e) {
             throw new RuntimeException(e);
         }
-        findViewById(R.id.btnDelete).setOnClickListener(v -> {
-            delete(profileName, sequenceNumber);
-        });
+        findViewById(R.id.btnDelete).setOnClickListener(v -> delete(profileName, sequenceNumber));
         Controller.controller.addObserver(this);
     }
 
-    private void loadData(String profileName, ScrollView layout, int sequenceNumber) throws IOException, NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException {
+    private void loadData(String profileName, int sequenceNumber, String mode) throws IOException, NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException {
         Controller controller = Controller.controller;
-        PublicProfile profile = PublicProfile.loadInternal(controller.appDataLocation + Controller.strPublicProfiles, profileName, sequenceNumber);
+        String url;
+        if(mode.equals("private"))
+            url = controller.appDataLocation + Controller.strPrivateProfiles;
+        else if(mode.equals("public"))
+            url = controller.appDataLocation + Controller.strPublicProfiles;
+        else
+            throw new IllegalArgumentException("mode '" + mode + "' not valid");
+        PublicProfile profile = PublicProfile.loadInternal(url, profileName, sequenceNumber);
         if(profile == null) {
             return;
         }

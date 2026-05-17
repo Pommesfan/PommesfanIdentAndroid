@@ -26,10 +26,10 @@
                 android:name=".PersonalIDdetailView"
                 android:exported="true"/>
         <activity
-                android:name=".PublicProfileDetailView"
+                android:name=".ProfileDetailView"
                 android:exported="true"/>
         <activity
-                android:name=".ImportedProfiles"
+                android:name=".ProfilesListView"
                 android:exported="true">
         </activity>
         <activity

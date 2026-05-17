@@ -21,20 +21,28 @@ import java.util.Objects;
 import android.widget.LinearLayout.LayoutParams;
 import javax.crypto.NoSuchPaddingException;
 
-public class ImportedProfiles extends Activity implements Observer<OutputEvent> {
+import static android.view.View.INVISIBLE;
+
+public class ProfilesListView extends Activity implements Observer<OutputEvent> {
+    private String mode = "";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_imported_profiles);
+        setContentView(R.layout.activity_profiles_list_view);
+        mode = getIntent().getStringExtra("mode");
         loadImportedProfiles();
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.importedProfiles), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
-
         findViewById(R.id.addButton).setOnClickListener(v -> openFile());
-
+        Button newButton = findViewById(R.id.newButton);
+        if(mode.equals("public"))
+            newButton.setVisibility(INVISIBLE);
+        else
+            newButton.setOnClickListener(v -> newPrivateProfile());
         Controller.controller.addObserver(this);
     }
 
@@ -53,11 +61,22 @@ public class ImportedProfiles extends Activity implements Observer<OutputEvent> 
                     Toast.LENGTH_SHORT).show();
         }
     }
-
+    private void newPrivateProfile() {
+        Intent intent = new Intent(this, ProfileEditor.class);
+        startActivity(intent);
+    }
     private void loadImportedProfiles() {
         LinearLayout listView = findViewById(R.id.listViewPublicprofiles);
         listView.removeAllViews();
-        File appDir = new File(Controller.controller.appDataLocation + Controller.strPublicProfiles);
+        String url;
+        if(mode.equals("private")) {
+            url = Controller.controller.appDataLocation + Controller.strPrivateProfiles;
+        } else if(mode.equals("public")) {
+            url = Controller.controller.appDataLocation + Controller.strPublicProfiles;
+        } else {
+            throw new IllegalArgumentException("mode '" + mode + "' not valid");
+        }
+        File appDir = new File(url);
         if(!appDir.exists()) {
             return;
         }
@@ -78,9 +97,10 @@ public class ImportedProfiles extends Activity implements Observer<OutputEvent> 
     }
 
     private void startDetailView(String profileName, int sequence_number) {
-        Intent intent = new Intent(this, PublicProfileDetailView.class);
+        Intent intent = new Intent(this, ProfileDetailView.class);
         intent.putExtra("profileName", profileName);
         intent.putExtra("sequenceNumber", sequence_number);
+        intent.putExtra("mode", mode);
         startActivity(intent);
     }
 
@@ -97,7 +117,7 @@ public class ImportedProfiles extends Activity implements Observer<OutputEvent> 
                             @Override
                             public void onOk(String crypto_password) throws NoSuchPaddingException, IOException, NoSuchAlgorithmException, InvalidKeyException {
                                 Controller.controller.importPublicProfile(inputStream, crypto_password);
-                                ImportedProfiles.this.recreate();
+                                ProfilesListView.this.recreate();
                             }
 
                             @Override

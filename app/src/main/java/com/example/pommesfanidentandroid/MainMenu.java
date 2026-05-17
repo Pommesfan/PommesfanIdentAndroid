@@ -27,11 +27,13 @@ public class MainMenu extends Activity implements Observer<OutputEvent> {
             return insets;
         });
         findViewById(R.id.ownProfiles).setOnClickListener(v -> {
-            Intent intent = new Intent(this, PrivateProfiles.class);
+            Intent intent = new Intent(this, ProfilesListView.class);
+            intent.putExtra("mode", "private");
             startActivity(intent);
         });
         findViewById(R.id.importedProfiles).setOnClickListener(v -> {
-            Intent intent = new Intent(this, ImportedProfiles.class);
+            Intent intent = new Intent(this, ProfilesListView.class);
+            intent.putExtra("mode", "public");
             startActivity(intent);
         });
         findViewById(R.id.importedPersonalIDs).setOnClickListener(v -> {

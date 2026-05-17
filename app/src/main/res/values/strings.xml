@@ -36,4 +36,8 @@
     <string name="maximale_tage_g_ltigkeit">Maximale Tage Gültigkeit</string>
     <string name="sequenznummer">Sequenznummer</string>
     <string name="neues_profil">Neues Profil</string>
+    <string name="neuer_ausweis">Neuer Ausweis</string>
+    <string name="name">Name</string>
+    <string name="passbild_hinzuf_gen">Passbild hinzufügen</string>
+    <string name="h_ndische_unterschrift_hinzuf_gen">Händische unterschrift hinzufügen</string>
 </resources>

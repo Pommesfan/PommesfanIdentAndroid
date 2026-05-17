@@ -28,29 +28,31 @@ public class ProfileEditor extends Activity implements Observer<OutputEvent> {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
-        findViewById(R.id.btnSave).setOnClickListener(v -> {
-            EditText profileName = findViewById(R.id.profileName);
-            EditText sequenceNumber = findViewById(R.id.sequence_number);
-            EditText validFrom = findViewById(R.id.valid_from);
-            EditText validUntilForCreation = findViewById(R.id.valid_until_for_creation);
-            EditText validUntilForCreated = findViewById(R.id.valid_until_for_created);
-            EditText maxValidDays = findViewById(R.id.max_valid_days);
-            PublicProfile.ValidityPeriod period = new PublicProfile.ValidityPeriod(
-                    validFrom.getText().toString(),
-                    validUntilForCreation.getText().toString(),
-                    validUntilForCreated.getText().toString(),
-                    Integer.parseInt(maxValidDays.getText().toString()));
-            try {
-                Controller.controller.generateKeyPair(
-                        profileName.getText().toString(),
-                        Integer.parseInt(sequenceNumber.getText().toString()),
-                        period, new String[]{});
-            } catch (NoSuchAlgorithmException | IOException | ParseException | NoSuchPaddingException |
-                     InvalidKeyException e) {
-                throw new RuntimeException(e);
-            }
-            finish();
-        });
+        findViewById(R.id.btnSave).setOnClickListener(v -> save());
+    }
+
+    private void save() {
+        EditText profileName = findViewById(R.id.profileName);
+        EditText sequenceNumber = findViewById(R.id.sequence_number);
+        EditText validFrom = findViewById(R.id.valid_from);
+        EditText validUntilForCreation = findViewById(R.id.valid_until_for_creation);
+        EditText validUntilForCreated = findViewById(R.id.valid_until_for_created);
+        EditText maxValidDays = findViewById(R.id.max_valid_days);
+        PublicProfile.ValidityPeriod period = new PublicProfile.ValidityPeriod(
+                validFrom.getText().toString(),
+                validUntilForCreation.getText().toString(),
+                validUntilForCreated.getText().toString(),
+                Integer.parseInt(maxValidDays.getText().toString()));
+        try {
+            Controller.controller.generateKeyPair(
+                    profileName.getText().toString(),
+                    Integer.parseInt(sequenceNumber.getText().toString()),
+                    period, new String[]{});
+        } catch (NoSuchAlgorithmException | IOException | ParseException | NoSuchPaddingException |
+                 InvalidKeyException e) {
+            throw new RuntimeException(e);
+        }
+        finish();
     }
 
     @Override

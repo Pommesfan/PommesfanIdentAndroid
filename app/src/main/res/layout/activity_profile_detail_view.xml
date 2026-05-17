@@ -10,19 +10,32 @@
         android:orientation="vertical"
         tools:context=".ProfileDetailView">
 
-    <LinearLayout
-            android:id="@+id/publicProfileAttributes"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical">
-        <Button
-                android:textSize="20sp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textColor="#FF0840"
-                android:textStyle="bold|italic"
-                android:text="@string/l_schen"
-                android:id="@+id/btnDelete" />
+        <LinearLayout
+                android:id="@+id/publicProfileAttributes"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+                <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="horizontal">
+                        <Button
+                                android:textSize="20sp"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textColor="#FF0840"
+                                android:textStyle="bold|italic"
+                                android:text="@string/l_schen"
+                                android:id="@+id/btnDelete" />
+                        <Button
+                                android:textSize="20sp"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textColor="#8BC34A"
+                                android:textStyle="bold|italic"
+                                android:text="@string/neuer_ausweis"
+                                android:id="@+id/btnNewID" />
+        </LinearLayout>
         <TextView
                 android:textSize="20sp"
                 android:layout_width="wrap_content"

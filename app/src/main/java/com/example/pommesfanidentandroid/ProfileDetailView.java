@@ -19,13 +19,14 @@ import java.security.NoSuchAlgorithmException;
 import android.widget.LinearLayout.LayoutParams;
 import javax.crypto.NoSuchPaddingException;
 
+import static android.view.View.INVISIBLE;
+
 public class ProfileDetailView extends AppCompatActivity implements Observer<OutputEvent> {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile_detail_view);
-        ScrollView layout = findViewById(R.id.publicProfileDetailView);
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.publicProfileDetailView), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
@@ -35,6 +36,11 @@ public class ProfileDetailView extends AppCompatActivity implements Observer<Out
         String profileName = intent.getStringExtra("profileName");
         int sequenceNumber = intent.getIntExtra("sequenceNumber", -1);
         String mode = intent.getStringExtra("mode");
+        Button newIdbtn = findViewById(R.id.btnNewID);
+        if(mode.equals("public"))
+            newIdbtn.setVisibility(INVISIBLE);
+        else
+            newIdbtn.setOnClickListener(v -> newID(profileName, sequenceNumber));
         try {
             loadData(profileName, sequenceNumber, mode);
         } catch (IOException | NoSuchPaddingException | NoSuchAlgorithmException | InvalidKeyException e) {
@@ -96,7 +102,12 @@ public class ProfileDetailView extends AppCompatActivity implements Observer<Out
             attributes_layout.addView(t);
         }
     }
-
+    private void newID(String profileName, int sequenceNumber) {
+        Intent intent = new Intent(this, IDeditor.class);
+        intent.putExtra("profileName", profileName);
+        intent.putExtra("sequenceNumber", sequenceNumber);
+        startActivity(intent);
+    }
     private void delete(String profileName, int sequenceNumber) {
         new YesNoDialog(this, "Profil wirklich löschen") {
             @Override

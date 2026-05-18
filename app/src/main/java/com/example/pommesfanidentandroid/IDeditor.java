@@ -1,8 +1,13 @@
 package com.example.pommesfanidentandroid;
 
 import android.app.Activity;
+import android.content.Intent;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.widget.EditText;
+import android.widget.TextView;
+import android.widget.Toast;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -12,13 +17,20 @@ import utils.Observer;
 import utils.OutputEvent;
 
 import javax.crypto.NoSuchPaddingException;
-import java.io.IOException;
+import java.io.*;
+import java.nio.file.Files;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.text.ParseException;
 
 public class IDeditor extends Activity implements Observer<OutputEvent> {
-
+    private byte[]personalimage;
+    private String personalImageUrl;
+    private String handSignatureUrl;
+    private byte[]handsignature;
+    private final int PERSONAL_IMAGE = 1;
+    private final int HAND_SIGNATURE = 2;
+    private int selectedImage = 0;
     @Override
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
@@ -28,31 +40,86 @@ public class IDeditor extends Activity implements Observer<OutputEvent> {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+        Intent intent = getIntent();
+        String profileName = intent.getStringExtra("profileName");
+        int sequenceNumber = intent.getIntExtra("sequenceNumber", 0);
+        findViewById(R.id.btnAddPersonalimage).setOnClickListener(v -> openFile(PERSONAL_IMAGE));
+        findViewById(R.id.btnAddHandSignature).setOnClickListener(v -> openFile(HAND_SIGNATURE));
         findViewById(R.id.btnSave).setOnClickListener(v -> {
-            EditText profileName = findViewById(R.id.profileName);
-            EditText sequenceNumber = findViewById(R.id.sequence_number);
-            EditText validFrom = findViewById(R.id.valid_from);
-            EditText validUntilForCreation = findViewById(R.id.valid_until_for_creation);
-            EditText validUntilForCreated = findViewById(R.id.valid_until_for_created);
-            EditText maxValidDays = findViewById(R.id.max_valid_days);
-            PublicProfile.ValidityPeriod period = new PublicProfile.ValidityPeriod(
-                    validFrom.getText().toString(),
-                    validUntilForCreation.getText().toString(),
-                    validUntilForCreated.getText().toString(),
-                    Integer.parseInt(maxValidDays.getText().toString()));
             try {
-                Controller.controller.generateKeyPair(
-                        profileName.getText().toString(),
-                        Integer.parseInt(sequenceNumber.getText().toString()),
-                        period, new String[]{});
-            } catch (NoSuchAlgorithmException | IOException | ParseException | NoSuchPaddingException |
-                     InvalidKeyException e) {
+                createID(profileName, sequenceNumber);
+            } catch (Exception e) {
                 throw new RuntimeException(e);
             }
-            finish();
         });
     }
 
+    private void createID(String profileName, int sequenceNumber) throws Exception {
+        EditText validUntil = findViewById(R.id.valid_until);
+        EditText firstName = findViewById(R.id.firstName);
+        EditText surname = findViewById(R.id.surname);
+        EditText birthdate = findViewById(R.id.birthdate);
+        EditText address = findViewById(R.id.address);
+        Controller.controller.generateID(profileName, sequenceNumber,
+                validUntil.getText().toString(),
+                firstName.getText().toString(),
+                surname.getText().toString(),
+                birthdate.getText().toString(),
+                address.getText().toString(),
+                new String[]{},
+                personalimage, AppGUIUtils.nameFromURL(personalImageUrl),
+                handsignature, AppGUIUtils.nameFromURL(handSignatureUrl));
+        finish();
+    }
+
+    private static final int FILE_SELECT_CODE = 0;
+    private void openFile(int mode) {
+        selectedImage = mode;
+        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+        intent.setType("*/*");
+        intent.addCategory(Intent.CATEGORY_OPENABLE);
+        try {
+            startActivityForResult(
+                    Intent.createChooser(intent, "Select a File to Upload"),
+                    FILE_SELECT_CODE);
+        } catch (android.content.ActivityNotFoundException ex) {
+            Toast.makeText(this, "Please install a File Manager.",
+                    Toast.LENGTH_SHORT).show();
+        }
+    }
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode) {
+            case FILE_SELECT_CODE:
+                if (resultCode == RESULT_OK) {
+                    Uri uri = data.getData();
+                    try {
+                        // https://stackoverflow.com/questions/44530136/read-failed-ebadf-bad-file-descriptor-while-reading-from-inputstream-nougat
+                        InputStream inputStream = getContentResolver().openInputStream(uri);
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                            assert inputStream != null;
+                            byte[]file = inputStream.readAllBytes();
+                            TextView textView;
+                            if(selectedImage == PERSONAL_IMAGE) {
+                                personalImageUrl = uri.toString();
+                                personalimage = file;
+                                textView = findViewById(R.id.personalImagePath);
+                                textView.setText(personalImageUrl);
+                            } else if(selectedImage == HAND_SIGNATURE) {
+                                handSignatureUrl = uri.toString();
+                                handsignature = file;
+                                textView = findViewById(R.id.handSignaturePath);
+                                textView.setText(handSignatureUrl);
+                            }
+                        }
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+                break;
+        }
+        super.onActivityResult(requestCode, resultCode, data);
+    }
     @Override
     public void update(OutputEvent outputEvent) {
 

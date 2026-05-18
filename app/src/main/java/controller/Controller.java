@@ -96,7 +96,9 @@ public class Controller extends Observable<OutputEvent> {
         return signature.sign();
     }
 
-    public void generateID(String publicProfileName, int sequence_number, String validUntil, String name, String surname, String birthdate, String address, String[] dynamicAttributeValues, File personalPicture, File handSignature) throws Exception {
+    public void generateID(String publicProfileName, int sequence_number, String validUntil, String name, String surname,
+                           String birthdate, String address, String[] dynamicAttributeValues, byte[]personalImage,
+                           String personalImageName, byte[] handSignature, String handSignatureName) throws Exception {
         if(!Utils.validateStringDate(validUntil)) {
             notifyObservers(new OutputEvent.InvalidDateEvent());
             return;
@@ -123,12 +125,10 @@ public class Controller extends Observable<OutputEvent> {
         }
 
         String ID_number = Utils.getAlphanumeric(8);
-        byte[] personalImage_b = Files.readAllBytes(personalPicture.toPath());
-        byte[] handSignature_b = Files.readAllBytes(handSignature.toPath());
 
         Personal_ID personalId = new Personal_ID(ID_number, privateProfile, today, validUntil, name, surname, birthdate,
-                address, dynamicAttributeValues, personalPicture.getName(), handSignature.getName());
-        personalId.blob = Optional.of(new Personal_ID.BLOB(personalImage_b, handSignature_b));
+                address, dynamicAttributeValues, personalImageName, handSignatureName);
+        personalId.blob = Optional.of(new Personal_ID.BLOB(personalImage, handSignature));
         //Create signature
         byte[] signature_b = sign_id(personalId, privateProfile);
         personalId.signature = Optional.of(signature_b);

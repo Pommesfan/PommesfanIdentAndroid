@@ -30,7 +30,7 @@
                 android:layout_height="38dp"
                 android:inputType="text"
                 android:ems="10"
-                android:id="@+id/vorname"/>
+                android:id="@+id/firstName"/>
         <TextView
                 android:text="@string/nachname"
                 android:layout_width="match_parent"
@@ -40,7 +40,7 @@
                 android:layout_height="38dp"
                 android:inputType="text"
                 android:ems="10"
-                android:id="@+id/nachname"/>
+                android:id="@+id/surname"/>
         <TextView
                 android:text="@string/geburtsdatum"
                 android:layout_width="match_parent"

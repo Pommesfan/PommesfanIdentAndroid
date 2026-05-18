@@ -20,6 +20,11 @@
             android:layout_height="wrap_content"
             android:text="@string/importierte_profile"/>
     <Button
+            android:id="@+id/createdIDs"
+            android:layout_width="310dp"
+            android:layout_height="wrap_content"
+            android:text="@string/erstellte_ausweise"/>
+    <Button
             android:id="@+id/importedPersonalIDs"
             android:layout_width="310dp"
             android:layout_height="wrap_content"

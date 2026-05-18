@@ -19,11 +19,11 @@ import java.util.Objects;
 
 import android.widget.LinearLayout.LayoutParams;
 
-public class ImportedPersonalIDs extends Activity implements Observer<OutputEvent> {
+public class PersonalIDsListView extends Activity implements Observer<OutputEvent> {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_imported_personal_ids);
+        setContentView(R.layout.activity_personal_ids_list_view);
         loadImportedIDs();
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.viewImportedPersonalID), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
@@ -32,9 +32,7 @@ public class ImportedPersonalIDs extends Activity implements Observer<OutputEven
         });
 
         Button btnImportID = findViewById(R.id.addButton);
-        btnImportID.setOnClickListener(v -> {
-            openFile();
-        });
+        btnImportID.setOnClickListener(v -> openFile());
 
         Controller.controller.addObserver(this);
     }
@@ -58,7 +56,17 @@ public class ImportedPersonalIDs extends Activity implements Observer<OutputEven
     private void loadImportedIDs() {
         LinearLayout listView = findViewById(R.id.listViewIDs);
         listView.removeAllViews();
-        File appDir = new File(Controller.controller.appDataLocation + Controller.strImportedPersonalIDs);
+        Intent intent = getIntent();
+        String mode = intent.getStringExtra("mode");
+        String url;
+        if(mode.equals("created"))
+            url = Controller.controller.appDataLocation + Controller.strCreatedPersonalIDs;
+        else if(mode.equals("imported"))
+            url = Controller.controller.appDataLocation + Controller.strImportedPersonalIDs;
+        else
+            throw new IllegalArgumentException("mode '" + mode + "' not valid");
+
+        File appDir = new File(url);
         if(!appDir.exists()) {
             return;
         }
@@ -69,13 +77,13 @@ public class ImportedPersonalIDs extends Activity implements Observer<OutputEven
             b.setText(f.getName());
             b.setBackgroundColor(Color.GREEN);
             listView.addView(b);
-            b.setOnClickListener(v -> startDetailView(f.getName()));
+            b.setOnClickListener(v -> startDetailView(f.getName(), mode));
         }
     }
 
-    private void startDetailView(String idNumber) {
+    private void startDetailView(String idNumber, String mode) {
         Intent intent = new Intent(this, PersonalIDdetailView.class);
-        intent.putExtra("mode", "saved");
+        intent.putExtra("mode", mode);
         intent.putExtra("idNumber", idNumber);
         startActivity(intent);
     }
@@ -93,7 +101,7 @@ public class ImportedPersonalIDs extends Activity implements Observer<OutputEven
                             @Override
                             public void onOk(String crypto_password) throws Exception {
                                 Controller.controller.importPersonalID(inputStream, crypto_password);
-                                ImportedPersonalIDs.this.recreate();
+                                PersonalIDsListView.this.recreate();
                             }
 
                             @Override

@@ -36,8 +36,14 @@ public class MainMenu extends Activity implements Observer<OutputEvent> {
             intent.putExtra("mode", "public");
             startActivity(intent);
         });
+        findViewById(R.id.createdIDs).setOnClickListener(v -> {
+            Intent intent = new Intent(this, PersonalIDsListView.class);
+            intent.putExtra("mode", "created");
+            startActivity(intent);
+        });
         findViewById(R.id.importedPersonalIDs).setOnClickListener(v -> {
-            Intent intent = new Intent(this, ImportedPersonalIDs.class);
+            Intent intent = new Intent(this, PersonalIDsListView.class);
+            intent.putExtra("mode", "imported");
             startActivity(intent);
         });
         findViewById(R.id.checkPersonalID).setOnClickListener(v -> {

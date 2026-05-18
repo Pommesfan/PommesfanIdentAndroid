@@ -59,4 +59,9 @@ public class AppGUIUtils {
         }
         return "";
     }
+
+    public static String nameFromURL(String url) {
+        String[]splittedUrl = url.split("/");
+        return splittedUrl[splittedUrl.length - 1];
+    }
 }

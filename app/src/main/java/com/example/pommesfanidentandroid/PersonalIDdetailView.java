@@ -17,6 +17,7 @@ import utils.OutputEvent;
 import java.io.ByteArrayInputStream;
 import android.widget.LinearLayout.LayoutParams;
 
+import static controller.Controller.LOAD_FROM_CREATED;
 import static controller.Controller.LOAD_FROM_IMPORTED;
 
 public class PersonalIDdetailView extends AppCompatActivity implements Observer<OutputEvent> {
@@ -45,7 +46,10 @@ public class PersonalIDdetailView extends AppCompatActivity implements Observer<
         //load personal id
         Personal_ID personalId;
         assert mode != null;
-        if(mode.equals("saved")) {
+        if(mode.equals("created")) {
+            String idNumber = intent.getStringExtra("idNumber");
+            personalId = Personal_ID.loadInternal(LOAD_FROM_CREATED, idNumber, true);
+        } else if(mode.equals("imported")) {
             String idNumber = intent.getStringExtra("idNumber");
             personalId = Personal_ID.loadInternal(LOAD_FROM_IMPORTED, idNumber, true);
         } else if(mode.equals("received")) {

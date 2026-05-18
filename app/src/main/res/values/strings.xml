@@ -40,4 +40,5 @@
     <string name="name">Name</string>
     <string name="passbild_hinzuf_gen">Passbild hinzufügen</string>
     <string name="h_ndische_unterschrift_hinzuf_gen">Händische unterschrift hinzufügen</string>
+    <string name="erstellte_ausweise">Erstellte Ausweise</string>
 </resources>

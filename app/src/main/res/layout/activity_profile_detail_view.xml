@@ -36,6 +36,14 @@
                                 android:text="@string/neuer_ausweis"
                                 android:id="@+id/btnNewID" />
         </LinearLayout>
+        <Button
+                android:textSize="20sp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="#8BC34A"
+                android:textStyle="bold|italic"
+                android:text="@string/profil_speichern"
+                android:id="@+id/btnExportProfile" />
         <TextView
                 android:textSize="20sp"
                 android:layout_width="wrap_content"

@@ -41,4 +41,5 @@
     <string name="passbild_hinzuf_gen">Passbild hinzufügen</string>
     <string name="h_ndische_unterschrift_hinzuf_gen">Händische unterschrift hinzufügen</string>
     <string name="erstellte_ausweise">Erstellte Ausweise</string>
+    <string name="profil_speichern">Profil speichern</string>
 </resources>

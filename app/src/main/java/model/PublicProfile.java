@@ -86,12 +86,11 @@ public class PublicProfile {
         return false;
     }
 
-    public void saveExternal(File destination, String password) throws IOException, NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException {
-        FileOutputStream fos = new FileOutputStream(destination);
-        fos.write(PROGRAM_WATERMARK);
-        fos.write(FILE_TYPE_PUBLIC_PROFILE);
+    public void saveExternal(OutputStream os, String password) throws IOException, NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException {
+        os.write(PROGRAM_WATERMARK);
+        os.write(FILE_TYPE_PUBLIC_PROFILE);
         byte[]password_hash = Utils.passwordHash(password);
-        AES_OutputStream aesos = AES_OutputStream.from_ecb(fos, AES_BUFFER_SIZE, password_hash);
+        AES_OutputStream aesos = AES_OutputStream.from_ecb(os, AES_BUFFER_SIZE, password_hash);
         Utils.SliceWriter sliceWriter = new Utils.SliceWriter(aesos);
         aesos.write(password_hash);
         toSliceWriter(sliceWriter);

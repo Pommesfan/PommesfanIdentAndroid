@@ -3,6 +3,7 @@ package com.example.pommesfanidentandroid;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.net.Uri;
 import android.os.Bundle;
 import android.widget.*;
 import androidx.appcompat.app.AppCompatActivity;
@@ -14,6 +15,7 @@ import model.PublicProfile;
 import utils.Observer;
 import utils.OutputEvent;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import android.widget.LinearLayout.LayoutParams;
@@ -22,7 +24,8 @@ import javax.crypto.NoSuchPaddingException;
 import static android.view.View.INVISIBLE;
 
 public class ProfileDetailView extends AppCompatActivity implements Observer<OutputEvent> {
-
+    private String profileName;
+    private int sequenceNumber = -1;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -33,14 +36,18 @@ public class ProfileDetailView extends AppCompatActivity implements Observer<Out
             return insets;
         });
         Intent intent = getIntent();
-        String profileName = intent.getStringExtra("profileName");
-        int sequenceNumber = intent.getIntExtra("sequenceNumber", -1);
+        profileName = intent.getStringExtra("profileName");
+        sequenceNumber = intent.getIntExtra("sequenceNumber", -1);
         String mode = intent.getStringExtra("mode");
         Button newIdbtn = findViewById(R.id.btnNewID);
-        if(mode.equals("public"))
-            newIdbtn.setVisibility(INVISIBLE);
-        else
+        Button exportProfile = findViewById(R.id.btnExportProfile);
+        if(mode.equals("public")) {
+            newIdbtn.setEnabled(false);
+            exportProfile.setEnabled(false);
+        } else {
             newIdbtn.setOnClickListener(v -> newID(profileName, sequenceNumber));
+            exportProfile.setOnClickListener(v -> saveFile());
+        }
         try {
             loadData(profileName, sequenceNumber, mode);
         } catch (IOException | NoSuchPaddingException | NoSuchAlgorithmException | InvalidKeyException e) {
@@ -107,6 +114,47 @@ public class ProfileDetailView extends AppCompatActivity implements Observer<Out
         intent.putExtra("profileName", profileName);
         intent.putExtra("sequenceNumber", sequenceNumber);
         startActivity(intent);
+    }
+    private static final int SAVE_FILE_CODE = 1;
+    private void saveFile() {
+        Intent intent = new Intent(Intent.ACTION_CREATE_DOCUMENT);
+        intent.setType("*/*");
+        intent.addCategory(Intent.CATEGORY_OPENABLE);
+        intent.putExtra(Intent.EXTRA_TITLE, profileName + ":" + sequenceNumber);
+        try {
+            startActivityForResult(
+                    Intent.createChooser(intent, "Select a File to Upload"),
+                    1);
+        } catch (android.content.ActivityNotFoundException ex) {
+            Toast.makeText(this, "Please install a File Manager.",
+                    Toast.LENGTH_SHORT).show();
+        }
+    }
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode) {
+            case SAVE_FILE_CODE:
+                if (resultCode == RESULT_OK) {
+                    Uri uri = data.getData();
+                    try {
+                        // https://stackoverflow.com/questions/44530136/read-failed-ebadf-bad-file-descriptor-while-reading-from-inputstream-nougat
+                        OutputStream outputStream = getContentResolver().openOutputStream(uri);
+                        new PasswordDialog(this, "Krypto-Passwort") {
+                            @Override
+                            public void onOk(String crypto_password) throws Exception {
+                                Controller.controller.exportPublicProfile(profileName, sequenceNumber, outputStream, crypto_password);
+                            }
+                            @Override
+                            public void onCancel() {
+                            }
+                        };
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+                break;
+        }
+        super.onActivityResult(requestCode, resultCode, data);
     }
     private void delete(String profileName, int sequenceNumber) {
         new YesNoDialog(this, "Profil wirklich löschen") {

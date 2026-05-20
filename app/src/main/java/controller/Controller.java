@@ -169,14 +169,14 @@ public class Controller extends Observable<OutputEvent> {
         }
     }
 
-    public void exportPublicProfile(String profileName, int sequence_number, File destination, String password) throws IOException, NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException {
+    public void exportPublicProfile(String profileName, int sequence_number, OutputStream os, String password) throws IOException, NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException {
         PrivateProfile privateProfile = PrivateProfile.fromInternalFile(
                 appDataLocation + strPrivateProfiles, profileName, sequence_number);
         if(privateProfile == null)
             return;
 
         PublicProfile publicProfile = privateProfile.toPublic();
-        publicProfile.saveExternal(destination, password);
+        publicProfile.saveExternal(os, password);
         notifyObservers(new OutputEvent.DummyEvent());
     }
 

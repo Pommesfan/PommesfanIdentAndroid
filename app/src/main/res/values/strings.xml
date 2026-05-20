@@ -42,4 +42,5 @@
     <string name="h_ndische_unterschrift_hinzuf_gen">Händische unterschrift hinzufügen</string>
     <string name="erstellte_ausweise">Erstellte Ausweise</string>
     <string name="profil_speichern">Profil speichern</string>
+    <string name="exportieren">Exportieren</string>
 </resources>

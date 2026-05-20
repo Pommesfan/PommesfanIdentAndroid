@@ -21,8 +21,6 @@ import java.security.NoSuchAlgorithmException;
 import android.widget.LinearLayout.LayoutParams;
 import javax.crypto.NoSuchPaddingException;
 
-import static android.view.View.INVISIBLE;
-
 public class ProfileDetailView extends AppCompatActivity implements Observer<OutputEvent> {
     private String profileName;
     private int sequenceNumber = -1;

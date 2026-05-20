@@ -222,17 +222,16 @@ public class Controller extends Observable<OutputEvent> {
         }
     }
 
-    public void exportPersonalID(String personalID_s, File destination, String password) throws Exception {
+    public void exportPersonalID(String personalID_s, OutputStream os, String password) throws Exception {
         Personal_ID personalId = Personal_ID.loadInternal(LOAD_FROM_CREATED, personalID_s.toUpperCase(), true);
         if (personalId == null) {
             return;
         }
 
-        FileOutputStream fos = new FileOutputStream(destination);
-        fos.write(PROGRAM_WATERMARK);
-        fos.write(FILE_TYPE_ID);
+        os.write(PROGRAM_WATERMARK);
+        os.write(FILE_TYPE_ID);
         byte[]password_hash = Utils.passwordHash(password);
-        AES_OutputStream aesos = AES_OutputStream.from_ecb(fos, AES_BUFFER_SIZE, password_hash);
+        AES_OutputStream aesos = AES_OutputStream.from_ecb(os, AES_BUFFER_SIZE, password_hash);
         Utils.SliceWriter sliceWriter = new Utils.SliceWriter(aesos);
         aesos.write(password_hash);
         personalId.toSliceWriter(sliceWriter, true);

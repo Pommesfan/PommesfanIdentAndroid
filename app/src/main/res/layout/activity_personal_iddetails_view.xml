@@ -39,6 +39,14 @@
                         android:text="@string/l_schen"
                         android:id="@+id/btnDelete"/>
             </LinearLayout>
+            <Button
+                    android:textSize="20sp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="#FF0840"
+                    android:textStyle="bold|italic"
+                    android:text="@string/exportieren"
+                    android:id="@+id/btnExportID"/>
             <TextView
                     android:textSize="20sp"
                     android:layout_width="wrap_content"

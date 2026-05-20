@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.BitmapDrawable;
+import android.net.Uri;
 import android.os.Bundle;
 import android.widget.*;
 import androidx.appcompat.app.AppCompatActivity;
@@ -15,13 +16,15 @@ import model.Personal_ID;
 import utils.Observer;
 import utils.OutputEvent;
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 import android.widget.LinearLayout.LayoutParams;
 
 import static controller.Controller.LOAD_FROM_CREATED;
 import static controller.Controller.LOAD_FROM_IMPORTED;
 
 public class PersonalIDdetailView extends AppCompatActivity implements Observer<OutputEvent> {
-
+    private String idNumber;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -31,18 +34,24 @@ public class PersonalIDdetailView extends AppCompatActivity implements Observer<
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+        Intent intent = getIntent();
+        String mode = intent.getStringExtra("mode");
+
+        Button exportID = findViewById(R.id.btnExportID);
+        if(mode.equals("created"))
+            exportID.setOnClickListener(v -> saveFile());
+        else
+            exportID.setEnabled(false);
 
         try {
-            loadData();
+            loadData(mode, intent);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
         Controller.controller.addObserver(this);
     }
 
-    private void loadData() throws Exception {
-        Intent intent = getIntent();
-        String mode = intent.getStringExtra("mode");
+    private void loadData(String mode, Intent intent) throws Exception {
         //load personal id
         Personal_ID personalId;
         assert mode != null;
@@ -74,7 +83,8 @@ public class PersonalIDdetailView extends AppCompatActivity implements Observer<
         ImageView personalImage = findViewById(R.id.viewPersonalImage);
         ImageView handSignature = findViewById(R.id.viewHandSignature);
 
-        viewIDnumber.setText(personalId.ID_number);
+        idNumber = personalId.ID_number;
+        viewIDnumber.setText(idNumber);
         viewProfileName.setText(personalId.publicProfile.name);
         viewProfileSequenceNumber.setText(String.valueOf(personalId.publicProfile.sequence_number));
         viewCreated.setText(personalId.created);
@@ -129,7 +139,47 @@ public class PersonalIDdetailView extends AppCompatActivity implements Observer<
     private void handIn(String id_number) {
         getHandInDialog(id_number);
     }
-
+    private static final int SAVE_FILE_CODE = 1;
+    private void saveFile() {
+        Intent intent = new Intent(Intent.ACTION_CREATE_DOCUMENT);
+        intent.setType("*/*");
+        intent.addCategory(Intent.CATEGORY_OPENABLE);
+        intent.putExtra(Intent.EXTRA_TITLE, idNumber);
+        try {
+            startActivityForResult(
+                    Intent.createChooser(intent, "Select a File to Upload"),
+                    1);
+        } catch (android.content.ActivityNotFoundException ex) {
+            Toast.makeText(this, "Please install a File Manager.",
+                    Toast.LENGTH_SHORT).show();
+        }
+    }
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode) {
+            case SAVE_FILE_CODE:
+                if (resultCode == RESULT_OK) {
+                    Uri uri = data.getData();
+                    try {
+                        // https://stackoverflow.com/questions/44530136/read-failed-ebadf-bad-file-descriptor-while-reading-from-inputstream-nougat
+                        OutputStream outputStream = getContentResolver().openOutputStream(uri);
+                        new PasswordDialog(this, "Krypto-Passwort") {
+                            @Override
+                            public void onOk(String crypto_password) throws Exception {
+                                Controller.controller.exportPersonalID(idNumber, outputStream, crypto_password);
+                            }
+                            @Override
+                            public void onCancel() {
+                            }
+                        };
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+                break;
+        }
+        super.onActivityResult(requestCode, resultCode, data);
+    }
     private void delete(String id_number) {
         new YesNoDialog(this, "Ausweis wirklich löschen?") {
             @Override

@@ -25,6 +25,7 @@ import static controller.Controller.LOAD_FROM_IMPORTED;
 
 public class PersonalIDdetailView extends AppCompatActivity implements Observer<OutputEvent> {
     private String idNumber;
+    String mode;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -35,7 +36,7 @@ public class PersonalIDdetailView extends AppCompatActivity implements Observer<
             return insets;
         });
         Intent intent = getIntent();
-        String mode = intent.getStringExtra("mode");
+        mode = intent.getStringExtra("mode");
 
         Button exportID = findViewById(R.id.btnExportID);
         if(mode.equals("created"))
@@ -185,7 +186,10 @@ public class PersonalIDdetailView extends AppCompatActivity implements Observer<
             @Override
             public void onOk() {
                 try {
-                    Controller.controller.deleteID(id_number);
+                    if(mode.equals("created"))
+                        Controller.controller.deleteID(id_number, LOAD_FROM_CREATED);
+                    else if(mode.equals("imported"))
+                        Controller.controller.deleteID(id_number, LOAD_FROM_IMPORTED);
                     finish();
                 } catch (Exception e) {
                     throw new RuntimeException(e);

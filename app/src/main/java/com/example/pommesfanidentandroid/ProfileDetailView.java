@@ -27,6 +27,7 @@ public class ProfileDetailView extends AppCompatActivity implements Observer<Out
     private int saveMode = -1;
     private final int SAVE_PRIVATE = 1;
     private final int SAVE_PUBLIC = 2;
+    private String mode;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -39,7 +40,7 @@ public class ProfileDetailView extends AppCompatActivity implements Observer<Out
         Intent intent = getIntent();
         profileName = intent.getStringExtra("profileName");
         sequenceNumber = intent.getIntExtra("sequenceNumber", -1);
-        String mode = intent.getStringExtra("mode");
+        mode = intent.getStringExtra("mode");
         Button newIdbtn = findViewById(R.id.btnNewID);
         Button exportPrivateProfile = findViewById(R.id.btnExportPrivateProfile);
         Button exportPublicProfile = findViewById(R.id.btnExportPublicProfile);
@@ -53,7 +54,7 @@ public class ProfileDetailView extends AppCompatActivity implements Observer<Out
             exportPublicProfile.setOnClickListener(v -> saveFile(SAVE_PUBLIC));
         }
         try {
-            loadData(profileName, sequenceNumber, mode);
+            loadData(profileName, sequenceNumber);
         } catch (IOException | NoSuchPaddingException | NoSuchAlgorithmException | InvalidKeyException e) {
             throw new RuntimeException(e);
         }
@@ -61,7 +62,7 @@ public class ProfileDetailView extends AppCompatActivity implements Observer<Out
         Controller.controller.addObserver(this);
     }
 
-    private void loadData(String profileName, int sequenceNumber, String mode) throws IOException, NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException {
+    private void loadData(String profileName, int sequenceNumber) throws IOException, NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException {
         Controller controller = Controller.controller;
         String url;
         if(mode.equals("private"))
@@ -169,7 +170,11 @@ public class ProfileDetailView extends AppCompatActivity implements Observer<Out
             @Override
             public void onOk() {
                 try {
-                    Controller.controller.deletePublicProfile(profileName, sequenceNumber);
+                    if(mode.equals("private"))
+                        Controller.controller.deleteProfile(profileName, sequenceNumber, Controller.LOAD_FROM_CREATED);
+                    else if (mode.equals("public")) {
+                        Controller.controller.deleteProfile(profileName, sequenceNumber, Controller.LOAD_FROM_IMPORTED);
+                    }
                     finish();
                 } catch (Exception e) {
                     throw new RuntimeException(e);

@@ -77,6 +77,9 @@ public class PrivateProfile extends PublicProfile {
         sliceWriter.write(privateKey);
         aesos.close();
     }
+    public static boolean isIDaggregated(String profileName, int sequenceNumber) throws Exception {
+        return isIDaggregated(profileName, sequenceNumber, LOAD_FROM_CREATED, strCreatedPersonalIDs);
+    }
 
     public PublicProfile toPublic() {
         return new PublicProfile(name, sequence_number, created, validityPeriod, dynamicAttributes, publicKey);

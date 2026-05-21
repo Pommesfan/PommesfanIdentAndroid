@@ -274,23 +274,42 @@ public class Controller extends Observable<OutputEvent> {
         checkIDrunnerRes = null;
         return res;
     }
-
-    public void deletePublicProfile(String name, int sequenceNumber) throws Exception {
-        if(PublicProfile.isIDaggregated(name, sequenceNumber))
+    public void deleteProfile(String name, int sequenceNumber, int mode) throws Exception {
+        boolean isAggregated;
+        String url;
+        if(mode == LOAD_FROM_CREATED) {
+            isAggregated = PrivateProfile.isIDaggregated(name, sequenceNumber);
+            url = strPrivateProfiles;
+        } else if (mode == LOAD_FROM_IMPORTED) {
+            isAggregated = PublicProfile.isIDaggregated(name, sequenceNumber);
+            url = strPublicProfiles;
+        } else
+            throw new IllegalArgumentException("unvalid mode: " + mode);
+        if(isAggregated)
             notifyObservers(new OutputEvent.IDaggregatedEvent());
         else {
-            Files.delete(Paths.get(appDataLocation + strPublicProfiles + name + "/" + sequenceNumber));
+            Files.delete(Paths.get(appDataLocation + url + name + "/" + sequenceNumber));
             notifyObservers(new OutputEvent.DummyEvent());
         }
     }
 
-    public void deleteID(String idNumber) throws Exception {
-        Personal_ID id = Personal_ID.loadInternal(LOAD_FROM_IMPORTED, idNumber, true);
+    public void deleteID(String idNumber, int mode) throws Exception {
+        String urlToDelete;
+        String urlOpposite;
+        if(mode == LOAD_FROM_CREATED) {
+            urlToDelete = strCreatedPersonalIDs;
+            urlOpposite = strImportedPersonalIDs;
+        } else if (mode == LOAD_FROM_IMPORTED) {
+            urlToDelete = strImportedPersonalIDs;
+            urlOpposite = strCreatedPersonalIDs;
+        } else
+            throw new IllegalArgumentException("unvalid mode: " + mode);
+        Personal_ID id = Personal_ID.loadInternal(mode, idNumber, true);
         if(id == null)
             return;
 
         // if id is present in created, don't delete relation
-        if(!Files.exists(Paths.get(appDataLocation + strCreatedPersonalIDs + idNumber))) {
+        if(!Files.exists(Paths.get(appDataLocation + urlOpposite + idNumber))) {
             AttachmentRelation relationPersonalImage = AttachmentRelation.getRelation(ATTACHMENT_PERSONAL_IMAGE);
             String personalImageFile = relationPersonalImage.removeID(id.ID_number);
             if(!relationPersonalImage.hasImage(personalImageFile)) {
@@ -306,7 +325,7 @@ public class Controller extends Observable<OutputEvent> {
             relationHandSignature.save();
         }
 
-        Files.delete(Paths.get(appDataLocation + strImportedPersonalIDs + idNumber));
+        Files.delete(Paths.get(appDataLocation + urlToDelete + idNumber));
         notifyObservers(new OutputEvent.DummyEvent());
     }
 

@@ -1,6 +1,5 @@
 package model;
 
-import controller.Controller;
 import utils.AES_InputStream;
 import utils.AES_OutputStream;
 import utils.OutputEvent;
@@ -86,9 +85,9 @@ public class PublicProfile {
         return false;
     }
 
-    public void saveExternal(OutputStream os, String password) throws IOException, NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException {
+    public void saveExternal(OutputStream os, String password, int type) throws IOException, NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException {
         os.write(PROGRAM_WATERMARK);
-        os.write(FILE_TYPE_PUBLIC_PROFILE);
+        os.write(type);
         byte[]password_hash = Utils.passwordHash(password);
         AES_OutputStream aesos = AES_OutputStream.from_ecb(os, AES_BUFFER_SIZE, password_hash);
         Utils.SliceWriter sliceWriter = new Utils.SliceWriter(aesos);

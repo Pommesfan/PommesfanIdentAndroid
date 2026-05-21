@@ -24,6 +24,9 @@ import javax.crypto.NoSuchPaddingException;
 public class ProfileDetailView extends AppCompatActivity implements Observer<OutputEvent> {
     private String profileName;
     private int sequenceNumber = -1;
+    private int saveMode = -1;
+    private final int SAVE_PRIVATE = 1;
+    private final int SAVE_PUBLIC = 2;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -38,13 +41,16 @@ public class ProfileDetailView extends AppCompatActivity implements Observer<Out
         sequenceNumber = intent.getIntExtra("sequenceNumber", -1);
         String mode = intent.getStringExtra("mode");
         Button newIdbtn = findViewById(R.id.btnNewID);
-        Button exportProfile = findViewById(R.id.btnExportProfile);
+        Button exportPrivateProfile = findViewById(R.id.btnExportPrivateProfile);
+        Button exportPublicProfile = findViewById(R.id.btnExportPublicProfile);
         if(mode.equals("public")) {
             newIdbtn.setEnabled(false);
-            exportProfile.setEnabled(false);
+            exportPrivateProfile.setEnabled(false);
+            exportPublicProfile.setEnabled(false);
         } else {
             newIdbtn.setOnClickListener(v -> newID(profileName, sequenceNumber));
-            exportProfile.setOnClickListener(v -> saveFile());
+            exportPrivateProfile.setOnClickListener(v -> saveFile(SAVE_PRIVATE));
+            exportPublicProfile.setOnClickListener(v -> saveFile(SAVE_PUBLIC));
         }
         try {
             loadData(profileName, sequenceNumber, mode);
@@ -114,7 +120,8 @@ public class ProfileDetailView extends AppCompatActivity implements Observer<Out
         startActivity(intent);
     }
     private static final int SAVE_FILE_CODE = 1;
-    private void saveFile() {
+    private void saveFile(int mode) {
+        saveMode = mode;
         Intent intent = new Intent(Intent.ACTION_CREATE_DOCUMENT);
         intent.setType("*/*");
         intent.addCategory(Intent.CATEGORY_OPENABLE);
@@ -140,7 +147,10 @@ public class ProfileDetailView extends AppCompatActivity implements Observer<Out
                         new PasswordDialog(this, "Krypto-Passwort") {
                             @Override
                             public void onOk(String crypto_password) throws Exception {
-                                Controller.controller.exportPublicProfile(profileName, sequenceNumber, outputStream, crypto_password);
+                                if(saveMode == SAVE_PRIVATE)
+                                    Controller.controller.exportPrivateProfile(profileName, sequenceNumber, outputStream, crypto_password);
+                                else if(saveMode == SAVE_PUBLIC)
+                                    Controller.controller.exportPublicProfile(profileName, sequenceNumber, outputStream, crypto_password);
                             }
                             @Override
                             public void onCancel() {

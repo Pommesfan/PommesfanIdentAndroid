@@ -14,10 +14,10 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal">
         <Button
-                android:id="@+id/addButton"
+                android:id="@+id/btnImport"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/hinzuf_gen" />
+                android:text="@string/importieren" />
         <Button
                 android:id="@+id/newButton"
                 android:layout_width="wrap_content"

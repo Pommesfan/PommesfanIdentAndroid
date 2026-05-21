@@ -37,7 +37,7 @@ public class ProfilesListView extends Activity implements Observer<OutputEvent> 
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
-        findViewById(R.id.addButton).setOnClickListener(v -> openFile());
+        findViewById(R.id.btnImport).setOnClickListener(v -> openFile());
         Button newButton = findViewById(R.id.newButton);
         if(mode.equals("public"))
             newButton.setVisibility(INVISIBLE);
@@ -116,7 +116,10 @@ public class ProfilesListView extends Activity implements Observer<OutputEvent> 
                         new PasswordDialog(this, "Krypto-Passwort") {
                             @Override
                             public void onOk(String crypto_password) throws NoSuchPaddingException, IOException, NoSuchAlgorithmException, InvalidKeyException {
-                                Controller.controller.importPublicProfile(inputStream, crypto_password);
+                                if(mode.equals("private"))
+                                    Controller.controller.importPrivateProfile(inputStream, crypto_password);
+                                else if(mode.equals("public"))
+                                    Controller.controller.importPublicProfile(inputStream, crypto_password);
                                 ProfilesListView.this.recreate();
                             }
 

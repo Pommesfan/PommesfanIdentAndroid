@@ -20,19 +20,24 @@ import java.util.Objects;
 import android.widget.LinearLayout.LayoutParams;
 
 public class PersonalIDsListView extends Activity implements Observer<OutputEvent> {
+    private String mode;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_personal_ids_list_view);
+        Intent intent = getIntent();
+        mode = intent.getStringExtra("mode");
         loadImportedIDs();
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.viewImportedPersonalID), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
-
-        Button btnImportID = findViewById(R.id.addButton);
-        btnImportID.setOnClickListener(v -> openFile());
+        Button btnImportID = findViewById(R.id.btnImport);
+        if(mode.equals("imported"))
+            btnImportID.setOnClickListener(v -> openFile());
+        else
+            btnImportID.setEnabled(false);
 
         Controller.controller.addObserver(this);
     }
@@ -56,8 +61,6 @@ public class PersonalIDsListView extends Activity implements Observer<OutputEven
     private void loadImportedIDs() {
         LinearLayout listView = findViewById(R.id.listViewIDs);
         listView.removeAllViews();
-        Intent intent = getIntent();
-        String mode = intent.getStringExtra("mode");
         String url;
         if(mode.equals("created"))
             url = Controller.controller.appDataLocation + Controller.strCreatedPersonalIDs;

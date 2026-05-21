@@ -4,7 +4,6 @@
     <string name="importierte_profile">Importierte Profile</string>
     <string name="importierte_ausweise">Importierte Ausweise</string>
     <string name="eigene_profile">Eigene Profile</string>
-    <string name="hinzuf_gen">Hinzufügen</string>
     <string name="neues_ffentliches_profil">Neues Öffentliches Profil</string>
     <string name="ausweisnummer">Ausweisnummer</string>
     <string name="profilname">Profilname</string>
@@ -41,6 +40,8 @@
     <string name="passbild_hinzuf_gen">Passbild hinzufügen</string>
     <string name="h_ndische_unterschrift_hinzuf_gen">Händische unterschrift hinzufügen</string>
     <string name="erstellte_ausweise">Erstellte Ausweise</string>
-    <string name="profil_speichern">Profil speichern</string>
     <string name="exportieren">Exportieren</string>
+    <string name="privates_profil_exportieren">Privates Profil exportieren</string>
+    <string name="ffentliches_profil_exportieren">Öffentliches Profil exportieren</string>
+    <string name="importieren">Importieren</string>
 </resources>

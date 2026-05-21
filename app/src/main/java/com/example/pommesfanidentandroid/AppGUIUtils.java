@@ -2,8 +2,7 @@ package com.example.pommesfanidentandroid;
 
 import utils.OutputEvent;
 
-import static controller.Controller.FILE_TYPE_ID;
-import static controller.Controller.FILE_TYPE_PUBLIC_PROFILE;
+import static controller.Controller.*;
 
 public class AppGUIUtils {
     public static String handleMsg(OutputEvent e) {
@@ -46,8 +45,10 @@ public class AppGUIUtils {
         } else if (e instanceof OutputEvent.WrongFileTypeEvent) {
             OutputEvent.WrongFileTypeEvent evt = (OutputEvent.WrongFileTypeEvent) e;
             String msg = "Datei beinhaltet ";
-            if(evt.type == FILE_TYPE_PUBLIC_PROFILE)
-                msg += "ein Profil\n";
+            if(evt.type == FILE_TYPE_PRIVATE_PROFILE)
+                msg += "ein privates Profil\n";
+            else if(evt.type == FILE_TYPE_PUBLIC_PROFILE)
+                msg += "ein öffentliches Profil\n";
             else if (evt.type == FILE_TYPE_ID) {
                 msg += "einen Ausweis\n";
             } else {

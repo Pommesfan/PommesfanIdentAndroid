@@ -138,7 +138,7 @@
                 android:textSize="20sp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="@color/purple_700"
+                android:textColor="#FF5722"
                 android:textStyle="bold|italic"
                 android:text="@string/dynamische_attribute"/>
     </LinearLayout>

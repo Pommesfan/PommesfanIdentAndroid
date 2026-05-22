@@ -99,6 +99,16 @@ public class PersonalIDdetailView extends AppCompatActivity implements Observer<
         //set dynamic attributes
         String[]dynamic_attributes_names = personalId.publicProfile.dynamicAttributes;
         LinearLayout attributes_layout = findViewById(R.id.personal_id_attributes);
+        if(dynamic_attributes_names.length == 0) {
+            LayoutParams lparams = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
+            TextView t = new TextView(this);
+            t.setText("Keine");
+            t.setTextSize(20);
+            t.setTextColor(Color.parseColor("red"));
+            t.setTypeface(t.getTypeface(), Typeface.BOLD_ITALIC);
+            t.setLayoutParams(lparams);
+            attributes_layout.addView(t);
+        }
         for (int i = 0; i < dynamic_attributes_names.length; i++) {
             LayoutParams lparams1 = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
             LayoutParams lparams2 = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
@@ -106,7 +116,7 @@ public class PersonalIDdetailView extends AppCompatActivity implements Observer<
             TextView t1 = new TextView(this);
             t1.setText(dynamic_attributes_names[i]);
             t1.setTextSize(20);
-            t1.setTextColor(Color.parseColor("magenta"));
+            t1.setTextColor(Color.parseColor("green"));
             t1.setTypeface(t1.getTypeface(), Typeface.BOLD);
             t1.setLayoutParams(lparams1);
             attributes_layout.addView(t1);

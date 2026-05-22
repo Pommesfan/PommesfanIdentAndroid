@@ -2,26 +2,23 @@ package com.example.pommesfanidentandroid;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import controller.Controller;
-import model.PublicProfile;
 import utils.Observer;
 import utils.OutputEvent;
-
-import javax.crypto.NoSuchPaddingException;
 import java.io.*;
-import java.nio.file.Files;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
-import java.text.ParseException;
+import java.util.Objects;
 
 public class IDeditor extends Activity implements Observer<OutputEvent> {
     private byte[]personalimage;
@@ -43,6 +40,7 @@ public class IDeditor extends Activity implements Observer<OutputEvent> {
         Intent intent = getIntent();
         String profileName = intent.getStringExtra("profileName");
         int sequenceNumber = intent.getIntExtra("sequenceNumber", 0);
+        setDynamicAttributes(Objects.requireNonNull(intent.getStringArrayExtra("dynamicAttributes")));
         findViewById(R.id.btnAddPersonalimage).setOnClickListener(v -> openFile(PERSONAL_IMAGE));
         findViewById(R.id.btnAddHandSignature).setOnClickListener(v -> openFile(HAND_SIGNATURE));
         findViewById(R.id.btnSave).setOnClickListener(v -> {
@@ -54,19 +52,56 @@ public class IDeditor extends Activity implements Observer<OutputEvent> {
         });
     }
 
+    private void setDynamicAttributes(String[] dynamicAttributes) {
+        LinearLayout layout = findViewById(R.id.dynamicAttributes);
+        if(dynamicAttributes.length == 0) {
+            LinearLayout.LayoutParams lparams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
+            TextView t = new TextView(this);
+            t.setText("Keine");
+            t.setTextSize(20);
+            t.setTextColor(Color.parseColor("red"));
+            t.setTypeface(t.getTypeface(), Typeface.BOLD_ITALIC);
+            t.setLayoutParams(lparams);
+            layout.addView(t);
+        }
+        for (int i = 0; i < dynamicAttributes.length; i++) {
+            // add label for dynamic attribute
+            LinearLayout.LayoutParams lparams1 = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
+            String dynamicAttribute = dynamicAttributes[i];
+            TextView t = new TextView(this);
+            t.setLayoutParams(lparams1);
+            t.setTextSize(20);
+            t.setText(dynamicAttribute);
+            layout.addView(t);
+            // add edit text for value of for dynamic attribute
+            LinearLayout.LayoutParams lparams2 = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+            EditText editText = new EditText(this);
+            editText.setLayoutParams(lparams2);
+            layout.addView(editText);
+        }
+    }
+
     private void createID(String profileName, int sequenceNumber) throws Exception {
         EditText validUntil = findViewById(R.id.valid_until);
         EditText firstName = findViewById(R.id.firstName);
         EditText surname = findViewById(R.id.surname);
         EditText birthdate = findViewById(R.id.birthdate);
         EditText address = findViewById(R.id.address);
+
+        LinearLayout layout = findViewById(R.id.dynamicAttributes);
+        final int dynamicAttributesCount = layout.getChildCount() / 2;
+        String[]dynamicAttributesValues = new String[dynamicAttributesCount];
+        for (int i = 0; i < dynamicAttributesCount; i++) {
+            dynamicAttributesValues[i] = ((EditText)layout.getChildAt(i * 2 + 1)).getText().toString();
+        }
+
         Controller.controller.generateID(profileName, sequenceNumber,
                 validUntil.getText().toString(),
                 firstName.getText().toString(),
                 surname.getText().toString(),
                 birthdate.getText().toString(),
                 address.getText().toString(),
-                new String[]{},
+                dynamicAttributesValues,
                 personalimage, AppGUIUtils.nameFromURL(personalImageUrl),
                 handsignature, AppGUIUtils.nameFromURL(handSignatureUrl));
         finish();

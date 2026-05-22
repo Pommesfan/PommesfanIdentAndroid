@@ -27,6 +27,7 @@ public class ProfileDetailView extends AppCompatActivity implements Observer<Out
     private int saveMode = -1;
     private final int SAVE_PRIVATE = 1;
     private final int SAVE_PUBLIC = 2;
+    private String[]dynamicAttributes;
     private String mode;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -93,8 +94,8 @@ public class ProfileDetailView extends AppCompatActivity implements Observer<Out
         viewMaxValidDays.setText(String.valueOf(profile.validityPeriod.maxValidDays));
 
         LinearLayout attributes_layout = findViewById(R.id.publicProfileAttributes);
-
-        if(profile.dynamicAttributes.length == 0) {
+        dynamicAttributes = profile.dynamicAttributes;
+        if(dynamicAttributes.length == 0) {
             LayoutParams lparams = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
             TextView t = new TextView(this);
             t.setText("Keine");
@@ -118,6 +119,7 @@ public class ProfileDetailView extends AppCompatActivity implements Observer<Out
         Intent intent = new Intent(this, IDeditor.class);
         intent.putExtra("profileName", profileName);
         intent.putExtra("sequenceNumber", sequenceNumber);
+        intent.putExtra("dynamicAttributes", dynamicAttributes);
         startActivity(intent);
     }
     private static final int SAVE_FILE_CODE = 1;

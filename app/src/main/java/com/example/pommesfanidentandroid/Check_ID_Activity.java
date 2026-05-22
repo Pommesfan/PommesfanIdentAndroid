@@ -11,7 +11,6 @@ import androidx.core.view.WindowInsetsCompat;
 import controller.Controller;
 import utils.Observer;
 import utils.OutputEvent;
-
 import java.io.IOException;
 
 public class Check_ID_Activity extends AppCompatActivity implements Observer<OutputEvent> {

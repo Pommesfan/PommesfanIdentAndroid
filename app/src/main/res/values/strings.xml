@@ -44,4 +44,6 @@
     <string name="privates_profil_exportieren">Privates Profil exportieren</string>
     <string name="ffentliches_profil_exportieren">Öffentliches Profil exportieren</string>
     <string name="importieren">Importieren</string>
+    <string name="plus">+</string>
+    <string name="folgenummer_profil">Folgenummer Profil</string>
 </resources>

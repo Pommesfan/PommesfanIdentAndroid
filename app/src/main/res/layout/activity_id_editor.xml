@@ -61,6 +61,19 @@
                 android:inputType="text"
                 android:ems="10"
                 android:id="@+id/address"/>
+        <TextView
+                android:textSize="20sp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="#FF5722"
+                android:textStyle="bold|italic"
+                android:text="@string/dynamische_attribute"/>
+        <LinearLayout
+                android:id="@+id/dynamicAttributes"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+        </LinearLayout>
         <Button
                 android:id="@+id/btnAddPersonalimage"
                 android:text="@string/passbild_hinzuf_gen"

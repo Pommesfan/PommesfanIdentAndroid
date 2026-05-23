@@ -1,7 +1,11 @@
 package com.example.pommesfanidentandroid;
 
+import android.content.Context;
 import android.content.Intent;
+import android.net.wifi.WifiInfo;
+import android.net.wifi.WifiManager;
 import android.os.Bundle;
+import android.text.format.Formatter;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
@@ -41,8 +45,10 @@ public class ProvideServiceView extends AppCompatActivity implements Observer<Ou
     @Override
     public void update(OutputEvent e) {
         if(e instanceof OutputEvent.ServerStartedEvent) {
+            WifiManager wifiManager = (WifiManager) getApplicationContext().getSystemService(WIFI_SERVICE);
+            String ipAddress = Formatter.formatIpAddress(wifiManager.getConnectionInfo().getIpAddress());
             OutputEvent.ServerStartedEvent evt = (OutputEvent.ServerStartedEvent) e;
-            ((TextView)findViewById(R.id.ip_address)).setText(evt.ip);
+            ((TextView)findViewById(R.id.ip_address)).setText(ipAddress);
             ((TextView)findViewById(R.id.port)).setText(String.valueOf(evt.port));
             ((TextView)findViewById(R.id.crypto_password)).setText(evt.password);
         } else if (e instanceof OutputEvent.PersonalIDValidEvent) {

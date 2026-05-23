@@ -13,21 +13,25 @@ import utils.Observer;
 import utils.OutputEvent;
 import java.io.IOException;
 
-public class Check_ID_Activity extends AppCompatActivity implements Observer<OutputEvent> {
+public class ProvideServiceView extends AppCompatActivity implements Observer<OutputEvent> {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_check_id);
+        setContentView(R.layout.activity_provide_service_view);
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.viewCheckPersonsalID), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
         Controller.controller.addObserver(this);
-
+        Intent intent = getIntent();
+        String mode = intent.getStringExtra("mode");
         try {
-            Controller.controller.checkPersonalIDFromRemote();
+            if(mode.equals("check"))
+                Controller.controller.checkPersonalIDFromRemote();
+            else if (mode.equals("export"))
+                Controller.controller.exportOverNetwork(intent.getStringExtra("idNumber"));
         } catch (Exception e) {
             Toast.makeText(this, "Fehler beim Einlesen", Toast.LENGTH_SHORT).show();
             finish();
@@ -55,10 +59,12 @@ public class Check_ID_Activity extends AppCompatActivity implements Observer<Out
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        try {
-            Controller.controller.stopBackgroundRunner();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        new Thread(() -> {
+            try {
+                Controller.controller.stopBackgroundRunner();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }).start();
     }
 }

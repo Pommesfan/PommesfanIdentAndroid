@@ -21,7 +21,7 @@ public abstract class NetworkDialog {
                     EditText ip = view.findViewById(R.id.ip);
                     EditText port = view.findViewById(R.id.port);
                     EditText crypto = view.findViewById(R.id.crypto);
-                    onOk(ip.getText().toString(), Integer.parseInt(port.getText().toString()), crypto.getText().toString());
+                    onOk(ip.getText().toString(), Integer.parseInt(port.getText().toString()), crypto.getText().toString().toUpperCase());
                 } catch (Exception e) {
                     throw new RuntimeException(e);
                 }

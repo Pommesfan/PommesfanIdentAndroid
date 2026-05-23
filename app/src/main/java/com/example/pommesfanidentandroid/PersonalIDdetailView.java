@@ -38,11 +38,26 @@ public class PersonalIDdetailView extends AppCompatActivity implements Observer<
         Intent intent = getIntent();
         mode = intent.getStringExtra("mode");
 
-        Button exportID = findViewById(R.id.btnExportID);
-        if(mode.equals("created"))
-            exportID.setOnClickListener(v -> saveFile());
-        else
-            exportID.setEnabled(false);
+        Button btnExportID = findViewById(R.id.btnExportID);
+        Button btnExportIdoverNetwork = findViewById(R.id.btnExportIDoverNetwork);
+        Button btnHandIn = findViewById(R.id.btnHandIn);
+        Button btnDelete = findViewById(R.id.btnDelete);
+        if(mode.equals("created")) {
+            btnExportID.setOnClickListener(v -> saveFile());
+            btnExportIdoverNetwork.setOnClickListener(v -> exportOverNetwork());
+        } else {
+            btnExportID.setEnabled(false);
+            btnExportIdoverNetwork.setEnabled(false);
+        }
+
+        btnHandIn.setEnabled(mode.equals("imported"));
+        btnHandIn.setOnClickListener(v -> {
+            handIn(idNumber);
+        });
+        btnDelete.setEnabled(!mode.equals("received"));
+        btnDelete.setOnClickListener(v -> {
+            delete(idNumber);
+        });
 
         try {
             loadData(mode, intent);
@@ -134,21 +149,16 @@ public class PersonalIDdetailView extends AppCompatActivity implements Observer<
 
         personalImage.setImageDrawable(new BitmapDrawable(new ByteArrayInputStream(blob.personal_image)));
         handSignature.setImageDrawable(new BitmapDrawable(new ByteArrayInputStream(blob.hand_signature)));
-
-        Button btnHandIn = findViewById(R.id.btnHandIn);
-        btnHandIn.setEnabled(!mode.equals("received"));
-        btnHandIn.setOnClickListener(v -> {
-            handIn(personalId.ID_number);
-        });
-        Button btnDelete = findViewById(R.id.btnDelete);
-        btnDelete.setEnabled(!mode.equals("received"));
-        btnDelete.setOnClickListener(v -> {
-            delete(personalId.ID_number);
-        });
     }
 
     private void handIn(String id_number) {
         getHandInDialog(id_number);
+    }
+    private void exportOverNetwork() {
+        Intent intent = new Intent(this, ProvideServiceView.class);
+        intent.putExtra("mode", "export");
+        intent.putExtra("idNumber", idNumber);
+        startActivity(intent);
     }
     private static final int SAVE_FILE_CODE = 1;
     private void saveFile() {

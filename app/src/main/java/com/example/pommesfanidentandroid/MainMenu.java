@@ -3,7 +3,6 @@ package com.example.pommesfanidentandroid;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Looper;
 import android.widget.Toast;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -47,7 +46,8 @@ public class MainMenu extends Activity implements Observer<OutputEvent> {
             startActivity(intent);
         });
         findViewById(R.id.checkPersonalID).setOnClickListener(v -> {
-            Intent intent = new Intent(this, Check_ID_Activity.class);
+            Intent intent = new Intent(this, ProvideServiceView.class);
+            intent.putExtra("mode", "check");
             startActivity(intent);
         });
 
@@ -77,21 +77,8 @@ public class MainMenu extends Activity implements Observer<OutputEvent> {
     public void showImportDialog() {
         new NetworkDialog(this, "Über Netzwerk importieren") {
             @Override
-            public void onOk(String ip, int port, String crypto) {
-                try {
-                    Thread t = new Thread(() -> {
-                        Looper.prepare();
-                        try {
-                            Controller.controller.importOverNetwork(ip, port, crypto);
-                        } catch (Exception e) {
-                            throw new RuntimeException(e);
-                        }
-                    });
-                    t.start();
-                    t.join();
-                } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
-                }
+            public void onOk(String ip, int port, String crypto) throws Exception {
+                Controller.controller.importOverNetwork(ip, port, crypto);
             }
             @Override
             public void onCancel() {

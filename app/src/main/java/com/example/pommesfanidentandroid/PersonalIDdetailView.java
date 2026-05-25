@@ -3,7 +3,6 @@ package com.example.pommesfanidentandroid;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Typeface;
-import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.widget.*;
@@ -15,7 +14,6 @@ import controller.Controller;
 import model.Personal_ID;
 import utils.Observer;
 import utils.OutputEvent;
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import android.widget.LinearLayout.LayoutParams;
@@ -146,9 +144,8 @@ public class PersonalIDdetailView extends AppCompatActivity implements Observer<
         if(personalId.blob.isEmpty())
             return;
         Personal_ID.BLOB blob = personalId.blob.get();
-
-        personalImage.setImageDrawable(new BitmapDrawable(new ByteArrayInputStream(blob.personal_image)));
-        handSignature.setImageDrawable(new BitmapDrawable(new ByteArrayInputStream(blob.hand_signature)));
+        AppGUIUtils.bytesToImageView(this, blob.personal_image, personalImage);
+        AppGUIUtils.bytesToImageView(this, blob.hand_signature, handSignature);
     }
 
     private void handIn(String id_number) {

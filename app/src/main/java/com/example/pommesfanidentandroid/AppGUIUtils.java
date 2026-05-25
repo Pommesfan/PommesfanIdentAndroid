@@ -1,5 +1,12 @@
 package com.example.pommesfanidentandroid;
 
+import android.app.Activity;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.os.Build;
+import android.util.DisplayMetrics;
+import android.view.WindowMetrics;
+import android.widget.ImageView;
 import utils.OutputEvent;
 
 import static controller.Controller.*;
@@ -64,5 +71,15 @@ public class AppGUIUtils {
     public static String nameFromURL(String url) {
         String[]splittedUrl = url.split("/");
         return splittedUrl[splittedUrl.length - 1];
+    }
+
+    public static void bytesToImageView(Activity activity, byte[]image, ImageView view) {
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        activity.getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+        // https://stackoverflow.com/questions/13854742/byte-array-of-image-into-imageview
+        Bitmap bmp = BitmapFactory.decodeByteArray(image, 0, image.length);
+        int width = displayMetrics.widthPixels;
+        int height = width / bmp.getWidth() * bmp.getHeight();
+        view.setImageBitmap(Bitmap.createScaledBitmap(bmp, width, height, false));
     }
 }

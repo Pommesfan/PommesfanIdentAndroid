@@ -15,7 +15,6 @@ import controller.Controller;
 import model.PublicProfile;
 import utils.Observer;
 import utils.OutputEvent;
-
 import javax.crypto.NoSuchPaddingException;
 import java.io.IOException;
 import java.security.InvalidKeyException;

@@ -1,8 +1,6 @@
 package com.example.pommesfanidentandroid;
 
-import android.content.Context;
 import android.content.Intent;
-import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.text.format.Formatter;

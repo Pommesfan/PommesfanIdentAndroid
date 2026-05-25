@@ -71,6 +71,7 @@ public class IDeditor extends Activity implements Observer<OutputEvent> {
             TextView t = new TextView(this);
             t.setLayoutParams(lparams1);
             t.setTextSize(20);
+            t.setTextColor(Color.parseColor("green"));
             t.setText(dynamicAttribute);
             layout.addView(t);
             // add edit text for value of for dynamic attribute
@@ -111,7 +112,7 @@ public class IDeditor extends Activity implements Observer<OutputEvent> {
     private void openFile(int mode) {
         selectedImage = mode;
         Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-        intent.setType("*/*");
+        intent.setType("image/*");
         intent.addCategory(Intent.CATEGORY_OPENABLE);
         try {
             startActivityForResult(
@@ -134,17 +135,14 @@ public class IDeditor extends Activity implements Observer<OutputEvent> {
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                             assert inputStream != null;
                             byte[]file = inputStream.readAllBytes();
-                            TextView textView;
                             if(selectedImage == PERSONAL_IMAGE) {
                                 personalImageUrl = uri.toString();
                                 personalimage = file;
-                                textView = findViewById(R.id.personalImagePath);
-                                textView.setText(personalImageUrl);
+                                AppGUIUtils.bytesToImageView(this, personalimage, findViewById(R.id.viewPersonalImage));
                             } else if(selectedImage == HAND_SIGNATURE) {
                                 handSignatureUrl = uri.toString();
                                 handsignature = file;
-                                textView = findViewById(R.id.handSignaturePath);
-                                textView.setText(handSignatureUrl);
+                                AppGUIUtils.bytesToImageView(this, handsignature, findViewById(R.id.viewHandSignature));
                             }
                         }
                     } catch (IOException e) {

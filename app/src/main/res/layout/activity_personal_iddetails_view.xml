@@ -19,6 +19,7 @@
                 android:id="@+id/personal_id_attributes"
                 android:orientation="vertical">
             <LinearLayout
+                    android:id="@+id/layoutHandInDelete"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:orientation="horizontal">
@@ -40,6 +41,7 @@
                         android:id="@+id/btnDelete"/>
             </LinearLayout>
             <LinearLayout
+                    android:id="@+id/layoutExport"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:orientation="horizontal">

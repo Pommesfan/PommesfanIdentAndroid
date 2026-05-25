@@ -45,10 +45,12 @@ public class ProfileDetailView extends AppCompatActivity implements Observer<Out
         Button newIdbtn = findViewById(R.id.btnNewID);
         Button exportPrivateProfile = findViewById(R.id.btnExportPrivateProfile);
         Button exportPublicProfile = findViewById(R.id.btnExportPublicProfile);
+        LinearLayout layoutDeleteAndNew = findViewById(R.id.layoutDeleteAndNew);
+        LinearLayout layoutProfileAttributes = findViewById(R.id.layoutProfileAttributes);
         if(mode.equals("public")) {
-            newIdbtn.setEnabled(false);
-            exportPrivateProfile.setEnabled(false);
-            exportPublicProfile.setEnabled(false);
+            layoutDeleteAndNew.removeView(newIdbtn);
+            layoutProfileAttributes.removeView(exportPrivateProfile);
+            layoutProfileAttributes.removeView(exportPublicProfile);
         } else {
             newIdbtn.setOnClickListener(v -> newID(profileName, sequenceNumber));
             exportPrivateProfile.setOnClickListener(v -> saveFile(SAVE_PRIVATE));
@@ -93,7 +95,7 @@ public class ProfileDetailView extends AppCompatActivity implements Observer<Out
         viewValidForCreated.setText(profile.validityPeriod.validUntilForCreated);
         viewMaxValidDays.setText(String.valueOf(profile.validityPeriod.maxValidDays));
 
-        LinearLayout attributes_layout = findViewById(R.id.publicProfileAttributes);
+        LinearLayout attributes_layout = findViewById(R.id.layoutProfileAttributes);
         dynamicAttributes = profile.dynamicAttributes;
         if(dynamicAttributes.length == 0) {
             LayoutParams lparams = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);

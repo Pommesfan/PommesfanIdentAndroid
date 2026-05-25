@@ -36,6 +36,9 @@ public class PersonalIDdetailView extends AppCompatActivity implements Observer<
         Intent intent = getIntent();
         mode = intent.getStringExtra("mode");
 
+        LinearLayout layoutHandInDelete = findViewById(R.id.layoutHandInDelete);
+        LinearLayout layoutExport = findViewById(R.id.layoutExport);
+        LinearLayout personalIdAttributes = findViewById(R.id.personal_id_attributes);
         Button btnExportID = findViewById(R.id.btnExportID);
         Button btnExportIdoverNetwork = findViewById(R.id.btnExportIDoverNetwork);
         Button btnHandIn = findViewById(R.id.btnHandIn);
@@ -44,28 +47,30 @@ public class PersonalIDdetailView extends AppCompatActivity implements Observer<
             btnExportID.setOnClickListener(v -> saveFile());
             btnExportIdoverNetwork.setOnClickListener(v -> exportOverNetwork());
         } else {
-            btnExportID.setEnabled(false);
-            btnExportIdoverNetwork.setEnabled(false);
+            personalIdAttributes.removeView(layoutExport);
         }
 
-        btnHandIn.setEnabled(mode.equals("imported"));
-        btnHandIn.setOnClickListener(v -> {
-            handIn(idNumber);
-        });
-        btnDelete.setEnabled(!mode.equals("received"));
-        btnDelete.setOnClickListener(v -> {
-            delete(idNumber);
-        });
+        if(mode.equals("imported")) {
+            btnHandIn.setOnClickListener(v -> handIn(idNumber));
+        } else {
+            layoutHandInDelete.removeView(btnHandIn);
+        }
+
+        if(mode.equals("received")) {
+            layoutHandInDelete.removeView(btnDelete);
+        } else {
+            btnDelete.setOnClickListener(v -> delete(idNumber));
+        }
 
         try {
-            loadData(mode, intent);
+            loadData(intent);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
         Controller.controller.addObserver(this);
     }
 
-    private void loadData(String mode, Intent intent) throws Exception {
+    private void loadData(Intent intent) throws Exception {
         //load personal id
         Personal_ID personalId;
         assert mode != null;

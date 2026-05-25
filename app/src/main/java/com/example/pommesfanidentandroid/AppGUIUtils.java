@@ -3,9 +3,7 @@ package com.example.pommesfanidentandroid;
 import android.app.Activity;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.os.Build;
 import android.util.DisplayMetrics;
-import android.view.WindowMetrics;
 import android.widget.ImageView;
 import utils.OutputEvent;
 

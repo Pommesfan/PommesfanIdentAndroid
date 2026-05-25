@@ -1,8 +1,6 @@
 package com.example.pommesfanidentandroid;
 
 import android.content.Intent;
-import android.graphics.Color;
-import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.widget.*;
@@ -18,7 +16,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
-import android.widget.LinearLayout.LayoutParams;
 import javax.crypto.NoSuchPaddingException;
 
 public class ProfileDetailView extends AppCompatActivity implements Observer<OutputEvent> {
@@ -98,23 +95,10 @@ public class ProfileDetailView extends AppCompatActivity implements Observer<Out
         LinearLayout attributes_layout = findViewById(R.id.layoutProfileAttributes);
         dynamicAttributes = profile.dynamicAttributes;
         if(dynamicAttributes.length == 0) {
-            LayoutParams lparams = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
-            TextView t = new TextView(this);
-            t.setText("Keine");
-            t.setTextSize(20);
-            t.setTextColor(Color.parseColor("red"));
-            t.setTypeface(t.getTypeface(), Typeface.BOLD_ITALIC);
-            t.setLayoutParams(lparams);
-            attributes_layout.addView(t);
+            attributes_layout.addView(AppGUIUtils.getNoneTextView(this));
         }
         for (int i = 0; i < profile.dynamicAttributes.length; i++) {
-           LayoutParams lparams = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
-            String dynamicAttribute = profile.dynamicAttributes[i];
-            TextView t = new TextView(this);
-            t.setLayoutParams(lparams);
-            t.setTextSize(20);
-            t.setText(dynamicAttribute);
-            attributes_layout.addView(t);
+            attributes_layout.addView(AppGUIUtils.getDynamicParamValueTag(this, profile.dynamicAttributes[i]));
         }
     }
     private void newID(String profileName, int sequenceNumber) {

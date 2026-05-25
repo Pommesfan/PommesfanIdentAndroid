@@ -3,8 +3,12 @@ package com.example.pommesfanidentandroid;
 import android.app.Activity;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
+import android.graphics.Typeface;
 import android.util.DisplayMetrics;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 import utils.OutputEvent;
 
 import static controller.Controller.*;
@@ -79,5 +83,35 @@ public class AppGUIUtils {
         int width = displayMetrics.widthPixels;
         int height = width / bmp.getWidth() * bmp.getHeight();
         view.setImageBitmap(Bitmap.createScaledBitmap(bmp, width, height, false));
+    }
+
+    public static TextView getNoneTextView(Activity activity) {
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
+        TextView t = new TextView(activity);
+        t.setText("Keine");
+        t.setTextSize(20);
+        t.setTextColor(Color.parseColor("red"));
+        t.setTypeface(t.getTypeface(), Typeface.BOLD_ITALIC);
+        t.setLayoutParams(params);
+        return t;
+    }
+
+    public static TextView getDynamicParamTag(Activity activity, String txt) {
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
+        TextView t = new TextView(activity);
+        t.setLayoutParams(params);
+        t.setTextSize(20);
+        t.setTextColor(Color.parseColor("green"));
+        t.setText(txt);
+        return t;
+    }
+
+    public static TextView getDynamicParamValueTag(Activity activity, String txt) {
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
+        TextView t = new TextView(activity);
+        t.setLayoutParams(params);
+        t.setTextSize(20);
+        t.setText(txt);
+        return t;
     }
 }

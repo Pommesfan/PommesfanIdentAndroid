@@ -1,8 +1,6 @@
 package com.example.pommesfanidentandroid;
 
 import android.content.Intent;
-import android.graphics.Color;
-import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.widget.*;
@@ -16,7 +14,6 @@ import utils.Observer;
 import utils.OutputEvent;
 import java.io.IOException;
 import java.io.OutputStream;
-import android.widget.LinearLayout.LayoutParams;
 
 import static controller.Controller.LOAD_FROM_CREATED;
 import static controller.Controller.LOAD_FROM_IMPORTED;
@@ -118,32 +115,11 @@ public class PersonalIDdetailView extends AppCompatActivity implements Observer<
         String[]dynamic_attributes_names = personalId.publicProfile.dynamicAttributes;
         LinearLayout attributes_layout = findViewById(R.id.personal_id_attributes);
         if(dynamic_attributes_names.length == 0) {
-            LayoutParams lparams = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
-            TextView t = new TextView(this);
-            t.setText("Keine");
-            t.setTextSize(20);
-            t.setTextColor(Color.parseColor("red"));
-            t.setTypeface(t.getTypeface(), Typeface.BOLD_ITALIC);
-            t.setLayoutParams(lparams);
-            attributes_layout.addView(t);
+            attributes_layout.addView(AppGUIUtils.getNoneTextView(this));
         }
         for (int i = 0; i < dynamic_attributes_names.length; i++) {
-            LayoutParams lparams1 = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
-            LayoutParams lparams2 = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
-
-            TextView t1 = new TextView(this);
-            t1.setText(dynamic_attributes_names[i]);
-            t1.setTextSize(20);
-            t1.setTextColor(Color.parseColor("green"));
-            t1.setTypeface(t1.getTypeface(), Typeface.BOLD);
-            t1.setLayoutParams(lparams1);
-            attributes_layout.addView(t1);
-
-            TextView t2 = new TextView(this);
-            t2.setText(personalId.dynamicAttributesValues[i]);
-            t2.setTextSize(20);
-            t2.setLayoutParams(lparams2);
-            attributes_layout.addView(t2);
+            attributes_layout.addView(AppGUIUtils.getDynamicParamTag(this, dynamic_attributes_names[i]));
+            attributes_layout.addView(AppGUIUtils.getDynamicParamValueTag(this, personalId.dynamicAttributesValues[i]));
         }
 
         if(personalId.blob.isEmpty())

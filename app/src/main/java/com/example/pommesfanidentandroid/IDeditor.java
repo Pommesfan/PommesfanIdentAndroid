@@ -2,14 +2,11 @@ package com.example.pommesfanidentandroid;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.graphics.Color;
-import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 import android.widget.Toast;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -55,29 +52,15 @@ public class IDeditor extends Activity implements Observer<OutputEvent> {
     private void setDynamicAttributes(String[] dynamicAttributes) {
         LinearLayout layout = findViewById(R.id.dynamicAttributes);
         if(dynamicAttributes.length == 0) {
-            LinearLayout.LayoutParams lparams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
-            TextView t = new TextView(this);
-            t.setText("Keine");
-            t.setTextSize(20);
-            t.setTextColor(Color.parseColor("red"));
-            t.setTypeface(t.getTypeface(), Typeface.BOLD_ITALIC);
-            t.setLayoutParams(lparams);
-            layout.addView(t);
+            layout.addView(AppGUIUtils.getNoneTextView(this));
         }
         for (int i = 0; i < dynamicAttributes.length; i++) {
             // add label for dynamic attribute
-            LinearLayout.LayoutParams lparams1 = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
-            String dynamicAttribute = dynamicAttributes[i];
-            TextView t = new TextView(this);
-            t.setLayoutParams(lparams1);
-            t.setTextSize(20);
-            t.setTextColor(Color.parseColor("green"));
-            t.setText(dynamicAttribute);
-            layout.addView(t);
+            layout.addView(AppGUIUtils.getDynamicParamTag(this, dynamicAttributes[i]));
             // add edit text for value of for dynamic attribute
-            LinearLayout.LayoutParams lparams2 = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
             EditText editText = new EditText(this);
-            editText.setLayoutParams(lparams2);
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+            editText.setLayoutParams(params);
             layout.addView(editText);
         }
     }

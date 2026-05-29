@@ -95,7 +95,7 @@ public class IDeditor extends Activity implements Observer<OutputEvent> {
     private void openFile(int mode) {
         selectedImage = mode;
         Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-        intent.setType("image/*");
+        intent.setType("*/*");
         intent.addCategory(Intent.CATEGORY_OPENABLE);
         try {
             startActivityForResult(

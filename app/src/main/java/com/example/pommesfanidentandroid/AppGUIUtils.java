@@ -81,7 +81,7 @@ public class AppGUIUtils {
         // https://stackoverflow.com/questions/13854742/byte-array-of-image-into-imageview
         Bitmap bmp = BitmapFactory.decodeByteArray(image, 0, image.length);
         int width = displayMetrics.widthPixels;
-        int height = width / bmp.getWidth() * bmp.getHeight();
+        int height = (int)((double)width / (double) bmp.getWidth() * (double)bmp.getHeight());
         view.setImageBitmap(Bitmap.createScaledBitmap(bmp, width, height, false));
     }
 

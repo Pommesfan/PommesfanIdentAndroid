@@ -3,11 +3,14 @@ package com.example.pommesfanidentandroid;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Looper;
 import android.widget.*;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import com.google.zxing.integration.android.IntentIntegrator;
+import com.google.zxing.integration.android.IntentResult;
 import controller.Controller;
 import model.Personal_ID;
 import utils.Observer;
@@ -139,6 +142,7 @@ public class PersonalIDdetailView extends AppCompatActivity implements Observer<
         startActivity(intent);
     }
     private static final int SAVE_FILE_CODE = 1;
+    private static final int READ_QR_CODE = 49374;
     private void saveFile() {
         Intent intent = new Intent(Intent.ACTION_CREATE_DOCUMENT);
         intent.setType("*/*");
@@ -176,8 +180,31 @@ public class PersonalIDdetailView extends AppCompatActivity implements Observer<
                     }
                 }
                 break;
+            case READ_QR_CODE:
+                super.onActivityResult(requestCode, resultCode, data);
+                IntentResult intentResult = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
+                if (intentResult != null) {
+                    String res = intentResult.getContents();
+                    if (intentResult.getContents() != null) {
+                        String[]resArray = res.split("\n");
+                        if (resArray.length != 4 || !resArray[0].equals("PommesfanIdent")) {
+                            Toast.makeText(this, "QR-Code wird nicht unterstützt", Toast.LENGTH_SHORT).show();
+                        }
+                        new Thread(() -> {
+                            Looper.prepare();
+                            try {
+                                Controller.controller.handInPersonalIDtoRemote(idNumber, resArray[1],
+                                        Integer.parseInt(resArray[2]), resArray[3]);
+                            } catch (Exception e) {
+                                throw new RuntimeException(e);
+                            }
+                        }).start();
+                    }
+                } else {
+                    super.onActivityResult(requestCode, resultCode, data);
+                }
+                break;
         }
-        super.onActivityResult(requestCode, resultCode, data);
     }
     private void delete(String id_number) {
         new YesNoDialog(this, "Ausweis wirklich löschen?") {

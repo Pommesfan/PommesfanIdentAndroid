@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
 import androidx.appcompat.app.AlertDialog;
+import com.google.zxing.integration.android.IntentIntegrator;
 
 public abstract class NetworkDialog {
     public NetworkDialog(Activity activity, String message) {
@@ -33,9 +34,18 @@ public abstract class NetworkDialog {
                 throw new RuntimeException(e);
             }
         });
+        builder.setNeutralButton("QR-Code", ((dialogInterface, id) -> scanQRcode(activity)));
         builder.setNegativeButton("Abbrechen", (dialog, id) -> onCancel());
         builder.setCancelable(true);
         builder.create().show();
+    }
+
+    private void scanQRcode(Activity activity) {
+        // https://www.geeksforgeeks.org/android/how-to-read-qr-code-using-zxing-library-in-android/
+        IntentIntegrator intentIntegrator = new IntentIntegrator(activity);
+        intentIntegrator.setPrompt("Scan a barcode or QR Code");
+        intentIntegrator.setOrientationLocked(false);
+        intentIntegrator.initiateScan();
     }
 
     public abstract void onOk(String ip, int port, String crypto) throws Exception;

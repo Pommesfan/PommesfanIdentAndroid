@@ -1,22 +1,28 @@
 package com.example.pommesfanidentandroid;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.text.format.Formatter;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import com.google.zxing.BarcodeFormat;
+import com.google.zxing.WriterException;
+import com.journeyapps.barcodescanner.BarcodeEncoder;
 import controller.Controller;
 import utils.Observer;
 import utils.OutputEvent;
 import java.io.IOException;
 
 public class ProvideServiceView extends AppCompatActivity implements Observer<OutputEvent> {
-
+    private OutputEvent.ServerStartedEvent serverStartedEvent = null;
+    private String ipAddress;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -27,6 +33,8 @@ public class ProvideServiceView extends AppCompatActivity implements Observer<Ou
             return insets;
         });
         Controller.controller.addObserver(this);
+        WifiManager wifiManager = (WifiManager) getApplicationContext().getSystemService(WIFI_SERVICE);
+        ipAddress = Formatter.formatIpAddress(wifiManager.getConnectionInfo().getIpAddress());
         Intent intent = getIntent();
         String mode = intent.getStringExtra("mode");
         try {
@@ -38,17 +46,39 @@ public class ProvideServiceView extends AppCompatActivity implements Observer<Ou
             Toast.makeText(this, "Fehler beim Einlesen", Toast.LENGTH_SHORT).show();
             finish();
         }
+        try {
+            setQRcode();
+        } catch (InterruptedException | WriterException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void setQRcode() throws InterruptedException, WriterException {
+        for (int i = 0; i < 10; i++) {
+            Thread.sleep(100);
+            if(serverStartedEvent != null) {
+                String qrCodeTxt = "PommesfanIdent\n" + ipAddress + "\n" + serverStartedEvent.port + "\n" + serverStartedEvent.password;
+                ImageView qrCode = findViewById(R.id.qrCode);
+                // https://www.geeksforgeeks.org/android/how-to-generate-qr-code-in-android/
+                BarcodeEncoder encoder = new BarcodeEncoder();
+                Bitmap bitmap = encoder.encodeBitmap(qrCodeTxt, BarcodeFormat.QR_CODE, 600, 600);
+                qrCode.setImageBitmap(bitmap);
+                break;
+            }
+        }
+    }
+
+    public void updateFields(OutputEvent.ServerStartedEvent evt) {
+        serverStartedEvent = evt;
+        ((TextView)findViewById(R.id.ip_address)).setText(ipAddress);
+        ((TextView)findViewById(R.id.port)).setText(String.valueOf(evt.port));
+        ((TextView)findViewById(R.id.crypto_password)).setText(evt.password);
     }
 
     @Override
     public void update(OutputEvent e) {
         if(e instanceof OutputEvent.ServerStartedEvent) {
-            WifiManager wifiManager = (WifiManager) getApplicationContext().getSystemService(WIFI_SERVICE);
-            String ipAddress = Formatter.formatIpAddress(wifiManager.getConnectionInfo().getIpAddress());
-            OutputEvent.ServerStartedEvent evt = (OutputEvent.ServerStartedEvent) e;
-            ((TextView)findViewById(R.id.ip_address)).setText(ipAddress);
-            ((TextView)findViewById(R.id.port)).setText(String.valueOf(evt.port));
-            ((TextView)findViewById(R.id.crypto_password)).setText(evt.password);
+            updateFields((OutputEvent.ServerStartedEvent) e);
         } else if (e instanceof OutputEvent.PersonalIDValidEvent) {
             finish();
             Intent intent = new Intent(this, PersonalIDdetailView.class);
@@ -70,5 +100,6 @@ public class ProvideServiceView extends AppCompatActivity implements Observer<Ou
                 throw new RuntimeException(e);
             }
         }).start();
+        Controller.controller.deleteObserver(this);
     }
 }

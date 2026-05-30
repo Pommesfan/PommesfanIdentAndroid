@@ -189,6 +189,7 @@ public class PersonalIDdetailView extends AppCompatActivity implements Observer<
                         String[]resArray = res.split("\n");
                         if (resArray.length != 4 || !resArray[0].equals("PommesfanIdent")) {
                             Toast.makeText(this, "QR-Code wird nicht unterstützt", Toast.LENGTH_SHORT).show();
+                            return;
                         }
                         new Thread(() -> {
                             Looper.prepare();

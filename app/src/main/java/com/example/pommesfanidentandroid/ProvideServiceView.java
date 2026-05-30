@@ -19,10 +19,12 @@ import controller.Controller;
 import utils.Observer;
 import utils.OutputEvent;
 import java.io.IOException;
+import java.util.concurrent.Semaphore;
 
 public class ProvideServiceView extends AppCompatActivity implements Observer<OutputEvent> {
     private OutputEvent.ServerStartedEvent serverStartedEvent = null;
     private String ipAddress;
+    private final Semaphore semaphore = new Semaphore(0);
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -54,18 +56,13 @@ public class ProvideServiceView extends AppCompatActivity implements Observer<Ou
     }
 
     public void setQRcode() throws InterruptedException, WriterException {
-        for (int i = 0; i < 10; i++) {
-            Thread.sleep(100);
-            if(serverStartedEvent != null) {
-                String qrCodeTxt = "PommesfanIdent\n" + ipAddress + "\n" + serverStartedEvent.port + "\n" + serverStartedEvent.password;
-                ImageView qrCode = findViewById(R.id.qrCode);
-                // https://www.geeksforgeeks.org/android/how-to-generate-qr-code-in-android/
-                BarcodeEncoder encoder = new BarcodeEncoder();
-                Bitmap bitmap = encoder.encodeBitmap(qrCodeTxt, BarcodeFormat.QR_CODE, 600, 600);
-                qrCode.setImageBitmap(bitmap);
-                break;
-            }
-        }
+        semaphore.acquire();
+        String qrCodeTxt = "PommesfanIdent\n" + ipAddress + "\n" + serverStartedEvent.port + "\n" + serverStartedEvent.password;
+        ImageView qrCode = findViewById(R.id.qrCode);
+        // https://www.geeksforgeeks.org/android/how-to-generate-qr-code-in-android/
+        BarcodeEncoder encoder = new BarcodeEncoder();
+        Bitmap bitmap = encoder.encodeBitmap(qrCodeTxt, BarcodeFormat.QR_CODE, 600, 600);
+        qrCode.setImageBitmap(bitmap);
     }
 
     public void updateFields(OutputEvent.ServerStartedEvent evt) {
@@ -79,6 +76,7 @@ public class ProvideServiceView extends AppCompatActivity implements Observer<Ou
     public void update(OutputEvent e) {
         if(e instanceof OutputEvent.ServerStartedEvent) {
             updateFields((OutputEvent.ServerStartedEvent) e);
+            semaphore.release();
         } else if (e instanceof OutputEvent.PersonalIDValidEvent) {
             finish();
             Intent intent = new Intent(this, PersonalIDdetailView.class);

@@ -3,6 +3,7 @@ package com.example.pommesfanidentandroid;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Looper;
 import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.core.graphics.Insets;
@@ -117,8 +118,10 @@ public class MainMenu extends Activity implements Observer<OutputEvent> {
                         String[]resArray = res.split("\n");
                         if (resArray.length != 4 || !resArray[0].equals("PommesfanIdent")) {
                             Toast.makeText(this, "QR-Code wird nicht unterstützt", Toast.LENGTH_SHORT).show();
+                            return;
                         }
                         new Thread(() -> {
+                            Looper.prepare();
                             try {
                                 Controller.controller.importOverNetwork(resArray[1], Integer.parseInt(resArray[2]), resArray[3]);
                             } catch (Exception e) {

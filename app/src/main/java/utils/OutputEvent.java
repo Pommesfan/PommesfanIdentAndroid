@@ -100,4 +100,5 @@ public interface OutputEvent {
     class DummyEvent implements OutputEvent {}
 
     class OtherProfileFoundEvent implements OutputEvent {}
+    class CreationSuccessEvent implements OutputEvent {}
 }

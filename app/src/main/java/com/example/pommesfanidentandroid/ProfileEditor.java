@@ -35,6 +35,7 @@ public class ProfileEditor extends Activity implements Observer<OutputEvent> {
         findViewById(R.id.btnSave).setOnClickListener(v -> save());
         findViewById(R.id.btnAddAttribute).setOnClickListener(v -> addDynamicAttribute());
         dynamicAttributes = findViewById(R.id.dynamicAttributes);
+        Controller.controller.addObserver(this);
     }
 
     private void addDynamicAttribute() {
@@ -71,11 +72,11 @@ public class ProfileEditor extends Activity implements Observer<OutputEvent> {
                  InvalidKeyException e) {
             throw new RuntimeException(e);
         }
-        finish();
     }
 
     @Override
-    public void update(OutputEvent outputEvent) {
-
+    public void update(OutputEvent e) {
+        if(e instanceof OutputEvent.CreationSuccessEvent)
+            finish();
     }
 }

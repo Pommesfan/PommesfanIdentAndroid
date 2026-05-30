@@ -47,6 +47,7 @@ public class IDeditor extends Activity implements Observer<OutputEvent> {
                 throw new RuntimeException(e);
             }
         });
+        Controller.controller.addObserver(this);
     }
 
     private void setDynamicAttributes(String[] dynamicAttributes) {
@@ -88,7 +89,6 @@ public class IDeditor extends Activity implements Observer<OutputEvent> {
                 dynamicAttributesValues,
                 personalimage, AppGUIUtils.nameFromURL(personalImageUrl),
                 handsignature, AppGUIUtils.nameFromURL(handSignatureUrl));
-        finish();
     }
 
     private static final int FILE_SELECT_CODE = 0;
@@ -137,7 +137,8 @@ public class IDeditor extends Activity implements Observer<OutputEvent> {
         super.onActivityResult(requestCode, resultCode, data);
     }
     @Override
-    public void update(OutputEvent outputEvent) {
-
+    public void update(OutputEvent e) {
+        if(e instanceof OutputEvent.CreationSuccessEvent)
+            finish();
     }
 }

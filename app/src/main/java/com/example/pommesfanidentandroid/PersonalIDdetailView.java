@@ -62,12 +62,12 @@ public class PersonalIDdetailView extends AppCompatActivity implements Observer<
             btnDelete.setOnClickListener(v -> delete(idNumber));
         }
 
+        Controller.controller.addObserver(this);
         try {
             loadData(intent);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-        Controller.controller.addObserver(this);
     }
 
     private void loadData(Intent intent) throws Exception {

@@ -72,7 +72,7 @@ public class Controller extends Observable<OutputEvent> {
         PrivateProfile privateProfile = new PrivateProfile(
                 profileName, sequence_number, todayDate, validityPeriod, dynamicAttributes, publicKey.getEncoded(), privateKey.getEncoded());
         privateProfile.saveInternal(appDataLocation + strPrivateProfiles + profileName + "/" + sequence_number);
-        notifyObservers(new OutputEvent.DummyEvent());
+        notifyObservers(new OutputEvent.CreationSuccessEvent());
     }
 
     public boolean validateValidityPeriod(PublicProfile.ValidityPeriod v, String todayDate) throws ParseException {
@@ -134,7 +134,7 @@ public class Controller extends Observable<OutputEvent> {
         personalId.signature = Optional.of(signature_b);
         //Save ID
         personalId.saveInternal(LOAD_FROM_CREATED);
-        notifyObservers(new OutputEvent.DummyEvent());
+        notifyObservers(new OutputEvent.CreationSuccessEvent());
     }
 
     public boolean checkPersonalIDvalidDate(PublicProfile.ValidityPeriod v, String today, String validUntil) throws ParseException {

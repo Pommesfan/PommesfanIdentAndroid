@@ -27,7 +27,6 @@ public class PersonalIDsListView extends Activity implements Observer<OutputEven
         setContentView(R.layout.activity_personal_ids_list_view);
         Intent intent = getIntent();
         mode = intent.getStringExtra("mode");
-        loadImportedIDs();
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.viewImportedPersonalID), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
@@ -38,8 +37,6 @@ public class PersonalIDsListView extends Activity implements Observer<OutputEven
             btnImportID.setOnClickListener(v -> openFile());
         else
             btnImportID.setEnabled(false);
-
-        Controller.controller.addObserver(this);
     }
 
     private static final int FILE_SELECT_CODE = 0;
@@ -121,18 +118,20 @@ public class PersonalIDsListView extends Activity implements Observer<OutputEven
     }
 
     @Override
-    protected void onDestroy() {
+    protected void onPause() {
+        super.onPause();
         Controller.controller.deleteObserver(this);
-        super.onDestroy();
     }
     @Override
     protected void onResume() {
         super.onResume();
+        Controller.controller.addObserver(this);
         loadImportedIDs();
     }
 
     @Override
     public void update(OutputEvent e) {
-        Toast.makeText(this, AppGUIUtils.handleMsg(e), Toast.LENGTH_SHORT).show();
+        if(!(e instanceof OutputEvent.DummyEvent))
+            Toast.makeText(this, AppGUIUtils.handleMsg(e), Toast.LENGTH_SHORT).show();
     }
 }

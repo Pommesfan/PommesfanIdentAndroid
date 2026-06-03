@@ -47,7 +47,6 @@ public class IDeditor extends Activity implements Observer<OutputEvent> {
                 throw new RuntimeException(e);
             }
         });
-        Controller.controller.addObserver(this);
     }
 
     private void setDynamicAttributes(String[] dynamicAttributes) {
@@ -136,6 +135,19 @@ public class IDeditor extends Activity implements Observer<OutputEvent> {
         }
         super.onActivityResult(requestCode, resultCode, data);
     }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        Controller.controller.deleteObserver(this);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Controller.controller.addObserver(this);
+    }
+
     @Override
     public void update(OutputEvent e) {
         if(e instanceof OutputEvent.CreationSuccessEvent)

@@ -34,25 +34,6 @@ public class ProvideServiceView extends AppCompatActivity implements Observer<Ou
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
-        Controller.controller.addObserver(this);
-        WifiManager wifiManager = (WifiManager) getApplicationContext().getSystemService(WIFI_SERVICE);
-        ipAddress = Formatter.formatIpAddress(wifiManager.getConnectionInfo().getIpAddress());
-        Intent intent = getIntent();
-        String mode = intent.getStringExtra("mode");
-        try {
-            if(mode.equals("check"))
-                Controller.controller.checkPersonalIDFromRemote();
-            else if (mode.equals("export"))
-                Controller.controller.exportOverNetwork(intent.getStringExtra("idNumber"));
-        } catch (Exception e) {
-            Toast.makeText(this, "Fehler beim Einlesen", Toast.LENGTH_SHORT).show();
-            finish();
-        }
-        try {
-            setQRcode();
-        } catch (InterruptedException | WriterException e) {
-            throw new RuntimeException(e);
-        }
     }
 
     public void setQRcode() throws InterruptedException, WriterException {
@@ -83,7 +64,8 @@ public class ProvideServiceView extends AppCompatActivity implements Observer<Ou
             intent.putExtra("mode", "received");
             startActivity(intent);
         }  else {
-            Toast.makeText(this, AppGUIUtils.handleMsg(e), Toast.LENGTH_SHORT).show();
+            if(!(e instanceof OutputEvent.DummyEvent))
+                Toast.makeText(this, AppGUIUtils.handleMsg(e), Toast.LENGTH_SHORT).show();
             finish();
         }
     }
@@ -91,6 +73,7 @@ public class ProvideServiceView extends AppCompatActivity implements Observer<Ou
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        Controller.controller.deleteObserver(this);
         new Thread(() -> {
             try {
                 Controller.controller.stopBackgroundRunner();
@@ -98,6 +81,29 @@ public class ProvideServiceView extends AppCompatActivity implements Observer<Ou
                 throw new RuntimeException(e);
             }
         }).start();
-        Controller.controller.deleteObserver(this);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        Controller.controller.addObserver(this);
+        WifiManager wifiManager = (WifiManager) getApplicationContext().getSystemService(WIFI_SERVICE);
+        ipAddress = Formatter.formatIpAddress(wifiManager.getConnectionInfo().getIpAddress());
+        Intent intent = getIntent();
+        String mode = intent.getStringExtra("mode");
+        try {
+            if(mode.equals("check"))
+                Controller.controller.checkPersonalIDFromRemote();
+            else if (mode.equals("export"))
+                Controller.controller.exportOverNetwork(intent.getStringExtra("idNumber"));
+        } catch (Exception e) {
+            Toast.makeText(this, "Fehler beim Einlesen", Toast.LENGTH_SHORT).show();
+            finish();
+        }
+        try {
+            setQRcode();
+        } catch (InterruptedException | WriterException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

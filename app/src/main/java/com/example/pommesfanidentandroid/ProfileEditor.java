@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -35,7 +36,6 @@ public class ProfileEditor extends Activity implements Observer<OutputEvent> {
         findViewById(R.id.btnSave).setOnClickListener(v -> save());
         findViewById(R.id.btnAddAttribute).setOnClickListener(v -> addDynamicAttribute());
         dynamicAttributes = findViewById(R.id.dynamicAttributes);
-        Controller.controller.addObserver(this);
     }
 
     private void addDynamicAttribute() {
@@ -75,8 +75,22 @@ public class ProfileEditor extends Activity implements Observer<OutputEvent> {
     }
 
     @Override
+    protected void onPause() {
+        super.onPause();
+        Controller.controller.deleteObserver(this);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Controller.controller.addObserver(this);
+    }
+
+    @Override
     public void update(OutputEvent e) {
         if(e instanceof OutputEvent.CreationSuccessEvent)
             finish();
+        else if(!(e instanceof OutputEvent.DummyEvent))
+            Toast.makeText(this, AppGUIUtils.handleMsg(e), Toast.LENGTH_SHORT).show();
     }
 }

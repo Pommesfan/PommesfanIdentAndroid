@@ -59,8 +59,6 @@ public class MainMenu extends Activity implements Observer<OutputEvent> {
             showImportDialog();
         });
 
-        Controller.controller.addObserver(this);
-
         if(Controller.controller.getProgramPasswordHash() == null) {
             new PasswordDialog(this, "App-Passwort") {
                 @Override
@@ -91,9 +89,15 @@ public class MainMenu extends Activity implements Observer<OutputEvent> {
     }
 
     @Override
-    protected void onDestroy() {
+    protected void onPause() {
+        super.onPause();
         Controller.controller.deleteObserver(this);
-        super.onDestroy();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Controller.controller.addObserver(this);
     }
 
     @Override

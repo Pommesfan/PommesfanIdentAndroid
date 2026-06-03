@@ -62,7 +62,6 @@ public class PersonalIDdetailView extends AppCompatActivity implements Observer<
             btnDelete.setOnClickListener(v -> delete(idNumber));
         }
 
-        Controller.controller.addObserver(this);
         try {
             loadData(intent);
         } catch (Exception e) {
@@ -238,13 +237,20 @@ public class PersonalIDdetailView extends AppCompatActivity implements Observer<
     }
 
     @Override
-    protected void onDestroy() {
+    protected void onPause() {
+        super.onPause();
         Controller.controller.deleteObserver(this);
-        super.onDestroy();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Controller.controller.addObserver(this);
     }
 
     @Override
     public void update(OutputEvent e) {
-        Toast.makeText(this, AppGUIUtils.handleMsg(e), Toast.LENGTH_SHORT).show();
+        if(!(e instanceof OutputEvent.DummyEvent))
+            Toast.makeText(this, AppGUIUtils.handleMsg(e), Toast.LENGTH_SHORT).show();
     }
 }

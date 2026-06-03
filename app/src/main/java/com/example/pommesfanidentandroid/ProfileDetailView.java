@@ -59,7 +59,6 @@ public class ProfileDetailView extends AppCompatActivity implements Observer<Out
             throw new RuntimeException(e);
         }
         findViewById(R.id.btnDelete).setOnClickListener(v -> delete(profileName, sequenceNumber));
-        Controller.controller.addObserver(this);
     }
 
     private void loadData(String profileName, int sequenceNumber) throws IOException, NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException {
@@ -172,13 +171,20 @@ public class ProfileDetailView extends AppCompatActivity implements Observer<Out
     }
 
     @Override
-    protected void onDestroy() {
+    protected void onPause() {
+        super.onPause();
         Controller.controller.deleteObserver(this);
-        super.onDestroy();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Controller.controller.addObserver(this);
     }
 
     @Override
     public void update(OutputEvent e) {
-        Toast.makeText(this, AppGUIUtils.handleMsg(e), Toast.LENGTH_SHORT).show();
+        if(!(e instanceof OutputEvent.DummyEvent))
+            Toast.makeText(this, AppGUIUtils.handleMsg(e), Toast.LENGTH_SHORT).show();
     }
 }

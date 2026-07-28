@@ -5,10 +5,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.View;
 import android.widget.*;
-import androidx.cardview.widget.CardView;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -83,13 +80,8 @@ public class ProfilesListView extends Activity implements Observer<OutputEvent> 
             String name = f.getName();
             for(File fs : Objects.requireNonNull(f.listFiles())) {
                 int sequence = Integer.parseInt(fs.getName());
-                CardView cardView = new CardView(this, null);
+                ProfileCardView cardView = new ProfileCardView(this, name, sequence);
                 cardView.setCardBackgroundColor(Color.green(120));
-                LayoutInflater inflater = getLayoutInflater();
-                View view = inflater.inflate(R.layout.cardview_profile, null);
-                ((TextView)view.findViewById(R.id.profileName)).setText(name);
-                ((TextView)view.findViewById(R.id.sequence_number)).setText(String.valueOf(sequence));
-                cardView.addView(view);
                 listView.addView(cardView);
                 cardView.setOnClickListener(v -> startDetailView(name, sequence));
             }

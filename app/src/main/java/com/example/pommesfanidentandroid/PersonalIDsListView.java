@@ -4,13 +4,9 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 import android.widget.Toast;
-import androidx.cardview.widget.CardView;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -21,8 +17,6 @@ import utils.OutputEvent;
 import java.io.File;
 import java.io.InputStream;
 import java.util.Objects;
-
-import android.widget.LinearLayout.LayoutParams;
 
 public class PersonalIDsListView extends Activity implements Observer<OutputEvent> {
     private String mode;
@@ -76,8 +70,6 @@ public class PersonalIDsListView extends Activity implements Observer<OutputEven
             return;
         }
         for(File f : Objects.requireNonNull(appDir.listFiles())) {
-            CardView cardView = new CardView(this, null);
-            LayoutInflater inflater = getLayoutInflater();
             String idNumber = f.getName();
 
             int mode_int;
@@ -91,12 +83,10 @@ public class PersonalIDsListView extends Activity implements Observer<OutputEven
             Personal_ID personalId = Personal_ID.loadInternal(mode_int, idNumber, false, false);
             if(personalId == null)
                 continue;
-            View view = inflater.inflate(R.layout.cardview_personal_id, null);
-            ((TextView)view.findViewById(R.id.idNumber)).setText(f.getName());
-            ((TextView)view.findViewById(R.id.profileName)).setText(personalId.publicProfile.name);
-            ((TextView)view.findViewById(R.id.sequence_number)).setText(String.valueOf(personalId.publicProfile.sequence_number));
+
+            IdCardView cardView = new IdCardView(this, f.getName(), personalId.publicProfile.name,
+                    personalId.publicProfile.sequence_number);
             cardView.setCardBackgroundColor(Color.blue(25));
-            cardView.addView(view);
             listView.addView(cardView);
             cardView.setOnClickListener(v -> startDetailView(idNumber, mode));
         }

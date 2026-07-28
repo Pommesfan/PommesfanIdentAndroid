@@ -4,13 +4,18 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
+import androidx.cardview.widget.CardView;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import controller.Controller;
+import model.Personal_ID;
 import utils.Observer;
 import utils.OutputEvent;
 import java.io.File;
@@ -55,7 +60,7 @@ public class PersonalIDsListView extends Activity implements Observer<OutputEven
         }
     }
 
-    private void loadImportedIDs() {
+    private void loadImportedIDs() throws Exception {
         LinearLayout listView = findViewById(R.id.listViewIDs);
         listView.removeAllViews();
         String url;
@@ -71,13 +76,29 @@ public class PersonalIDsListView extends Activity implements Observer<OutputEven
             return;
         }
         for(File f : Objects.requireNonNull(appDir.listFiles())) {
-            LayoutParams lparams = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
-            Button b = new Button(this);
-            b.setLayoutParams(lparams);
-            b.setText(f.getName());
-            b.setBackgroundColor(Color.GREEN);
-            listView.addView(b);
-            b.setOnClickListener(v -> startDetailView(f.getName(), mode));
+            CardView cardView = new CardView(this, null);
+            LayoutInflater inflater = getLayoutInflater();
+            String idNumber = f.getName();
+
+            int mode_int;
+            if(mode.equals("created"))
+                mode_int = Controller.LOAD_FROM_CREATED;
+            else if(mode.equals("imported"))
+                mode_int = Controller.LOAD_FROM_IMPORTED;
+            else
+                throw new IllegalArgumentException("mode '" + mode + "' not valid");
+
+            Personal_ID personalId = Personal_ID.loadInternal(mode_int, idNumber, false, false);
+            if(personalId == null)
+                continue;
+            View view = inflater.inflate(R.layout.cardview_personal_id, null);
+            ((TextView)view.findViewById(R.id.idNumber)).setText(f.getName());
+            ((TextView)view.findViewById(R.id.profileName)).setText(personalId.publicProfile.name);
+            ((TextView)view.findViewById(R.id.sequence_number)).setText(String.valueOf(personalId.publicProfile.sequence_number));
+            cardView.setCardBackgroundColor(Color.blue(25));
+            cardView.addView(view);
+            listView.addView(cardView);
+            cardView.setOnClickListener(v -> startDetailView(idNumber, mode));
         }
     }
 
@@ -126,7 +147,11 @@ public class PersonalIDsListView extends Activity implements Observer<OutputEven
     protected void onResume() {
         super.onResume();
         Controller.controller.addObserver(this);
-        loadImportedIDs();
+        try {
+            loadImportedIDs();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override

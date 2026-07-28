@@ -45,15 +45,15 @@ public class Personal_ID {
         handSignaturePath = pHandSignaturePath;
     }
 
-    public static Personal_ID fromString(int created_or_imported_profile, String[] attributes) throws Exception {
+    public static Personal_ID fromString(int created_or_imported_profile, String[] attributes, boolean check) throws Exception {
         String ID_number = attributes[0];
         PublicProfile publicProfile;
         final String profileName = attributes[1];
         final int sequence_number = Integer.parseInt(attributes[2]);
         if (created_or_imported_profile == Controller.LOAD_FROM_CREATED) {
-            publicProfile = PrivateProfile.loadInternal(controller.appDataLocation + Controller.strPrivateProfiles, profileName, sequence_number);
+            publicProfile = PrivateProfile.loadInternal(controller.appDataLocation + Controller.strPrivateProfiles, profileName, sequence_number, check);
         } else if(created_or_imported_profile == Controller.LOAD_FROM_IMPORTED) {
-            publicProfile = PublicProfile.loadInternal(controller.appDataLocation + Controller.strPublicProfiles, profileName, sequence_number);
+            publicProfile = PublicProfile.loadInternal(controller.appDataLocation + Controller.strPublicProfiles, profileName, sequence_number, check);
         } else {
             throw new NoSuchMethodException("created_or_imported must be 1 or 2");
         }
@@ -63,19 +63,21 @@ public class Personal_ID {
         String created = attributes[3];
         String validUntil = attributes[4];
 
-        if(!Utils.dateAfter(Utils.today(), validUntil, true)) {
-            controller.notifyObservers(new OutputEvent.PersonalIDoutdatedEvent(ID_number));
-            return null;
-        }
+        if (check) {
+            if (!Utils.dateAfter(Utils.today(), validUntil, true)) {
+                controller.notifyObservers(new OutputEvent.PersonalIDoutdatedEvent(ID_number));
+                return null;
+            }
 
-        if(!controller.validateValidityPeriod(publicProfile.validityPeriod, publicProfile.validityPeriod.validFrom)) {
-            controller.notifyObservers(new OutputEvent.InvalidDateSequenceEvent());
-            return null;
-        }
+            if (!controller.validateValidityPeriod(publicProfile.validityPeriod, publicProfile.validityPeriod.validFrom)) {
+                controller.notifyObservers(new OutputEvent.InvalidDateSequenceEvent());
+                return null;
+            }
 
-        if(!controller.checkPersonalIDvalidDate(publicProfile.validityPeriod, Utils.today(), validUntil)) {
-            controller.notifyObservers(new OutputEvent.PersonalIDoutOfValidityPeriodEvent());
-            return null;
+            if (!controller.checkPersonalIDvalidDate(publicProfile.validityPeriod, Utils.today(), validUntil)) {
+                controller.notifyObservers(new OutputEvent.PersonalIDoutOfValidityPeriodEvent());
+                return null;
+            }
         }
 
         String name = attributes[5];
@@ -84,7 +86,7 @@ public class Personal_ID {
         String address = attributes[8];
 
         int nDynamicAttributes = publicProfile.dynamicAttributes.length;
-        if(attributes.length != 11 + nDynamicAttributes) {
+        if(check && attributes.length != 11 + nDynamicAttributes) {
             controller.notifyObservers(new OutputEvent.DynamicAttributesDoesntFitEvent(nDynamicAttributes));
             return null;
         }
@@ -96,11 +98,11 @@ public class Personal_ID {
         return new Personal_ID(ID_number, publicProfile, created, validUntil, name, surname, birthdate, address, dynamicAttributesValues, personalImagePath, handSignaturePath);
     }
 
-    public static Personal_ID fromSliceReader(int created_or_imported_profile, Utils.SliceReader sliceReader, boolean withBlob) throws Exception {
+    public static Personal_ID fromSliceReader(int created_or_imported_profile, Utils.SliceReader sliceReader, boolean withBlob, boolean check) throws Exception {
         String[] attributes = Utils.bytesToStringArray(sliceReader.next());
         if(attributes.length == 0)
             return null;
-        Personal_ID personalId = Personal_ID.fromString(created_or_imported_profile, attributes);
+        Personal_ID personalId = Personal_ID.fromString(created_or_imported_profile, attributes, check);
         if(personalId == null)
             return null;
         personalId.signature = Optional.of(sliceReader.next());
@@ -113,7 +115,7 @@ public class Personal_ID {
         return personalId;
     }
 
-    public static Personal_ID loadInternal(int created_or_imported, String name, boolean loadBlob) throws Exception {
+    public static Personal_ID loadInternal(int created_or_imported, String name, boolean loadBlob, boolean check) throws Exception {
         String location;
         if (created_or_imported == Controller.LOAD_FROM_CREATED) {
             location = controller.appDataLocation + Controller.strCreatedPersonalIDs;
@@ -129,7 +131,7 @@ public class Personal_ID {
         FileInputStream fis = new FileInputStream(location + name);
         AES_InputStream aesis = AES_InputStream.from_ecb(fis, AES_BUFFER_SIZE, controller.getProgramPasswordHash());
         Utils.SliceReader sliceReader = new Utils.SliceReader(aesis);
-        Personal_ID personalId = fromSliceReader(created_or_imported, sliceReader, false);
+        Personal_ID personalId = fromSliceReader(created_or_imported, sliceReader, false, check);
         if(personalId == null)
             return null;
 

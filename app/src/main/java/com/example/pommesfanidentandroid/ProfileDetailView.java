@@ -70,7 +70,7 @@ public class ProfileDetailView extends AppCompatActivity implements Observer<Out
             url = controller.appDataLocation + Controller.strPublicProfiles;
         else
             throw new IllegalArgumentException("mode '" + mode + "' not valid");
-        PublicProfile profile = PublicProfile.loadInternal(url, profileName, sequenceNumber);
+        PublicProfile profile = PublicProfile.loadInternal(url, profileName, sequenceNumber, false);
         if(profile == null) {
             return;
         }

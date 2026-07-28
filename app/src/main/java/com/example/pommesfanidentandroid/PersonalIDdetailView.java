@@ -75,10 +75,10 @@ public class PersonalIDdetailView extends AppCompatActivity implements Observer<
         assert mode != null;
         if(mode.equals("created")) {
             String idNumber = intent.getStringExtra("idNumber");
-            personalId = Personal_ID.loadInternal(LOAD_FROM_CREATED, idNumber, true);
+            personalId = Personal_ID.loadInternal(LOAD_FROM_CREATED, idNumber, true, true);
         } else if(mode.equals("imported")) {
             String idNumber = intent.getStringExtra("idNumber");
-            personalId = Personal_ID.loadInternal(LOAD_FROM_IMPORTED, idNumber, true);
+            personalId = Personal_ID.loadInternal(LOAD_FROM_IMPORTED, idNumber, true, true);
         } else if(mode.equals("received")) {
             personalId = Controller.controller.getCheckIDrunnerRes();
         } else {

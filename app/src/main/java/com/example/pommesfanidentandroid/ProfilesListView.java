@@ -5,9 +5,10 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
-import android.widget.Button;
-import android.widget.LinearLayout;
-import android.widget.Toast;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.*;
+import androidx.cardview.widget.CardView;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -18,7 +19,6 @@ import java.io.*;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Objects;
-import android.widget.LinearLayout.LayoutParams;
 import javax.crypto.NoSuchPaddingException;
 
 import static android.view.View.INVISIBLE;
@@ -82,14 +82,16 @@ public class ProfilesListView extends Activity implements Observer<OutputEvent> 
         for(File f : Objects.requireNonNull(appDir.listFiles())) {
             String name = f.getName();
             for(File fs : Objects.requireNonNull(f.listFiles())) {
-                LayoutParams lparams = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
                 int sequence = Integer.parseInt(fs.getName());
-                Button b = new Button(this);
-                b.setLayoutParams(lparams);
-                b.setText(name + " : " + sequence);
-                b.setBackgroundColor(Color.GREEN);
-                listView.addView(b);
-                b.setOnClickListener(v -> startDetailView(name, sequence));
+                CardView cardView = new CardView(this, null);
+                cardView.setCardBackgroundColor(Color.green(120));
+                LayoutInflater inflater = getLayoutInflater();
+                View view = inflater.inflate(R.layout.cardview_profile, null);
+                ((TextView)view.findViewById(R.id.profileName)).setText(name);
+                ((TextView)view.findViewById(R.id.sequence_number)).setText(String.valueOf(sequence));
+                cardView.addView(view);
+                listView.addView(cardView);
+                cardView.setOnClickListener(v -> startDetailView(name, sequence));
             }
         }
     }

@@ -33,14 +33,16 @@ public class PrivateProfile extends PublicProfile {
         aesos.close();
     }
 
-    public static PrivateProfile fromInternalFile(String path, String profileName, int sequence_number) throws IOException, NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException {
-        if(!Utils.exists(path + profileName)) {
-            controller.notifyObservers(new OutputEvent.NoSuchProfileEvent(profileName, sequence_number, false));
-            return null;
-        }
-        if(!Utils.exists(path + profileName + "/" + sequence_number)) {
-            controller.notifyObservers(new OutputEvent.NoSuchProfileEvent(profileName, sequence_number, true));
-            return null;
+    public static PrivateProfile fromInternalFile(String path, String profileName, int sequence_number, boolean check) throws IOException, NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException {
+        if(check) {
+            if (!Utils.exists(path + profileName)) {
+                controller.notifyObservers(new OutputEvent.NoSuchProfileEvent(profileName, sequence_number, false));
+                return null;
+            }
+            if (!Utils.exists(path + profileName + "/" + sequence_number)) {
+                controller.notifyObservers(new OutputEvent.NoSuchProfileEvent(profileName, sequence_number, true));
+                return null;
+            }
         }
         FileInputStream fis = new FileInputStream(path + profileName + "/" + sequence_number);
         AES_InputStream aesis = AES_InputStream.from_ecb(fis, AES_BUFFER_SIZE, controller.getProgramPasswordHash());

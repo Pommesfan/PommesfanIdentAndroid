@@ -30,15 +30,16 @@ public class PublicProfile {
         this.publicKey = publicKey;
     }
 
-    public static PublicProfile loadInternal(String path, String profileName, int sequence_number) throws IOException, NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException {
-        if(!Utils.exists(path + profileName)) {
-            controller.notifyObservers(new OutputEvent.NoSuchProfileEvent(profileName, sequence_number, false));
-            return null;
-        }
-
-        if(!Utils.exists(path + profileName + "/" + sequence_number)) {
-            controller.notifyObservers(new OutputEvent.NoSuchProfileEvent(profileName, sequence_number, true));
-            return null;
+    public static PublicProfile loadInternal(String path, String profileName, int sequence_number, boolean check) throws IOException, NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException {
+        if(check) {
+            if (!Utils.exists(path + profileName)) {
+                controller.notifyObservers(new OutputEvent.NoSuchProfileEvent(profileName, sequence_number, false));
+                return null;
+            }
+            if (!Utils.exists(path + profileName + "/" + sequence_number)) {
+                controller.notifyObservers(new OutputEvent.NoSuchProfileEvent(profileName, sequence_number, true));
+                return null;
+            }
         }
 
         FileInputStream fis = new FileInputStream(path + profileName + "/" + sequence_number);
@@ -76,7 +77,7 @@ public class PublicProfile {
     protected static boolean isIDaggregated(String profileName, int sequenceNumber, int mode, String url) throws Exception {
         File folder = new File(controller.appDataLocation + url);
         for(String idNumber: Objects.requireNonNull(folder.list())) {
-            Personal_ID personalId = Personal_ID.loadInternal(mode, idNumber, false);
+            Personal_ID personalId = Personal_ID.loadInternal(mode, idNumber, false, false);
             assert personalId != null;
             PublicProfile profile = personalId.publicProfile;
             if(profile.name.equals(profileName) && profile.sequence_number == sequenceNumber)

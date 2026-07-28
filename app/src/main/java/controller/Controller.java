@@ -106,7 +106,7 @@ public class Controller extends Observable<OutputEvent> {
 
         //load public profile
         PrivateProfile privateProfile = PrivateProfile.fromInternalFile(
-                appDataLocation + strPrivateProfiles, publicProfileName, sequence_number);
+                appDataLocation + strPrivateProfiles, publicProfileName, sequence_number, true);
         if(privateProfile == null) {
             return;
         }
@@ -158,7 +158,7 @@ public class Controller extends Observable<OutputEvent> {
     }
 
     public void checkPersonalID(String id_number) throws Exception {
-        Personal_ID personalId = Personal_ID.loadInternal(LOAD_FROM_IMPORTED, id_number.toUpperCase(), true);
+        Personal_ID personalId = Personal_ID.loadInternal(LOAD_FROM_IMPORTED, id_number.toUpperCase(), true, true);
         if(personalId == null) {
             return;
         }
@@ -171,7 +171,7 @@ public class Controller extends Observable<OutputEvent> {
 
     public void exportPublicProfile(String profileName, int sequence_number, OutputStream os, String password) throws IOException, NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException {
         PrivateProfile privateProfile = PrivateProfile.fromInternalFile(
-                appDataLocation + strPrivateProfiles, profileName, sequence_number);
+                appDataLocation + strPrivateProfiles, profileName, sequence_number, true);
         if(privateProfile == null)
             return;
 
@@ -198,7 +198,7 @@ public class Controller extends Observable<OutputEvent> {
 
     public void exportPrivateProfile(String profileName, int sequenceNumber, OutputStream os, String password) throws NoSuchPaddingException, IOException, NoSuchAlgorithmException, InvalidKeyException {
         PrivateProfile privateProfile = PrivateProfile.fromInternalFile(
-                appDataLocation + strPrivateProfiles, profileName, sequenceNumber);
+                appDataLocation + strPrivateProfiles, profileName, sequenceNumber, true);
         if(privateProfile == null)
             return;
         privateProfile.saveExternal(os, password, FILE_TYPE_PRIVATE_PROFILE);
@@ -223,7 +223,7 @@ public class Controller extends Observable<OutputEvent> {
     }
 
     public void exportPersonalID(String personalID_s, OutputStream os, String password) throws Exception {
-        Personal_ID personalId = Personal_ID.loadInternal(LOAD_FROM_CREATED, personalID_s.toUpperCase(), true);
+        Personal_ID personalId = Personal_ID.loadInternal(LOAD_FROM_CREATED, personalID_s.toUpperCase(), true, true);
         if (personalId == null) {
             return;
         }
@@ -252,7 +252,7 @@ public class Controller extends Observable<OutputEvent> {
         if(!controller.validateCryptoPassword(aesis, password_hash))
             return;
 
-        Personal_ID personalId = Personal_ID.fromSliceReader(LOAD_FROM_IMPORTED, sliceReader, true);
+        Personal_ID personalId = Personal_ID.fromSliceReader(LOAD_FROM_IMPORTED, sliceReader, true, true);
         if (personalId == null) {
             return;
         }
@@ -304,7 +304,7 @@ public class Controller extends Observable<OutputEvent> {
             urlOpposite = strCreatedPersonalIDs;
         } else
             throw new IllegalArgumentException("unvalid mode: " + mode);
-        Personal_ID id = Personal_ID.loadInternal(mode, idNumber, true);
+        Personal_ID id = Personal_ID.loadInternal(mode, idNumber, true, true);
         if(id == null)
             return;
 
@@ -364,7 +364,7 @@ public class Controller extends Observable<OutputEvent> {
 
             AES_InputStream aesis = AES_InputStream.from_ecb(inputStream, AES_BUFFER_SIZE, crypto_hash);
             Utils.SliceReader sliceReader = new Utils.SliceReader(aesis);
-            Personal_ID personalId = Personal_ID.fromSliceReader(LOAD_FROM_IMPORTED, sliceReader, true);
+            Personal_ID personalId = Personal_ID.fromSliceReader(LOAD_FROM_IMPORTED, sliceReader, true, true);
             aesos.close();
             aesis.close();
             s.close();
@@ -393,7 +393,7 @@ public class Controller extends Observable<OutputEvent> {
     public void handInPersonalIDtoRemote(String id_number, String ip, int port, String password) throws Exception {
         Socket s = new Socket(ip, port);
         // load personal id
-        Personal_ID personalId = Personal_ID.loadInternal(LOAD_FROM_IMPORTED, id_number.toUpperCase(), true);
+        Personal_ID personalId = Personal_ID.loadInternal(LOAD_FROM_IMPORTED, id_number.toUpperCase(), true, true);
         if (personalId == null) {
             return;
         }
@@ -448,7 +448,7 @@ public class Controller extends Observable<OutputEvent> {
             aesos.write(crypto_hash);
             aesos.flush();
 
-            Personal_ID personalId = Personal_ID.loadInternal(LOAD_FROM_CREATED, idNumber, true);
+            Personal_ID personalId = Personal_ID.loadInternal(LOAD_FROM_CREATED, idNumber, true, true);
             if (personalId == null) {
                 return;
             }
@@ -486,7 +486,7 @@ public class Controller extends Observable<OutputEvent> {
         PublicProfile publicProfile = PublicProfile.fromSliceReader(new Utils.SliceReader(aesis));
         if(Files.exists(Paths.get(appDataLocation + strPublicProfiles + publicProfile.name + "/" + publicProfile.sequence_number))) {
             PublicProfile saved = PublicProfile.loadInternal(
-                    appDataLocation + strPublicProfiles, publicProfile.name, publicProfile.sequence_number);
+                    appDataLocation + strPublicProfiles, publicProfile.name, publicProfile.sequence_number, true);
             if(!saved.equals(publicProfile)) {
                 notifyObservers(new OutputEvent.OtherProfileFoundEvent());
                 return;
@@ -495,7 +495,7 @@ public class Controller extends Observable<OutputEvent> {
             publicProfile.saveInternal(appDataLocation + strPublicProfiles + "/");
         }
 
-        Personal_ID personalId = Personal_ID.fromSliceReader(LOAD_FROM_IMPORTED, new Utils.SliceReader(aesis), true);
+        Personal_ID personalId = Personal_ID.fromSliceReader(LOAD_FROM_IMPORTED, new Utils.SliceReader(aesis), true, true);
         if(personalId == null) {
             aesis.close();
             return;
@@ -525,7 +525,7 @@ public class Controller extends Observable<OutputEvent> {
     }
 
     public void showPublicProfile(String profileName, int sequence) throws IOException, NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException {
-        PublicProfile profile = PublicProfile.loadInternal(appDataLocation + Controller.strPublicProfiles, profileName, sequence);
+        PublicProfile profile = PublicProfile.loadInternal(appDataLocation + Controller.strPublicProfiles, profileName, sequence, true);
         if(profile == null) {
             return;
         }

@@ -25,7 +25,7 @@ public class ProfileDetailView extends AppCompatActivity implements Observer<Out
     private final int SAVE_PRIVATE = 1;
     private final int SAVE_PUBLIC = 2;
     private String[]dynamicAttributes;
-    private String mode;
+    private int mode;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -38,13 +38,13 @@ public class ProfileDetailView extends AppCompatActivity implements Observer<Out
         Intent intent = getIntent();
         profileName = intent.getStringExtra("profileName");
         sequenceNumber = intent.getIntExtra("sequenceNumber", -1);
-        mode = intent.getStringExtra("mode");
+        mode = intent.getIntExtra("mode", 0);
         Button newIdbtn = findViewById(R.id.btnNewID);
         Button exportPrivateProfile = findViewById(R.id.btnExportPrivateProfile);
         Button exportPublicProfile = findViewById(R.id.btnExportPublicProfile);
         LinearLayout layoutDeleteAndNew = findViewById(R.id.layoutDeleteAndNew);
         LinearLayout layoutProfileAttributes = findViewById(R.id.layoutProfileAttributes);
-        if(mode.equals("public")) {
+        if(mode == AppGUIUtils.PUBLIC) {
             layoutDeleteAndNew.removeView(newIdbtn);
             layoutProfileAttributes.removeView(exportPrivateProfile);
             layoutProfileAttributes.removeView(exportPublicProfile);
@@ -64,9 +64,9 @@ public class ProfileDetailView extends AppCompatActivity implements Observer<Out
     private void loadData(String profileName, int sequenceNumber) throws IOException, NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException {
         Controller controller = Controller.controller;
         String url;
-        if(mode.equals("private"))
+        if(mode == AppGUIUtils.PRIVATE)
             url = controller.appDataLocation + Controller.strPrivateProfiles;
-        else if(mode.equals("public"))
+        else if(mode == AppGUIUtils.PUBLIC)
             url = controller.appDataLocation + Controller.strPublicProfiles;
         else
             throw new IllegalArgumentException("mode '" + mode + "' not valid");
@@ -157,9 +157,9 @@ public class ProfileDetailView extends AppCompatActivity implements Observer<Out
             @Override
             public void onOk() {
                 try {
-                    if(mode.equals("private"))
+                    if(mode == AppGUIUtils.PRIVATE)
                         Controller.controller.deleteProfile(profileName, sequenceNumber, Controller.LOAD_FROM_CREATED);
-                    else if (mode.equals("public")) {
+                    else if (mode == AppGUIUtils.PUBLIC) {
                         Controller.controller.deleteProfile(profileName, sequenceNumber, Controller.LOAD_FROM_IMPORTED);
                     }
                     finish();

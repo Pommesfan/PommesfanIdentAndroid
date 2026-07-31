@@ -14,6 +14,14 @@ import utils.OutputEvent;
 import static controller.Controller.*;
 
 public class AppGUIUtils {
+    public static final int PRIVATE = 1;
+    public static final int PUBLIC = 2;
+    public static final int CREATED = 3;
+    public static final int IMPORTED = 4;
+    public static final int RECEIVED = 5;
+    public static final int CHECK = 6;
+    public static final int EXPORT = 7;
+
     public static String handleMsg(OutputEvent e) {
         if(e instanceof OutputEvent.PersonalIDValidEvent) {
             return "Ausweis ist korrekt\n" + ((OutputEvent.PersonalIDValidEvent) e).personalIDprintout;

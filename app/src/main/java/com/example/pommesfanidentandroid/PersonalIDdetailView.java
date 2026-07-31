@@ -23,7 +23,7 @@ import static controller.Controller.LOAD_FROM_IMPORTED;
 
 public class PersonalIDdetailView extends AppCompatActivity implements Observer<OutputEvent> {
     private String idNumber;
-    String mode;
+    int mode;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -34,7 +34,7 @@ public class PersonalIDdetailView extends AppCompatActivity implements Observer<
             return insets;
         });
         Intent intent = getIntent();
-        mode = intent.getStringExtra("mode");
+        mode = intent.getIntExtra("mode", 0);
 
         LinearLayout layoutHandInDelete = findViewById(R.id.layoutHandInDelete);
         LinearLayout layoutExport = findViewById(R.id.layoutExport);
@@ -43,20 +43,20 @@ public class PersonalIDdetailView extends AppCompatActivity implements Observer<
         Button btnExportIdoverNetwork = findViewById(R.id.btnExportIDoverNetwork);
         Button btnHandIn = findViewById(R.id.btnHandIn);
         Button btnDelete = findViewById(R.id.btnDelete);
-        if(mode.equals("created")) {
+        if(mode == AppGUIUtils.CREATED) {
             btnExportID.setOnClickListener(v -> saveFile());
             btnExportIdoverNetwork.setOnClickListener(v -> exportOverNetwork());
         } else {
             personalIdAttributes.removeView(layoutExport);
         }
 
-        if(mode.equals("imported")) {
+        if(mode == AppGUIUtils.IMPORTED) {
             btnHandIn.setOnClickListener(v -> handIn(idNumber));
         } else {
             layoutHandInDelete.removeView(btnHandIn);
         }
 
-        if(mode.equals("received")) {
+        if(mode == AppGUIUtils.RECEIVED) {
             layoutHandInDelete.removeView(btnDelete);
         } else {
             btnDelete.setOnClickListener(v -> delete(idNumber));
@@ -72,14 +72,13 @@ public class PersonalIDdetailView extends AppCompatActivity implements Observer<
     private void loadData(Intent intent) throws Exception {
         //load personal id
         Personal_ID personalId;
-        assert mode != null;
-        if(mode.equals("created")) {
+        if(mode == AppGUIUtils.CREATED) {
             String idNumber = intent.getStringExtra("idNumber");
             personalId = Personal_ID.loadInternal(LOAD_FROM_CREATED, idNumber, true, true);
-        } else if(mode.equals("imported")) {
+        } else if(mode == AppGUIUtils.IMPORTED) {
             String idNumber = intent.getStringExtra("idNumber");
             personalId = Personal_ID.loadInternal(LOAD_FROM_IMPORTED, idNumber, true, true);
-        } else if(mode.equals("received")) {
+        } else if(mode == AppGUIUtils.RECEIVED) {
             personalId = Controller.controller.getCheckIDrunnerRes();
         } else {
             personalId = null;
@@ -136,7 +135,7 @@ public class PersonalIDdetailView extends AppCompatActivity implements Observer<
     }
     private void exportOverNetwork() {
         Intent intent = new Intent(this, ProvideServiceView.class);
-        intent.putExtra("mode", "export");
+        intent.putExtra("mode", AppGUIUtils.EXPORT);
         intent.putExtra("idNumber", idNumber);
         startActivity(intent);
     }
@@ -211,9 +210,9 @@ public class PersonalIDdetailView extends AppCompatActivity implements Observer<
             @Override
             public void onOk() {
                 try {
-                    if(mode.equals("created"))
+                    if(mode == AppGUIUtils.CREATED)
                         Controller.controller.deleteID(id_number, LOAD_FROM_CREATED);
-                    else if(mode.equals("imported"))
+                    else if(mode == AppGUIUtils.IMPORTED)
                         Controller.controller.deleteID(id_number, LOAD_FROM_IMPORTED);
                     finish();
                 } catch (Exception e) {

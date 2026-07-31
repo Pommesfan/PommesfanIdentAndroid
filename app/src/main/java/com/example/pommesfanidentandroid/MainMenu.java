@@ -31,27 +31,27 @@ public class MainMenu extends Activity implements Observer<OutputEvent> {
         });
         findViewById(R.id.ownProfiles).setOnClickListener(v -> {
             Intent intent = new Intent(this, ProfilesListView.class);
-            intent.putExtra("mode", "private");
+            intent.putExtra("mode", AppGUIUtils.PRIVATE);
             startActivity(intent);
         });
         findViewById(R.id.importedProfiles).setOnClickListener(v -> {
             Intent intent = new Intent(this, ProfilesListView.class);
-            intent.putExtra("mode", "public");
+            intent.putExtra("mode", AppGUIUtils.PUBLIC);
             startActivity(intent);
         });
         findViewById(R.id.createdIDs).setOnClickListener(v -> {
             Intent intent = new Intent(this, PersonalIDsListView.class);
-            intent.putExtra("mode", "created");
+            intent.putExtra("mode", AppGUIUtils.CREATED);
             startActivity(intent);
         });
         findViewById(R.id.importedPersonalIDs).setOnClickListener(v -> {
             Intent intent = new Intent(this, PersonalIDsListView.class);
-            intent.putExtra("mode", "imported");
+            intent.putExtra("mode", AppGUIUtils.IMPORTED);
             startActivity(intent);
         });
         findViewById(R.id.checkPersonalID).setOnClickListener(v -> {
             Intent intent = new Intent(this, ProvideServiceView.class);
-            intent.putExtra("mode", "check");
+            intent.putExtra("mode", AppGUIUtils.CHECK);
             startActivity(intent);
         });
 

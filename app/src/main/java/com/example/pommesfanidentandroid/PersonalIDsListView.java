@@ -19,20 +19,20 @@ import java.io.InputStream;
 import java.util.Objects;
 
 public class PersonalIDsListView extends Activity implements Observer<OutputEvent> {
-    private String mode;
+    private int mode;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_personal_ids_list_view);
         Intent intent = getIntent();
-        mode = intent.getStringExtra("mode");
+        mode = intent.getIntExtra("mode", 0);
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.viewImportedPersonalID), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
         Button btnImportID = findViewById(R.id.btnImport);
-        if(mode.equals("imported"))
+        if(mode == AppGUIUtils.IMPORTED)
             btnImportID.setOnClickListener(v -> openFile());
         else
             btnImportID.setEnabled(false);
@@ -58,9 +58,9 @@ public class PersonalIDsListView extends Activity implements Observer<OutputEven
         LinearLayout listView = findViewById(R.id.listViewIDs);
         listView.removeAllViews();
         String url;
-        if(mode.equals("created"))
+        if(mode == AppGUIUtils.CREATED)
             url = Controller.controller.appDataLocation + Controller.strCreatedPersonalIDs;
-        else if(mode.equals("imported"))
+        else if(mode == AppGUIUtils.IMPORTED)
             url = Controller.controller.appDataLocation + Controller.strImportedPersonalIDs;
         else
             throw new IllegalArgumentException("mode '" + mode + "' not valid");
@@ -73,9 +73,9 @@ public class PersonalIDsListView extends Activity implements Observer<OutputEven
             String idNumber = f.getName();
 
             int mode_int;
-            if(mode.equals("created"))
+            if(mode == AppGUIUtils.CREATED)
                 mode_int = Controller.LOAD_FROM_CREATED;
-            else if(mode.equals("imported"))
+            else if(mode == AppGUIUtils.IMPORTED)
                 mode_int = Controller.LOAD_FROM_IMPORTED;
             else
                 throw new IllegalArgumentException("mode '" + mode + "' not valid");
@@ -92,7 +92,7 @@ public class PersonalIDsListView extends Activity implements Observer<OutputEven
         }
     }
 
-    private void startDetailView(String idNumber, String mode) {
+    private void startDetailView(String idNumber, int mode) {
         Intent intent = new Intent(this, PersonalIDdetailView.class);
         intent.putExtra("mode", mode);
         intent.putExtra("idNumber", idNumber);

@@ -21,13 +21,13 @@ import javax.crypto.NoSuchPaddingException;
 import static android.view.View.INVISIBLE;
 
 public class ProfilesListView extends Activity implements Observer<OutputEvent> {
-    private String mode = "";
+    private int mode;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profiles_list_view);
-        mode = getIntent().getStringExtra("mode");
+        mode = getIntent().getIntExtra("mode", 0);
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.importedProfiles), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
@@ -35,7 +35,7 @@ public class ProfilesListView extends Activity implements Observer<OutputEvent> 
         });
         findViewById(R.id.btnImport).setOnClickListener(v -> openFile());
         Button newButton = findViewById(R.id.newButton);
-        if(mode.equals("public"))
+        if(mode == AppGUIUtils.PUBLIC)
             newButton.setVisibility(INVISIBLE);
         else
             newButton.setOnClickListener(v -> newPrivateProfile());
@@ -64,9 +64,9 @@ public class ProfilesListView extends Activity implements Observer<OutputEvent> 
         LinearLayout listView = findViewById(R.id.listViewPublicprofiles);
         listView.removeAllViews();
         String url;
-        if(mode.equals("private")) {
+        if(mode == AppGUIUtils.PRIVATE) {
             url = Controller.controller.appDataLocation + Controller.strPrivateProfiles;
-        } else if(mode.equals("public")) {
+        } else if(mode == AppGUIUtils.PUBLIC) {
             url = Controller.controller.appDataLocation + Controller.strPublicProfiles;
         } else {
             throw new IllegalArgumentException("mode '" + mode + "' not valid");
@@ -108,9 +108,9 @@ public class ProfilesListView extends Activity implements Observer<OutputEvent> 
                         new PasswordDialog(this, "Krypto-Passwort") {
                             @Override
                             public void onOk(String crypto_password) throws NoSuchPaddingException, IOException, NoSuchAlgorithmException, InvalidKeyException {
-                                if(mode.equals("private"))
+                                if(mode == AppGUIUtils.PRIVATE)
                                     Controller.controller.importPrivateProfile(inputStream, crypto_password);
-                                else if(mode.equals("public"))
+                                else if(mode == AppGUIUtils.PUBLIC)
                                     Controller.controller.importPublicProfile(inputStream, crypto_password);
                                 ProfilesListView.this.recreate();
                             }

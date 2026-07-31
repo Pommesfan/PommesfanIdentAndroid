@@ -61,7 +61,7 @@ public class ProvideServiceView extends AppCompatActivity implements Observer<Ou
         } else if (e instanceof OutputEvent.PersonalIDValidEvent) {
             finish();
             Intent intent = new Intent(this, PersonalIDdetailView.class);
-            intent.putExtra("mode", "received");
+            intent.putExtra("mode", AppGUIUtils.RECEIVED);
             startActivity(intent);
         }  else {
             if(!(e instanceof OutputEvent.DummyEvent))
@@ -90,11 +90,11 @@ public class ProvideServiceView extends AppCompatActivity implements Observer<Ou
         WifiManager wifiManager = (WifiManager) getApplicationContext().getSystemService(WIFI_SERVICE);
         ipAddress = Formatter.formatIpAddress(wifiManager.getConnectionInfo().getIpAddress());
         Intent intent = getIntent();
-        String mode = intent.getStringExtra("mode");
+        int mode = intent.getIntExtra("mode", 0);
         try {
-            if(mode.equals("check"))
+            if(mode == AppGUIUtils.CHECK)
                 Controller.controller.checkPersonalIDFromRemote();
-            else if (mode.equals("export"))
+            else if (mode == AppGUIUtils.EXPORT)
                 Controller.controller.exportOverNetwork(intent.getStringExtra("idNumber"));
         } catch (Exception e) {
             Toast.makeText(this, "Fehler beim Einlesen", Toast.LENGTH_SHORT).show();

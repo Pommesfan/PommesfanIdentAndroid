@@ -39,4 +39,10 @@
             android:text="@string/ueber_netzwerk_importieren"
             android:layout_width="320dp"
             android:layout_height="wrap_content"/>
+    <Button
+            android:id="@+id/importFromBluetooth"
+            android:text="@string/ber_bluetooth_importieren"
+            android:layout_width="320dp"
+            android:layout_height="wrap_content"/>
+
 </LinearLayout>

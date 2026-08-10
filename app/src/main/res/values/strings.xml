@@ -46,4 +46,5 @@
     <string name="importieren">Importieren</string>
     <string name="plus">+</string>
     <string name="folgenummer_profil">Folgenummer Profil</string>
+    <string name="ber_bluetooth_importieren">Über Bluetooth importieren</string>
 </resources>

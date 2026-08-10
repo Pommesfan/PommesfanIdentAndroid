@@ -62,6 +62,14 @@
                         android:text="Exportieren(Netzwerk)"
                         android:id="@+id/btnExportIDoverNetwork"/>
             </LinearLayout>
+            <Button
+                    android:textSize="14sp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="#FF0840"
+                    android:textStyle="bold|italic"
+                    android:text="Exportieren(Bluetooth)"
+                    android:id="@+id/btnExportIDoverBluetooth"/>
             <TextView
                     android:textSize="20sp"
                     android:layout_width="wrap_content"

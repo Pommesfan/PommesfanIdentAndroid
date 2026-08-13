@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/exportToFile"
+          android:title="@string/datei"/>
+    <item android:id="@+id/exportOverNetwork"
+          android:title="@string/netzwerk" />
+    <item android:id="@+id/exportOverBluetooth"
+          android:title="@string/bluetooth" />
+</menu>

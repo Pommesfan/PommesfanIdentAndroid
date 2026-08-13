@@ -3,6 +3,7 @@ package com.example.pommesfanidentandroid;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.*;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
@@ -40,18 +41,15 @@ public class ProfileDetailView extends AppCompatActivity implements Observer<Out
         sequenceNumber = intent.getIntExtra("sequenceNumber", -1);
         mode = intent.getIntExtra("mode", 0);
         Button newIdbtn = findViewById(R.id.btnNewID);
-        Button exportPrivateProfile = findViewById(R.id.btnExportPrivateProfile);
-        Button exportPublicProfile = findViewById(R.id.btnExportPublicProfile);
+        Button btnExport = findViewById(R.id.btnExport);
         LinearLayout layoutDeleteAndNew = findViewById(R.id.layoutDeleteAndNew);
         LinearLayout layoutProfileAttributes = findViewById(R.id.layoutProfileAttributes);
         if(mode == AppGUIUtils.PUBLIC) {
             layoutDeleteAndNew.removeView(newIdbtn);
-            layoutProfileAttributes.removeView(exportPrivateProfile);
-            layoutProfileAttributes.removeView(exportPublicProfile);
+            layoutProfileAttributes.removeView(btnExport);
         } else {
             newIdbtn.setOnClickListener(v -> newID(profileName, sequenceNumber));
-            exportPrivateProfile.setOnClickListener(v -> saveFile(SAVE_PRIVATE));
-            exportPublicProfile.setOnClickListener(v -> saveFile(SAVE_PUBLIC));
+            btnExport.setOnClickListener(v -> exportMenu(v));
         }
         try {
             loadData(profileName, sequenceNumber);
@@ -59,6 +57,22 @@ public class ProfileDetailView extends AppCompatActivity implements Observer<Out
             throw new RuntimeException(e);
         }
         findViewById(R.id.btnDelete).setOnClickListener(v -> delete(profileName, sequenceNumber));
+    }
+
+    private void exportMenu(View v) {
+        PopupMenu popup = new PopupMenu(this, v);
+        popup.getMenuInflater().inflate(R.menu.export_profile_menu, popup.getMenu());
+        popup.setOnMenuItemClickListener(menuItem -> {
+            int itemId = menuItem.getItemId();
+            if(itemId == R.id.exportPrivate)
+                saveFile(SAVE_PRIVATE);
+            else if(itemId == R.id.exportPublic)
+                saveFile(SAVE_PUBLIC);
+            else
+                return false;
+            return true;
+        });
+        popup.show();
     }
 
     private void loadData(String profileName, int sequenceNumber) throws IOException, NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException {

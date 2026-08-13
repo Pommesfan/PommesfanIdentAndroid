@@ -11,6 +11,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Looper;
 import android.util.Log;
+import android.view.View;
 import android.widget.*;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
@@ -24,7 +25,6 @@ import model.Personal_ID;
 import utils.Observer;
 import utils.OutputEvent;
 import utils.Utils;
-
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.UUID;
@@ -49,45 +49,53 @@ public class PersonalIDdetailView extends AppCompatActivity implements Observer<
         mode = intent.getIntExtra("mode", 0);
 
         LinearLayout layoutHandInDelete = findViewById(R.id.layoutHandInDelete);
-        LinearLayout layoutExport = findViewById(R.id.layoutExport);
+        Button btnExport = findViewById(R.id.btnExportID);
         LinearLayout personalIdAttributes = findViewById(R.id.personal_id_attributes);
-        Button btnExportID = findViewById(R.id.btnExportID);
-        Button btnExportIdoverNetwork = findViewById(R.id.btnExportIDoverNetwork);
         Button btnHandIn = findViewById(R.id.btnHandIn);
         Button btnDelete = findViewById(R.id.btnDelete);
-        Button btnExportIDoverBluetooth = findViewById(R.id.btnExportIDoverBluetooth);
-        if(mode == AppGUIUtils.CREATED) {
-            btnExportID.setOnClickListener(v -> saveFile());
-            btnExportIdoverNetwork.setOnClickListener(v -> exportOverNetwork());
-            btnExportIDoverBluetooth.setOnClickListener(v -> {
-                try {
-                    exportOverBluetooth();
-                } catch (Exception e) {
-                    throw new RuntimeException(e);
-                }
-            });
-        } else {
-            personalIdAttributes.removeView(layoutExport);
-            personalIdAttributes.removeView(btnExportIDoverBluetooth);
-        }
+        if(mode == AppGUIUtils.CREATED)
+            btnExport.setOnClickListener(v -> exportId(v));
+        else
+            personalIdAttributes.removeView(btnExport);
 
-        if(mode == AppGUIUtils.IMPORTED) {
+        if(mode == AppGUIUtils.IMPORTED)
             btnHandIn.setOnClickListener(v -> handIn(idNumber));
-        } else {
+        else
             layoutHandInDelete.removeView(btnHandIn);
-        }
 
-        if(mode == AppGUIUtils.RECEIVED) {
+        if(mode == AppGUIUtils.RECEIVED)
             layoutHandInDelete.removeView(btnDelete);
-        } else {
+        else
             btnDelete.setOnClickListener(v -> delete(idNumber));
-        }
 
         try {
             loadData(intent);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private void exportId(View v) {
+        PopupMenu popup = new PopupMenu(this, v);
+        popup.getMenuInflater().inflate(R.menu.export_id_menu, popup.getMenu());
+        popup.setOnMenuItemClickListener(menuItem -> {
+            int itemId = menuItem.getItemId();
+            if(itemId == R.id.exportToFile)
+                saveFile();
+            else if(itemId == R.id.exportOverNetwork)
+                exportOverNetwork();
+            else if(itemId == R.id.exportOverBluetooth) {
+                try {
+                    exportOverBluetooth();
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            }
+            else
+                return false;
+            return true;
+        });
+        popup.show();
     }
 
     private void loadData(Intent intent) throws Exception {
@@ -105,9 +113,8 @@ public class PersonalIDdetailView extends AppCompatActivity implements Observer<
             personalId = null;
         }
 
-        if (personalId == null) {
+        if (personalId == null)
             return;
-        }
 
         TextView viewIDnumber = findViewById(R.id.fieldIDnumber);
         TextView viewProfileName = findViewById(R.id.fieldprofileName);

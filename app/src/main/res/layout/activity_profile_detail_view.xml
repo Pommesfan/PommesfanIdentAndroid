@@ -42,15 +42,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textColor="#8BC34A"
-                android:text="@string/privates_profil_exportieren"
-                android:id="@+id/btnExportPrivateProfile" />
-        <Button
-                android:textSize="14sp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textColor="#8BC34A"
-                android:text="@string/ffentliches_profil_exportieren"
-                android:id="@+id/btnExportPublicProfile" />
+                android:text="@string/exportieren"
+                android:id="@+id/btnExport" />
         <TextView
                 android:textSize="20sp"
                 android:layout_width="wrap_content"

@@ -37,7 +37,6 @@ public class AES_OutputStream extends OutputStream {
 
     @Override
     public void write(byte[]b) {
-        System.gc();
         int buf_len = buf.length;
         int start = 0;
         while(start < b.length) {
@@ -64,7 +63,6 @@ public class AES_OutputStream extends OutputStream {
                 start += remaining_size;
             }
         }
-        System.gc();
     }
 
     private void toOutputStream(int len) {

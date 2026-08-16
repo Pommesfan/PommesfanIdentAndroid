@@ -13,11 +13,11 @@ public interface OutputEvent {
         public PersonalIDInvalidEvent() {}
     }
 
-    class ServerStartedEvent implements OutputEvent {
+    class NetworkServerStartedEvent implements OutputEvent {
         public final String ip;
         public final int port;
         public final String password;
-        public ServerStartedEvent(String pIP, int pPort, String pPassword) {
+        public NetworkServerStartedEvent(String pIP, int pPort, String pPassword) {
             ip = pIP;
             port = pPort;
             password = pPassword;

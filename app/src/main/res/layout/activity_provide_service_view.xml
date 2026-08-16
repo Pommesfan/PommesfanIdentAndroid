@@ -2,39 +2,64 @@
 <LinearLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"
-        android:id="@+id/viewCheckPersonsalID"
+        android:id="@+id/viewProvideService"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:paddingLeft="16dp"
         android:paddingRight="16dp"
         android:orientation="vertical"
         tools:context=".ProvideServiceView">
-    <TextView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:textSize="20sp"
-            android:textColor="@color/purple_700"
-            android:textStyle="bold|italic"
-            android:text="@string/ip_adresse">
-    </TextView>
-    <TextView
-            android:textSize="20sp"
+    <LinearLayout
+            android:id="@+id/layoutNetworkConnection"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/ip_address"/>
-    <TextView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:textSize="20sp"
-            android:textColor="@color/purple_700"
-            android:textStyle="bold|italic"
-            android:text="@string/portnummer">
-    </TextView>
-    <TextView
-            android:textSize="20sp"
+            android:orientation="vertical">
+        <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:textSize="20sp"
+                android:textColor="@color/purple_700"
+                android:textStyle="bold|italic"
+                android:text="@string/ip_adresse">
+        </TextView>
+        <TextView
+                android:textSize="20sp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/ip_address"/>
+        <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="20sp"
+                android:textColor="@color/purple_700"
+                android:textStyle="bold|italic"
+                android:text="@string/portnummer">
+        </TextView>
+        <TextView
+                android:textSize="20sp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/port"/>
+    </LinearLayout>
+    <LinearLayout
+            android:id="@+id/layoutBluetoothConnection"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/port"/>
+            android:orientation="vertical">
+        <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="20sp"
+                android:textColor="@color/purple_700"
+                android:textStyle="bold|italic"
+                android:text="@string/mac_adresse">
+        </TextView>
+        <TextView
+                android:textSize="20sp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/mac_address"/>
+    </LinearLayout>
     <TextView
             android:layout_width="match_parent"
             android:layout_height="match_parent"

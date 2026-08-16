@@ -52,7 +52,6 @@ public class AES_InputStream extends InputStream {
 
     @Override
     public int read(byte[] b, int off, int len) {
-        System.gc();
         if(buf == null) {
             buf = new byte[buf_len];
             from_inputstream();
@@ -82,7 +81,6 @@ public class AES_InputStream extends InputStream {
                 b_position += buf_remaining;
             }
         }
-        System.gc();
         return b_position;
     }
     @Override

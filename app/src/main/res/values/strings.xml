@@ -1,10 +1,8 @@
 <resources>
     <string name="app_name">PommesfanIdent</string>
-    <string name="title_activity_main">MainActivity</string>
     <string name="importierte_profile">Importierte Profile</string>
     <string name="importierte_ausweise">Importierte Ausweise</string>
     <string name="eigene_profile">Eigene Profile</string>
-    <string name="neues_ffentliches_profil">Neues Öffentliches Profil</string>
     <string name="ausweisnummer">Ausweisnummer</string>
     <string name="profilname">Profilname</string>
     <string name="vorname">Vorname</string>
@@ -36,13 +34,10 @@
     <string name="sequenznummer">Sequenznummer</string>
     <string name="neues_profil">Neues Profil</string>
     <string name="neuer_ausweis">Neuer Ausweis</string>
-    <string name="name">Name</string>
     <string name="passbild_hinzuf_gen">Passbild hinzufügen</string>
     <string name="h_ndische_unterschrift_hinzuf_gen">Händische unterschrift hinzufügen</string>
     <string name="erstellte_ausweise">Erstellte Ausweise</string>
     <string name="exportieren">Exportieren</string>
-    <string name="privates_profil_exportieren">Privates Profil exportieren</string>
-    <string name="ffentliches_profil_exportieren">Öffentliches Profil exportieren</string>
     <string name="importieren">Importieren</string>
     <string name="plus">+</string>
     <string name="folgenummer_profil">Folgenummer Profil</string>
@@ -52,4 +47,7 @@
     <string name="datei">Datei</string>
     <string name="netzwerk">Netzwerk</string>
     <string name="bluetooth">Bluetooth</string>
+    <string name="ausweis_pr_fen_netzwerk">Ausweis prüfen(Netzwerk)</string>
+    <string name="ausweis_pr_fen_bluetooth">Ausweis prüfen(Bluetooth)</string>
+    <string name="mac_adresse">Mac-Adresse</string>
 </resources>

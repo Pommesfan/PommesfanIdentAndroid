@@ -1,4 +1,4 @@
-package com.example.pommesfanidentandroid;
+package AppUtils;
 
 import android.app.Activity;
 import android.graphics.Bitmap;
@@ -21,14 +21,16 @@ public class AppGUIUtils {
     public static final int RECEIVED = 5;
     public static final int CHECK = 6;
     public static final int EXPORT = 7;
+    public static final int NETWORK = 8;
+    public static final int BLUETOOTH = 9;
 
     public static String handleMsg(OutputEvent e) {
         if(e instanceof OutputEvent.PersonalIDValidEvent) {
             return "Ausweis ist korrekt\n" + ((OutputEvent.PersonalIDValidEvent) e).personalIDprintout;
         } else if(e instanceof OutputEvent.PersonalIDInvalidEvent){
             return "Ausweis ist nicht korrekt\n";
-        } else if (e instanceof OutputEvent.ServerStartedEvent) {
-            OutputEvent.ServerStartedEvent evt = (OutputEvent.ServerStartedEvent) e;
+        } else if (e instanceof OutputEvent.NetworkServerStartedEvent) {
+            OutputEvent.NetworkServerStartedEvent evt = (OutputEvent.NetworkServerStartedEvent) e;
             return "IP-Adresse:" + evt.ip + "\nPortnummer: " + evt.port + "\nKrypto-Passwort:" + evt.password;
         } else if (e instanceof OutputEvent.NoSuchProfileEvent) {
             OutputEvent.NoSuchProfileEvent evt = (OutputEvent.NoSuchProfileEvent) e;

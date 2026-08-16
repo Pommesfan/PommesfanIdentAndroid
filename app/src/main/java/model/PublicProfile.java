@@ -76,12 +76,15 @@ public class PublicProfile {
 
     protected static boolean isIDaggregated(String profileName, int sequenceNumber, int mode, String url) throws Exception {
         File folder = new File(controller.appDataLocation + url);
-        for(String idNumber: Objects.requireNonNull(folder.list())) {
-            Personal_ID personalId = Personal_ID.loadInternal(mode, idNumber, false, false);
-            assert personalId != null;
-            PublicProfile profile = personalId.publicProfile;
-            if(profile.name.equals(profileName) && profile.sequence_number == sequenceNumber)
-                return true;
+        String[] files = folder.list();
+        if(files != null) {
+            for(String idNumber: files) {
+                Personal_ID personalId = Personal_ID.loadInternal(mode, idNumber, false, false);
+                assert personalId != null;
+                PublicProfile profile = personalId.publicProfile;
+                if(profile.name.equals(profileName) && profile.sequence_number == sequenceNumber)
+                    return true;
+            }
         }
         return false;
     }

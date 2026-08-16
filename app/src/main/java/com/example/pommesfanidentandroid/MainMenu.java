@@ -1,5 +1,6 @@
 package com.example.pommesfanidentandroid;
 
+import AppUtils.AppGUIUtils;
 import android.Manifest;
 import android.app.Activity;
 import android.bluetooth.*;
@@ -22,15 +23,10 @@ import model.PublicProfile;
 import utils.Observer;
 import utils.OutputEvent;
 import utils.Utils;
-
-import javax.crypto.NoSuchPaddingException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
 import java.util.Set;
 import java.util.UUID;
 
@@ -72,9 +68,16 @@ public class MainMenu extends Activity implements Observer<OutputEvent> {
             intent.putExtra("mode", AppGUIUtils.IMPORTED);
             startActivity(intent);
         });
-        findViewById(R.id.checkPersonalID).setOnClickListener(v -> {
+        findViewById(R.id.checkPersonalIDoverNetwork).setOnClickListener(v -> {
             Intent intent = new Intent(this, ProvideServiceView.class);
             intent.putExtra("mode", AppGUIUtils.CHECK);
+            intent.putExtra("medium", AppGUIUtils.NETWORK);
+            startActivity(intent);
+        });
+        findViewById(R.id.checkPersonalIDoverBluetooth).setOnClickListener(v -> {
+            Intent intent = new Intent(this, ProvideServiceView.class);
+            intent.putExtra("mode", AppGUIUtils.CHECK);
+            intent.putExtra("medium", AppGUIUtils.BLUETOOTH);
             startActivity(intent);
         });
 

@@ -1,5 +1,6 @@
 package com.example.pommesfanidentandroid;
 
+import AppUtils.AppGUIUtils;
 import android.app.Activity;
 import android.os.Bundle;
 import android.view.LayoutInflater;

@@ -30,10 +30,15 @@
             android:layout_height="wrap_content"
             android:text="@string/importierte_ausweise"/>
     <Button
-            android:id="@+id/checkPersonalID"
+            android:id="@+id/checkPersonalIDoverNetwork"
             android:layout_width="315dp"
             android:layout_height="wrap_content"
-            android:text="@string/ausweis_pr_fen"/>
+            android:text="@string/ausweis_pr_fen_netzwerk"/>
+    <Button
+            android:id="@+id/checkPersonalIDoverBluetooth"
+            android:layout_width="315dp"
+            android:layout_height="wrap_content"
+            android:text="@string/ausweis_pr_fen_bluetooth"/>
     <Button
             android:id="@+id/importFromNetwork"
             android:text="@string/ueber_netzwerk_importieren"

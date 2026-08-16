@@ -1,11 +1,14 @@
 package com.example.pommesfanidentandroid;
 
+import AppUtils.AppGUIUtils;
+import AppUtils.BluetoothUtils;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.text.format.Formatter;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
@@ -22,41 +25,55 @@ import java.io.IOException;
 import java.util.concurrent.Semaphore;
 
 public class ProvideServiceView extends AppCompatActivity implements Observer<OutputEvent> {
-    private OutputEvent.ServerStartedEvent serverStartedEvent = null;
     private String ipAddress;
     private final Semaphore semaphore = new Semaphore(0);
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_provide_service_view);
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.viewCheckPersonsalID), (v, insets) -> {
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.viewProvideService), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
     }
 
-    public void setQRcode() throws InterruptedException, WriterException {
-        semaphore.acquire();
-        String qrCodeTxt = "PommesfanIdent\n" + ipAddress + "\n" + serverStartedEvent.port + "\n" + serverStartedEvent.password;
+    public void setQRcode(String qrTxt) throws InterruptedException, WriterException {
         ImageView qrCode = findViewById(R.id.qrCode);
         // https://www.geeksforgeeks.org/android/how-to-generate-qr-code-in-android/
         BarcodeEncoder encoder = new BarcodeEncoder();
-        Bitmap bitmap = encoder.encodeBitmap(qrCodeTxt, BarcodeFormat.QR_CODE, 600, 600);
+        Bitmap bitmap = encoder.encodeBitmap(qrTxt, BarcodeFormat.QR_CODE, 600, 600);
         qrCode.setImageBitmap(bitmap);
     }
 
-    public void updateFields(OutputEvent.ServerStartedEvent evt) {
-        serverStartedEvent = evt;
-        ((TextView)findViewById(R.id.ip_address)).setText(ipAddress);
-        ((TextView)findViewById(R.id.port)).setText(String.valueOf(evt.port));
-        ((TextView)findViewById(R.id.crypto_password)).setText(evt.password);
+    public void updateFields(OutputEvent e) {
+        String qr = "PommesfanIdent\n";
+        TextView password = findViewById(R.id.crypto_password);
+        if(e instanceof OutputEvent.NetworkServerStartedEvent) {
+            OutputEvent.NetworkServerStartedEvent evt = (OutputEvent.NetworkServerStartedEvent)e;
+            ((TextView)findViewById(R.id.ip_address)).setText(ipAddress);
+            ((TextView)findViewById(R.id.port)).setText(String.valueOf(evt.port));
+            password.setText(evt.password);
+            qr += ipAddress + "\n" + evt.port + "\n" + evt.password;
+        } else if(e instanceof BluetoothUtils.BluetoothServerStartedEvent) {
+            BluetoothUtils.BluetoothServerStartedEvent evt = (BluetoothUtils.BluetoothServerStartedEvent)e;
+            ((TextView)findViewById(R.id.mac_address)).setText(evt.mac);
+            password.setText(evt.password);
+            qr += evt.mac + "\n" + evt.password;
+        } else {
+            return;
+        }
+        try {
+            setQRcode(qr);
+        } catch (InterruptedException | WriterException ex) {
+            throw new RuntimeException(ex);
+        }
     }
 
     @Override
     public void update(OutputEvent e) {
-        if(e instanceof OutputEvent.ServerStartedEvent) {
-            updateFields((OutputEvent.ServerStartedEvent) e);
+        if(e instanceof OutputEvent.NetworkServerStartedEvent || e instanceof BluetoothUtils.BluetoothServerStartedEvent) {
+            updateFields(e);
             semaphore.release();
         } else if (e instanceof OutputEvent.PersonalIDValidEvent) {
             finish();
@@ -64,8 +81,6 @@ public class ProvideServiceView extends AppCompatActivity implements Observer<Ou
             intent.putExtra("mode", AppGUIUtils.RECEIVED);
             startActivity(intent);
         }  else {
-            if(!(e instanceof OutputEvent.DummyEvent))
-                Toast.makeText(this, AppGUIUtils.handleMsg(e), Toast.LENGTH_SHORT).show();
             finish();
         }
     }
@@ -87,22 +102,29 @@ public class ProvideServiceView extends AppCompatActivity implements Observer<Ou
     protected void onStart() {
         super.onStart();
         Controller.controller.addObserver(this);
+        LinearLayout viewProvideService = findViewById(R.id.viewProvideService);
         WifiManager wifiManager = (WifiManager) getApplicationContext().getSystemService(WIFI_SERVICE);
         ipAddress = Formatter.formatIpAddress(wifiManager.getConnectionInfo().getIpAddress());
         Intent intent = getIntent();
         int mode = intent.getIntExtra("mode", 0);
+        int medium = intent.getIntExtra("medium", 0);
         try {
-            if(mode == AppGUIUtils.CHECK)
-                Controller.controller.checkPersonalIDFromRemote();
-            else if (mode == AppGUIUtils.EXPORT)
-                Controller.controller.exportOverNetwork(intent.getStringExtra("idNumber"));
+            if(medium == AppGUIUtils.NETWORK) {
+                viewProvideService.removeView(findViewById(R.id.layoutBluetoothConnection));
+                if(mode == AppGUIUtils.CHECK)
+                    Controller.controller.checkPersonalIDFromRemote();
+                else if (mode == AppGUIUtils.EXPORT)
+                    Controller.controller.exportOverNetwork(intent.getStringExtra("idNumber"));
+            } else if(medium == AppGUIUtils.BLUETOOTH) {
+                viewProvideService.removeView(findViewById(R.id.layoutNetworkConnection));
+            }
         } catch (Exception e) {
             Toast.makeText(this, "Fehler beim Einlesen", Toast.LENGTH_SHORT).show();
             finish();
         }
         try {
-            setQRcode();
-        } catch (InterruptedException | WriterException e) {
+            semaphore.acquire();
+        } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
     }

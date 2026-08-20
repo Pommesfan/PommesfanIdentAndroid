@@ -329,7 +329,7 @@ public class Controller extends Observable<OutputEvent> {
         notifyObservers(new OutputEvent.DummyEvent());
     }
 
-    private class CheckIDrunner extends BackgroundRunner {
+    private class CheckIDrunner extends BackgroundRunner.NetworkBackgroundRunner {
         public CheckIDrunner()  {
             super();
         }
@@ -386,8 +386,7 @@ public class Controller extends Observable<OutputEvent> {
     }
 
     public void checkPersonalIDFromRemote() {
-        backgroundRunner = new CheckIDrunner();
-        backgroundRunner.start();
+        startBackGroundRunner(new CheckIDrunner());
     }
 
     public void handInPersonalIDtoRemote(String id_number, String ip, int port, String password) throws Exception {
@@ -421,7 +420,7 @@ public class Controller extends Observable<OutputEvent> {
         notifyObservers(new OutputEvent.IDhandedInSuccessEvent());
     }
 
-    private class ExportIDrunner extends BackgroundRunner {
+    private class ExportIDrunner extends BackgroundRunner.NetworkBackgroundRunner {
         private final String idNumber;
         public ExportIDrunner(String idNumber) {
             super();
@@ -512,15 +511,21 @@ public class Controller extends Observable<OutputEvent> {
     }
 
     public void exportOverNetwork(String idNumber) throws Exception {
-        backgroundRunner = new ExportIDrunner(idNumber);
+        startBackGroundRunner(new ExportIDrunner(idNumber));
+    }
+    public void startBackGroundRunner(BackgroundRunner b) {
+        backgroundRunner = b;
         backgroundRunner.start();
     }
 
     public void stopBackgroundRunner() throws IOException {
         if(backgroundRunner == null)
             return;
-        Socket s = new Socket(InetAddress.getLocalHost().getHostAddress(), backgroundRunner.getPort());
-        s.getOutputStream().write(1);
+        if(backgroundRunner instanceof BackgroundRunner.NetworkBackgroundRunner) {
+            BackgroundRunner.NetworkBackgroundRunner b = (BackgroundRunner.NetworkBackgroundRunner)backgroundRunner;
+            Socket s = new Socket(InetAddress.getLocalHost().getHostAddress(), b.getPort());
+            s.getOutputStream().write(1);
+        }
         backgroundRunner = null;
     }
 

@@ -23,8 +23,11 @@ import model.PublicProfile;
 import utils.Observer;
 import utils.OutputEvent;
 import utils.Utils;
+
+import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.Buffer;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Set;
@@ -160,7 +163,7 @@ public class MainMenu extends Activity implements Observer<OutputEvent> {
             }
             return;
         }
-        InputStream inputStream = socket.getInputStream();
+        InputStream inputStream = new BufferedInputStream(socket.getInputStream());
         PublicProfile publicProfile = PublicProfile.fromSliceReader(new Utils.SliceReader(inputStream));
         if(Files.exists(Paths.get(controller.appDataLocation + strPublicProfiles + publicProfile.name + "/" + publicProfile.sequence_number))) {
             PublicProfile saved = PublicProfile.loadInternal(
@@ -175,7 +178,7 @@ public class MainMenu extends Activity implements Observer<OutputEvent> {
 
         Personal_ID personalId = Personal_ID.fromSliceReader(LOAD_FROM_IMPORTED, new Utils.SliceReader(inputStream), true, true);
         personalId.saveInternal(LOAD_FROM_IMPORTED);
-        inputStream.close();
+        socket.close();
     }
 
     public final int REQUEST_ENABLE_BT = 0;

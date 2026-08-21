@@ -1,6 +1,8 @@
 package com.example.pommesfanidentandroid;
 
 import AppUtils.AppGUIUtils;
+import AppUtils.BluetoothUtils;
+import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -48,7 +50,7 @@ public class PersonalIDdetailView extends AppCompatActivity implements Observer<
             personalIdAttributes.removeView(btnExport);
 
         if(mode == AppGUIUtils.IMPORTED)
-            btnHandIn.setOnClickListener(v -> handIn(idNumber));
+            btnHandIn.setOnClickListener(v -> handIn(idNumber, v));
         else
             layoutHandInDelete.removeView(btnHandIn);
 
@@ -97,7 +99,7 @@ public class PersonalIDdetailView extends AppCompatActivity implements Observer<
             String idNumber = intent.getStringExtra("idNumber");
             personalId = Personal_ID.loadInternal(LOAD_FROM_IMPORTED, idNumber, true, true);
         } else if(mode == AppGUIUtils.RECEIVED) {
-            personalId = Controller.controller.getCheckIDrunnerRes();
+            personalId = Controller.controller.checkIDrunnerRes;
         } else {
             personalId = null;
         }
@@ -147,8 +149,20 @@ public class PersonalIDdetailView extends AppCompatActivity implements Observer<
         AppGUIUtils.bytesToImageView(this, blob.hand_signature, handSignature);
     }
 
-    private void handIn(String id_number) {
-        getHandInDialog(id_number);
+    private void handIn(String id_number, View v) {
+        PopupMenu popup = new PopupMenu(this, v);
+        popup.getMenuInflater().inflate(R.menu.hand_in_id_menu, popup.getMenu());
+        popup.setOnMenuItemClickListener(menuItem -> {
+            int itemId = menuItem.getItemId();
+            if(itemId == R.id.btnHandInOverNetwork)
+                handInOverNetwork(id_number);
+            else if(itemId == R.id.btnHandInOverBluetooth)
+                handInOverBluetooth(id_number, this);
+            else
+                return false;
+            return true;
+        });
+        popup.show();
     }
     private void exportOverConnection(int medium) {
         Intent intent = new Intent(this, ProvideServiceView.class);
@@ -240,13 +254,24 @@ public class PersonalIDdetailView extends AppCompatActivity implements Observer<
         };
     }
 
-    public void getHandInDialog(String id_number) {
-        new NetworkDialog(this, "Einreichen") {
+    public void handInOverNetwork(String id_number) {
+        new NetworkDialog(this, "Einreichen über Netzwerk") {
             @Override
             public void onOk(String ip, int port, String crypto) throws Exception {
                 Controller.controller.handInPersonalIDtoRemote(id_number, ip, port, crypto);
             }
+            @Override
+            public void onCancel() {
+            }
+        };
+    }
 
+    public void handInOverBluetooth(String id_number, Activity activity) {
+        new BluetoothDialog(this, "Einreichen über Bluetooth") {
+            @Override
+            public void onOk(String mac, String crypto) throws Exception {
+                BluetoothUtils.handInOverBluetooth(activity, id_number, mac, crypto);
+            }
             @Override
             public void onCancel() {
             }

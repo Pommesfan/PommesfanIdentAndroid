@@ -142,7 +142,7 @@ public class Controller extends Observable<OutputEvent> {
                 Utils.dateAfter(validUntil, v.validUntilForCreated, true) && Utils.daysBetween(today, validUntil) <= v.maxValidDays;
     }
 
-    private boolean validateSignature(Personal_ID personalId) throws NoSuchAlgorithmException, InvalidKeySpecException, InvalidKeyException, SignatureException, IOException {
+    public boolean validateSignature(Personal_ID personalId) throws NoSuchAlgorithmException, InvalidKeySpecException, InvalidKeyException, SignatureException, IOException {
         if(personalId.blob.isEmpty())
             throw new NoSuchElementException("Option of BLOB is empty");
         if(personalId.signature.isEmpty())
@@ -266,14 +266,6 @@ public class Controller extends Observable<OutputEvent> {
         notifyObservers(new OutputEvent.DummyEvent());
     }
 
-    private BackgroundRunner backgroundRunner;
-    private Personal_ID checkIDrunnerRes;
-
-    public Personal_ID getCheckIDrunnerRes() {
-        Personal_ID res = checkIDrunnerRes;
-        checkIDrunnerRes = null;
-        return res;
-    }
     public void deleteProfile(String name, int sequenceNumber, int mode) throws Exception {
         boolean isAggregated;
         String url;
@@ -328,6 +320,9 @@ public class Controller extends Observable<OutputEvent> {
         Files.delete(Paths.get(appDataLocation + urlToDelete + idNumber));
         notifyObservers(new OutputEvent.DummyEvent());
     }
+
+    private BackgroundRunner backgroundRunner;
+    public Personal_ID checkIDrunnerRes;
 
     private class CheckIDrunner extends BackgroundRunner.NetworkBackgroundRunner {
         public CheckIDrunner()  {

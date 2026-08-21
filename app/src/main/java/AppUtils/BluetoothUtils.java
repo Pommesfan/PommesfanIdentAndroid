@@ -2,26 +2,25 @@ package AppUtils;
 
 import android.Manifest;
 import android.app.Activity;
-import android.bluetooth.BluetoothAdapter;
-import android.bluetooth.BluetoothManager;
-import android.bluetooth.BluetoothServerSocket;
-import android.bluetooth.BluetoothSocket;
-import android.content.Context;
+import android.bluetooth.*;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.util.Log;
+import android.widget.Toast;
 import androidx.core.app.ActivityCompat;
 import controller.Controller;
 import model.Personal_ID;
-import utils.BackgroundRunner;
-import utils.OutputEvent;
-import utils.Utils;
-import java.io.BufferedOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
+import model.PublicProfile;
+import utils.*;
+
+import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.Set;
 import java.util.UUID;
 import static androidx.fragment.app.FragmentManager.TAG;
-import static controller.Controller.LOAD_FROM_CREATED;
+import static controller.Controller.*;
+import static controller.Controller.strPublicProfiles;
 
 public class BluetoothUtils {
     public static class BluetoothServerStartedEvent implements OutputEvent {
@@ -32,25 +31,22 @@ public class BluetoothUtils {
             password = pPassword;
         }
     }
-    public static class BluetoothBackroundRunner extends BackgroundRunner {
-        public final String idNumber;
+    public static abstract class BluetoothBackroundRunner extends BackgroundRunner {
         private final Activity activity;
-        public BluetoothBackroundRunner(String pIdNumber, Activity pActivity) {
-            idNumber = pIdNumber;
+        public BluetoothBackroundRunner(Activity pActivity) {
             activity = pActivity;
         }
-        @Override
-        protected void routine() throws Exception {
+        protected BluetoothSocket init() throws IOException {
             BluetoothManager bluetoothManager = activity.getSystemService(BluetoothManager.class);
             BluetoothAdapter bluetoothAdapter = bluetoothManager.getAdapter();
             if (bluetoothAdapter == null) {
-                // Toast.makeText(this, "Bluetooth auf diesem Gerät icht unterstützt", Toast.LENGTH_LONG).show();
-                return;
+                // Toast.makeText(this, "Bluetooth auf diesem Gerät nicht unterstützt", Toast.LENGTH_LONG).show();
+                return null;
             }
             if (!bluetoothAdapter.isEnabled()) {
                 Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
                 if (ActivityCompat.checkSelfPermission(activity, Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
-                    return;
+                    return null;
                 }
                 activity.startActivityForResult(enableBtIntent, 0);
             }
@@ -72,31 +68,162 @@ public class BluetoothUtils {
                 mmServerSocket = bluetoothAdapter.listenUsingRfcommWithServiceRecord("PommesFanIdent", UUID.fromString("123e4567-e89b-12d3-a456-426614174000"));
             } catch (Exception e) {
                 Log.e(TAG, "Socket's listen() method failed", e);
+                return null;
             }
-            Controller.controller.notifyObservers(new BluetoothUtils.BluetoothServerStartedEvent(bluetoothAdapter.getAddress(), "fhfnflmnztoidhfg"));
+            Controller.controller.notifyObservers(new BluetoothServerStartedEvent(bluetoothAdapter.getAddress(), "fhfnflmnztoidhfg"));
             BluetoothSocket socket = null;
             // Keep listening until exception occurs or a socket is returned.
-            while (true) {
-                try {
-                    socket = mmServerSocket.accept();
-                } catch (IOException e) {
-                    Log.e(TAG, "Socket's accept() method failed", e);
-                    break;
-                }
-
-                if (socket != null) {
-                    // A connection was accepted. Perform work associated with
-                    mmServerSocket.close();
-                    break;
-                }
+            try {
+                socket = mmServerSocket.accept();
+            } catch (IOException e) {
+                Log.e(TAG, "Socket's accept() method failed", e);
+                return null;
             }
-
+            mmServerSocket.close();
+            return socket;
+        }
+    }
+    public static class ImportOverBluetoothRunner extends BluetoothBackroundRunner {
+        public final String idNumber;
+        public ImportOverBluetoothRunner(String pIdNumber, Activity pActivity) {
+            super(pActivity);
+            idNumber = pIdNumber;
+        }
+        @Override
+        protected void routine() throws Exception {
+            BluetoothSocket socket = init();
+            if(socket == null)
+                return;
             Personal_ID personalId = Personal_ID.loadInternal(LOAD_FROM_CREATED, idNumber, true, true);
+            if(personalId == null)
+                return;
             OutputStream os = new BufferedOutputStream(socket.getOutputStream());
             personalId.publicProfile.toSliceWriter(new Utils.SliceWriter(os));
             personalId.toSliceWriter(new Utils.SliceWriter(os), true);
             os.close();
-            mmServerSocket.close();
         }
+    }
+    public static class CheckIDoverBluetoothRunner extends BluetoothBackroundRunner {
+        public CheckIDoverBluetoothRunner(Activity pActivity) {
+            super(pActivity);
+        }
+        @Override
+        protected void routine() throws Exception {
+            BluetoothSocket socket = init();
+            if(socket == null)
+                return;
+            InputStream inputStream = new BufferedInputStream(socket.getInputStream());
+            Utils.SliceReader sliceReader = new Utils.SliceReader(inputStream);
+            Personal_ID personalId = Personal_ID.fromSliceReader(LOAD_FROM_IMPORTED, sliceReader, true, true);
+            socket.close();
+            if (personalId == null)
+                return;
+
+            Controller c = Controller.controller;
+            Controller.controller.checkIDrunnerRes = personalId;
+
+            if (c.validateSignature(personalId)) {
+                c.notifyObservers(new OutputEvent.PersonalIDValidEvent(personalId.toString()));
+            } else {
+                c.notifyObservers(new OutputEvent.PersonalIDInvalidEvent());
+            }
+        }
+    }
+
+    private static BluetoothSocket connectClient(Activity activity) {
+        BluetoothManager bluetoothManager = activity.getSystemService(BluetoothManager.class);
+        BluetoothAdapter bluetoothAdapter = bluetoothManager.getAdapter();
+        if (bluetoothAdapter == null) {
+            Toast.makeText(activity, "Bluetooth auf diesem Gerät nicht unterstützt", Toast.LENGTH_LONG).show();
+        }
+        if (!bluetoothAdapter.isEnabled()) {
+            Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+            if (ActivityCompat.checkSelfPermission(activity, Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
+                return null;
+            }
+            activity.startActivityForResult(enableBtIntent, 0);
+        }
+        Set<BluetoothDevice> pairedDevices = bluetoothAdapter.getBondedDevices();
+
+        BluetoothDevice bluetoothDevice = null;
+        if (!pairedDevices.isEmpty()) {
+            // There are paired devices. Get the name and address of each paired device.
+            for (BluetoothDevice device : pairedDevices) {
+                String name = device.getName();
+                bluetoothDevice = device;
+                break;
+            }
+        }
+        if(bluetoothDevice == null)
+            return null;
+        // Use a temporary object that is later assigned to mmSocket
+        // because mmSocket is final.
+        BluetoothSocket socket;
+
+        try {
+            // Get a BluetoothSocket to connect with the given BluetoothDevice.
+            // MY_UUID is the app's UUID string, also used in the server code.
+            socket = bluetoothDevice.createRfcommSocketToServiceRecord(UUID.fromString("123e4567-e89b-12d3-a456-426614174000"));
+        } catch (Exception e) {
+            Log.e(TAG, "Socket's create() method failed", e);
+            return null;
+        }
+
+        // bluetoothAdapter.cancelDiscovery();
+
+        try {
+            // Connect to the remote device through the socket. This call blocks
+            // until it succeeds or throws an exception.
+            socket.connect();
+        } catch (IOException connectException) {
+            // Unable to connect; close the socket and return.
+            try {
+                socket.close();
+            } catch (IOException closeException) {
+                Log.e(TAG, "Could not close the client socket", closeException);
+            }
+            return null;
+        }
+        return socket;
+    }
+    public static void importFromBluetooth(Controller controller, Activity activity) throws Exception {
+        BluetoothSocket socket = connectClient(activity);
+        InputStream inputStream = new BufferedInputStream(socket.getInputStream());
+        PublicProfile publicProfile = PublicProfile.fromSliceReader(new Utils.SliceReader(inputStream));
+        if(Files.exists(Paths.get(controller.appDataLocation + strPublicProfiles + publicProfile.name + "/" + publicProfile.sequence_number))) {
+            PublicProfile saved = PublicProfile.loadInternal(
+                    controller.appDataLocation + strPublicProfiles, publicProfile.name, publicProfile.sequence_number, true);
+            if(!saved.equals(publicProfile)) {
+                controller.notifyObservers(new OutputEvent.OtherProfileFoundEvent());
+                return;
+            }
+        } else {
+            publicProfile.saveInternal(controller.appDataLocation + strPublicProfiles + "/");
+        }
+
+        Personal_ID personalId = Personal_ID.fromSliceReader(LOAD_FROM_IMPORTED, new Utils.SliceReader(inputStream), true, true);
+        socket.close();
+        if(personalId == null) {
+            return;
+        }
+        Controller c = Controller.controller;
+        if(!c.validateSignature(personalId)) {
+            c.notifyObservers(new OutputEvent.PersonalIDInvalidEvent());
+            return;
+        }
+        personalId.saveInternal(LOAD_FROM_IMPORTED);
+        c.notifyObservers(new OutputEvent.DummyEvent());
+    }
+
+    public static void handInOverBluetooth(Activity activity, String idNumber, String mac, String crypto) throws Exception {
+        BluetoothSocket socket = connectClient(activity);
+        Personal_ID personalId = Personal_ID.loadInternal(LOAD_FROM_IMPORTED, idNumber.toUpperCase(), true, true);
+        if (personalId == null) {
+            return;
+        }
+        OutputStream os = new BufferedOutputStream(socket.getOutputStream());
+        personalId.toSliceWriter(new Utils.SliceWriter(os), true);
+        os.close();
+        Controller.controller.notifyObservers(new OutputEvent.IDhandedInSuccessEvent());
     }
 }

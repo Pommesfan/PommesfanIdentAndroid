@@ -117,7 +117,10 @@ public class ProvideServiceView extends AppCompatActivity implements Observer<Ou
                     Controller.controller.exportOverNetwork(intent.getStringExtra("idNumber"));
             } else if(medium == AppGUIUtils.BLUETOOTH) {
                 viewProvideService.removeView(findViewById(R.id.layoutNetworkConnection));
-                Controller.controller.startBackGroundRunner(new BluetoothUtils.BluetoothBackroundRunner(intent.getStringExtra("idNumber"), this));
+                if(mode == AppGUIUtils.CHECK)
+                    Controller.controller.startBackGroundRunner(new BluetoothUtils.CheckIDoverBluetoothRunner(this));
+                else if (mode == AppGUIUtils.EXPORT)
+                    Controller.controller.startBackGroundRunner(new BluetoothUtils.ImportOverBluetoothRunner(intent.getStringExtra("idNumber"), this));
             }
         } catch (Exception e) {
             Toast.makeText(this, "Fehler beim Einlesen", Toast.LENGTH_SHORT).show();

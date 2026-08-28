@@ -57,9 +57,9 @@ public class ProvideServiceView extends AppCompatActivity implements Observer<Ou
             qr += ipAddress + "\n" + evt.port + "\n" + evt.password;
         } else if(e instanceof BluetoothUtils.BluetoothServerStartedEvent) {
             BluetoothUtils.BluetoothServerStartedEvent evt = (BluetoothUtils.BluetoothServerStartedEvent)e;
-            ((TextView)findViewById(R.id.mac_address)).setText(evt.mac);
+            ((TextView)findViewById(R.id.device_name)).setText(evt.deviceName);
             password.setText(evt.password);
-            qr += evt.mac + "\n" + evt.password;
+            qr += evt.deviceName + "\n" + evt.password;
         } else {
             return;
         }

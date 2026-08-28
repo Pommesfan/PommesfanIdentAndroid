@@ -152,7 +152,6 @@ public class Personal_ID {
 
         sliceWriter.write(signature.get());
         if(withBlob) {
-
             if (blob.isEmpty())
                 throw new NoSuchElementException("Optional of BLOB is empty");
 

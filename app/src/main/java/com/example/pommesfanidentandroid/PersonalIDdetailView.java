@@ -187,6 +187,7 @@ public class PersonalIDdetailView extends AppCompatActivity implements Observer<
                     Toast.LENGTH_SHORT).show();
         }
     }
+    private int importMode = 0;
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
@@ -213,10 +214,16 @@ public class PersonalIDdetailView extends AppCompatActivity implements Observer<
             case READ_QR_CODE:
                 super.onActivityResult(requestCode, resultCode, data);
                 IntentResult intentResult = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
-                if (intentResult != null) {
-                    String res = intentResult.getContents();
-                    if (intentResult.getContents() != null) {
-                        String[]resArray = res.split("\n");
+                if (intentResult == null) {
+                    super.onActivityResult(requestCode, resultCode, data);
+                    return;
+                }
+                String res = intentResult.getContents();
+                if (res == null)
+                    return;
+                String[] resArray = res.split("\n");
+                switch (importMode) {
+                    case AppGUIUtils.NETWORK:
                         if (resArray.length != 4 || !resArray[0].equals("PommesfanIdent")) {
                             Toast.makeText(this, "QR-Code wird nicht unterstützt", Toast.LENGTH_SHORT).show();
                             return;
@@ -230,11 +237,19 @@ public class PersonalIDdetailView extends AppCompatActivity implements Observer<
                                 throw new RuntimeException(e);
                             }
                         }).start();
-                    }
-                } else {
-                    super.onActivityResult(requestCode, resultCode, data);
+                        break;
+                    case AppGUIUtils.BLUETOOTH:
+                        if (resArray.length != 3 || !resArray[0].equals("PommesfanIdent")) {
+                            Toast.makeText(this, "QR-Code wird nicht unterstützt", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+                        try {
+                            BluetoothUtils.handInOverBluetooth(this, idNumber, resArray[1], resArray[2]);
+                        } catch (Exception e) {
+                            throw new RuntimeException(e);
+                        }
+                        break;
                 }
-                break;
         }
     }
     private void delete(String id_number) {
@@ -255,6 +270,7 @@ public class PersonalIDdetailView extends AppCompatActivity implements Observer<
     }
 
     public void handInOverNetwork(String id_number) {
+        importMode = AppGUIUtils.NETWORK;
         new NetworkDialog(this, "Einreichen über Netzwerk") {
             @Override
             public void onOk(String ip, int port, String crypto) throws Exception {
@@ -267,10 +283,11 @@ public class PersonalIDdetailView extends AppCompatActivity implements Observer<
     }
 
     public void handInOverBluetooth(String id_number, Activity activity) {
+        importMode = AppGUIUtils.BLUETOOTH;
         new BluetoothDialog(this, "Einreichen über Bluetooth") {
             @Override
-            public void onOk(String mac, String crypto) throws Exception {
-                BluetoothUtils.handInOverBluetooth(activity, id_number, mac, crypto);
+            public void onOk(String deviceName, String crypto) throws Exception {
+                BluetoothUtils.handInOverBluetooth(activity, id_number, deviceName, crypto);
             }
             @Override
             public void onCancel() {

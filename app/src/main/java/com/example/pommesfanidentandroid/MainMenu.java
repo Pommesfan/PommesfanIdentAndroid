@@ -19,11 +19,10 @@ import utils.Observer;
 import utils.OutputEvent;
 
 public class MainMenu extends Activity implements Observer<OutputEvent> {
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if(Controller.controller == null) {
+        if (Controller.controller == null) {
             Controller.controller = new Controller(getFilesDir().toString() + "/");
         }
         setContentView(R.layout.activity_main_menu);
@@ -68,11 +67,11 @@ public class MainMenu extends Activity implements Observer<OutputEvent> {
         findViewById(R.id.importFromNetwork).setOnClickListener(v -> importOverNetwork());
         findViewById(R.id.importFromBluetooth).setOnClickListener(v -> importOverBluetooth());
 
-        if(Controller.controller.getProgramPasswordHash() == null) {
+        if (Controller.controller.getProgramPasswordHash() == null) {
             new PasswordDialog(this, "App-Passwort") {
                 @Override
                 public void onOk(String crypto_password) throws Exception {
-                    if(!Controller.controller.setProgramPasswordHash(crypto_password)) {
+                    if (!Controller.controller.setProgramPasswordHash(crypto_password)) {
                         System.exit(0);
                     }
                 }
@@ -84,7 +83,9 @@ public class MainMenu extends Activity implements Observer<OutputEvent> {
             };
         }
     }
+
     public void importOverNetwork() {
+        importMode = AppGUIUtils.NETWORK;
         new NetworkDialog(this, "Über Netzwerk importieren") {
             @Override
             public void onOk(String ip, int port, String crypto) throws Exception {
@@ -95,11 +96,13 @@ public class MainMenu extends Activity implements Observer<OutputEvent> {
             }
         };
     }
+
     public void importOverBluetooth() {
+        importMode = AppGUIUtils.BLUETOOTH;
         new BluetoothDialog(this, "Über Bluetooth importieren") {
             @Override
-            public void onOk(String mac, String crypto) throws Exception {
-                BluetoothUtils.importFromBluetooth(Controller.controller, MainMenu.this);
+            public void onOk(String deviceName, String crypto) throws Exception {
+                BluetoothUtils.importFromBluetooth(Controller.controller, deviceName, crypto, MainMenu.this);
             }
             @Override
             public void onCancel() {
@@ -125,6 +128,7 @@ public class MainMenu extends Activity implements Observer<OutputEvent> {
     }
 
     private static final int READ_QR_CODE = 49374;
+    private int importMode = 0;
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
@@ -135,10 +139,16 @@ public class MainMenu extends Activity implements Observer<OutputEvent> {
                 IntentResult intentResult = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
                 // if the intentResult is null then
                 // toast a message as "cancelled"
-                if (intentResult != null) {
-                    String res = intentResult.getContents();
-                    if (intentResult.getContents() != null) {
-                        String[]resArray = res.split("\n");
+                if (intentResult == null) {
+                    super.onActivityResult(requestCode, resultCode, data);
+                    return;
+                }
+                String res = intentResult.getContents();
+                if (res == null)
+                    return;
+                String[] resArray = res.split("\n");
+                switch (importMode) {
+                    case AppGUIUtils.NETWORK:
                         if (resArray.length != 4 || !resArray[0].equals("PommesfanIdent")) {
                             Toast.makeText(this, "QR-Code wird nicht unterstützt", Toast.LENGTH_SHORT).show();
                             return;
@@ -151,9 +161,18 @@ public class MainMenu extends Activity implements Observer<OutputEvent> {
                                 throw new RuntimeException(e);
                             }
                         }).start();
-                    }
-                } else {
-                    super.onActivityResult(requestCode, resultCode, data);
+                        break;
+                    case AppGUIUtils.BLUETOOTH:
+                        if (resArray.length != 3 || !resArray[0].equals("PommesfanIdent")) {
+                            Toast.makeText(this, "QR-Code wird nicht unterstützt", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+                        try {
+                            BluetoothUtils.importFromBluetooth(Controller.controller, resArray[1], resArray[2], MainMenu.this);
+                        } catch (Exception e) {
+                            throw new RuntimeException(e);
+                        }
+                        break;
                 }
         }
     }

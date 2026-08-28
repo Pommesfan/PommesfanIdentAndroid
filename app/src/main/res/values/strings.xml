@@ -50,4 +50,5 @@
     <string name="ausweis_pr_fen_netzwerk">Ausweis prüfen(Netzwerk)</string>
     <string name="ausweis_pr_fen_bluetooth">Ausweis prüfen(Bluetooth)</string>
     <string name="mac_adresse">Mac-Adresse</string>
+    <string name="name_gereat">Name Gerät</string>
 </resources>

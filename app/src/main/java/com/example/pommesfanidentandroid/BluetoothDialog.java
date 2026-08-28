@@ -15,10 +15,10 @@ public abstract class BluetoothDialog {
         View view = inflater.inflate(R.layout.bluetooth_dialog, null);
         builder.setView(view);
         builder.setPositiveButton("Ok", (dialog, which) -> {
-            EditText mac = view.findViewById(R.id.mac);
+            EditText device = view.findViewById(R.id.device_name);
             EditText crypto = view.findViewById(R.id.crypto);
             try {
-                onOk(mac.toString(), crypto.toString());
+                onOk(device.toString(), crypto.toString());
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
@@ -37,6 +37,6 @@ public abstract class BluetoothDialog {
         intentIntegrator.initiateScan();
     }
 
-    public abstract void onOk(String mac, String crypto) throws Exception;
+    public abstract void onOk(String deviceName, String crypto) throws Exception;
     public abstract void onCancel();
 }

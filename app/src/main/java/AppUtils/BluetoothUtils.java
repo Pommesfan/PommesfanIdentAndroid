@@ -19,12 +19,11 @@ import java.nio.file.Paths;
 import java.security.NoSuchAlgorithmException;
 import java.util.Set;
 import java.util.UUID;
-import static androidx.fragment.app.FragmentManager.TAG;
 import static controller.Controller.*;
 import static controller.Controller.strPublicProfiles;
 
 public class BluetoothUtils {
-    public final static String BLUETOOTH_UUID = "123e4567-e89b-12d3-a456-426614174000";
+    public final static String BLUETOOTH_UUID = "3df1b6dd-1e4e-4dcb-9d6d-7e455b6f08fa";
     public static class BluetoothServerStartedEvent implements OutputEvent {
         public final String deviceName;
         public final String password;
@@ -35,6 +34,8 @@ public class BluetoothUtils {
     }
     public static abstract class BluetoothBackroundRunner extends BackgroundRunner {
         private final Activity activity;
+        private BluetoothServerSocket mmServerSocket;
+        private boolean cancelled = false;
         public BluetoothBackroundRunner(Activity pActivity) {
             activity = pActivity;
         }
@@ -63,28 +64,33 @@ public class BluetoothUtils {
                         1
                 );
             }
-
-            BluetoothServerSocket mmServerSocket = null;
             try {
                 // MY_UUID is the app's UUID string, also used by the client code.
                 mmServerSocket = bluetoothAdapter.listenUsingRfcommWithServiceRecord("PommesFanIdent", UUID.fromString(BLUETOOTH_UUID));
             } catch (Exception e) {
-                Log.e(TAG, "Socket's listen() method failed", e);
-                return null;
+                throw new RuntimeException();
             }
             String crypto = Utils.getAlphanumeric(16);
             crypto_hash = Utils.passwordHash(crypto);
-            Controller.controller.notifyObservers(new BluetoothServerStartedEvent(bluetoothAdapter.getName(), crypto));
+            controller.notifyObservers(new BluetoothServerStartedEvent(bluetoothAdapter.getName(), crypto));
             BluetoothSocket socket;
             // Keep listening until exception occurs or a socket is returned.
             try {
                 socket = mmServerSocket.accept();
+                System.out.println();
             } catch (IOException e) {
-                Log.e(TAG, "Socket's accept() method failed", e);
-                return null;
+                if(!cancelled)
+                    throw new RuntimeException();
+                else
+                    return null;
             }
             mmServerSocket.close();
             return socket;
+        }
+        @Override
+        public void stop() throws IOException {
+            mmServerSocket.close();
+            cancelled = true;
         }
     }
     public static class ImportOverBluetoothRunner extends BluetoothBackroundRunner {
@@ -123,8 +129,8 @@ public class BluetoothUtils {
             if (personalId == null)
                 return;
 
-            Controller c = Controller.controller;
-            Controller.controller.checkIDrunnerRes = personalId;
+            Controller c = controller;
+            controller.checkIDrunnerRes = personalId;
 
             if (c.validateSignature(personalId)) {
                 c.notifyObservers(new OutputEvent.PersonalIDValidEvent(personalId.toString()));
@@ -171,8 +177,7 @@ public class BluetoothUtils {
             // MY_UUID is the app's UUID string, also used in the server code.
             socket = bluetoothDevice.createRfcommSocketToServiceRecord(UUID.fromString(BLUETOOTH_UUID));
         } catch (Exception e) {
-            Log.e(TAG, "Socket's create() method failed", e);
-            return null;
+            throw new RuntimeException();
         }
 
         // bluetoothAdapter.cancelDiscovery();
@@ -186,7 +191,7 @@ public class BluetoothUtils {
             try {
                 socket.close();
             } catch (IOException closeException) {
-                Log.e(TAG, "Could not close the client socket", closeException);
+                throw new RuntimeException();
             }
             return null;
         }
@@ -230,6 +235,6 @@ public class BluetoothUtils {
         OutputStream os = AES_OutputStream.from_ecb(socket.getOutputStream(), AES_BUFFER_SIZE, Utils.passwordHash(crypto));
         personalId.toSliceWriter(new Utils.SliceWriter(os), true);
         os.close();
-        Controller.controller.notifyObservers(new OutputEvent.IDhandedInSuccessEvent());
+        controller.notifyObservers(new OutputEvent.IDhandedInSuccessEvent());
     }
 }

@@ -516,11 +516,7 @@ public class Controller extends Observable<OutputEvent> {
     public void stopBackgroundRunner() throws IOException {
         if(backgroundRunner == null)
             return;
-        if(backgroundRunner instanceof BackgroundRunner.NetworkBackgroundRunner) {
-            BackgroundRunner.NetworkBackgroundRunner b = (BackgroundRunner.NetworkBackgroundRunner)backgroundRunner;
-            Socket s = new Socket(InetAddress.getLocalHost().getHostAddress(), b.getPort());
-            s.getOutputStream().write(1);
-        }
+        backgroundRunner.stop();
         backgroundRunner = null;
     }
 

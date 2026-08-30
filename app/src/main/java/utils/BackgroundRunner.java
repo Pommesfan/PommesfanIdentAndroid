@@ -5,6 +5,7 @@ import controller.Controller;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.ServerSocket;
+import java.net.Socket;
 import java.security.NoSuchAlgorithmException;
 
 public abstract class BackgroundRunner {
@@ -27,6 +28,7 @@ public abstract class BackgroundRunner {
     public void start() {
         t.start();
     }
+    public abstract void stop() throws IOException;
 
     public abstract static class NetworkBackgroundRunner extends BackgroundRunner {
         protected ServerSocket serverSocket;
@@ -41,7 +43,11 @@ public abstract class BackgroundRunner {
             String ip = InetAddress.getLocalHost().getHostAddress();
             Controller.controller.notifyObservers(new OutputEvent.NetworkServerStartedEvent(ip, serverSocket.getLocalPort(), crypto));
         }
-
+        @Override
+        public void stop() throws IOException {
+            Socket s = new Socket(InetAddress.getLocalHost().getHostAddress(), getPort());
+            s.getOutputStream().write(1);
+        }
         public int getPort() {
             return serverSocket.getLocalPort();
         }

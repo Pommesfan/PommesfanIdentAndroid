@@ -218,38 +218,8 @@ public class PersonalIDdetailView extends AppCompatActivity implements Observer<
                     super.onActivityResult(requestCode, resultCode, data);
                     return;
                 }
-                String res = intentResult.getContents();
-                if (res == null)
-                    return;
-                String[] resArray = res.split("\n");
-                switch (importMode) {
-                    case AppGUIUtils.NETWORK:
-                        if (resArray.length != 4 || !resArray[0].equals("PommesfanIdent")) {
-                            Toast.makeText(this, "QR-Code wird nicht unterstützt", Toast.LENGTH_SHORT).show();
-                            return;
-                        }
-                        new Thread(() -> {
-                            Looper.prepare();
-                            try {
-                                Controller.controller.handInPersonalIDtoRemote(idNumber, resArray[1],
-                                        Integer.parseInt(resArray[2]), resArray[3]);
-                            } catch (Exception e) {
-                                throw new RuntimeException(e);
-                            }
-                        }).start();
-                        break;
-                    case AppGUIUtils.BLUETOOTH:
-                        if (resArray.length != 3 || !resArray[0].equals("PommesfanIdent")) {
-                            Toast.makeText(this, "QR-Code wird nicht unterstützt", Toast.LENGTH_SHORT).show();
-                            return;
-                        }
-                        try {
-                            BluetoothUtils.handInOverBluetooth(this, idNumber, resArray[1], resArray[2]);
-                        } catch (Exception e) {
-                            throw new RuntimeException(e);
-                        }
-                        break;
-                }
+                String qrCode = intentResult.getContents();
+                AppGUIUtils.handleQRcode(qrCode, importMode, AppGUIUtils.CHECK, idNumber, this);
         }
     }
     private void delete(String id_number) {

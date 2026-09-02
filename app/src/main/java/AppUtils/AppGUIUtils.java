@@ -5,10 +5,13 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.os.Looper;
 import android.util.DisplayMetrics;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
+import controller.Controller;
 import utils.OutputEvent;
 
 import static controller.Controller.*;
@@ -123,5 +126,54 @@ public class AppGUIUtils {
         t.setTextSize(20);
         t.setText(txt);
         return t;
+    }
+
+    public static void handleQRcode(String qrCode, int medium, int mode, String idNumber, Activity activity) {
+        if (qrCode == null)
+            return;
+        String[] resArray = qrCode.split("\n");
+        switch (medium) {
+            case AppGUIUtils.NETWORK:
+                if (resArray.length != 4 || !resArray[0].equals("PommesfanIdent")) {
+                    Toast.makeText(activity, "QR-Code wird nicht unterstützt", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                new Thread(() -> {
+                    Looper.prepare();
+                    try {
+                        switch (mode) {
+                            case EXPORT:
+                                Controller.controller.importOverNetwork(resArray[1], Integer.parseInt(resArray[2]), resArray[3]);
+                                break;
+                            case CHECK:
+                                Controller.controller.handInPersonalIDtoRemote(idNumber, resArray[1],
+                                        Integer.parseInt(resArray[2]), resArray[3]);
+                                break;
+                        }
+
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
+                }).start();
+                break;
+            case AppGUIUtils.BLUETOOTH:
+                if (resArray.length != 3 || !resArray[0].equals("PommesfanIdent")) {
+                    Toast.makeText(activity, "QR-Code wird nicht unterstützt", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                try {
+                    switch (mode) {
+                        case EXPORT:
+                            BluetoothUtils.importFromBluetooth(Controller.controller, resArray[1], resArray[2], activity);
+                            break;
+                        case CHECK:
+                            BluetoothUtils.handInOverBluetooth(activity, idNumber, resArray[1], resArray[2]);
+                            break;
+                    }
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+                break;
+        }
     }
 }

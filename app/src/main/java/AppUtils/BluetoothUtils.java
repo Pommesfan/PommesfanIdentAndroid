@@ -5,14 +5,12 @@ import android.app.Activity;
 import android.bluetooth.*;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.util.Log;
 import android.widget.Toast;
 import androidx.core.app.ActivityCompat;
 import controller.Controller;
 import model.Personal_ID;
 import model.PublicProfile;
 import utils.*;
-
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -77,20 +75,19 @@ public class BluetoothUtils {
             // Keep listening until exception occurs or a socket is returned.
             try {
                 socket = mmServerSocket.accept();
-                System.out.println();
             } catch (IOException e) {
-                if(!cancelled)
-                    throw new RuntimeException();
-                else
+                if(cancelled)
                     return null;
+                else
+                    throw new RuntimeException();
             }
             mmServerSocket.close();
             return socket;
         }
         @Override
         public void stop() throws IOException {
-            mmServerSocket.close();
             cancelled = true;
+            mmServerSocket.close();
         }
     }
     public static class ImportOverBluetoothRunner extends BluetoothBackroundRunner {
